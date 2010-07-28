@@ -1,0 +1,34 @@
+--  This package is free software; you can redistribute it and/or
+--  modify it under terms of the GNU General Public License as
+--  published by the Free Software Foundation; either version 3, or
+--  (at your option) any later version.  It is distributed in the
+--  hope that it will be useful, but WITHOUT ANY WARRANTY; without
+--  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+--  PARTICULAR PURPOSE.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program; see the file COPYING3 respectively.  If
+--  not, see <http://www.gnu.org/licenses/>.
+--
+--  Copyright Simon Wright <simon@pushface.org>
+
+project Ada_Math_Build is
+
+   for Library_Name use "ada_math";
+   for Library_Kind use "dynamic";
+   for Library_Dir use "../lib";
+   for Library_Src_Dir use "../include";
+
+   for Languages use ("ada");
+
+   for Object_Dir use ".build";
+
+   package Builder is
+      for Default_Switches ("ada") use ("-g");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatpg", "-gnatqQ");
+   end Compiler;
+
+end Ada_Math_Build;
