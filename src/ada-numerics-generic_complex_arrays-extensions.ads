@@ -21,6 +21,8 @@
 generic
 package Ada.Numerics.Generic_Complex_Arrays.Extensions is
 
+   pragma Pure;
+
    function Eigenvalues (A : Complex_Matrix) return Complex_Vector;
 
 end Ada.Numerics.Generic_Complex_Arrays.Extensions;
