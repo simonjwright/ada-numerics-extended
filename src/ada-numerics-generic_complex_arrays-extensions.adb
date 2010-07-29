@@ -20,8 +20,7 @@
 --  2006-2009, Free Software Foundation, Inc.  The adaptation and the
 --  original work are Copyright Simon Wright <simon@pushface.org>
 
---  with Interfaces.Fortran.BLAS;
-with Interfaces.Fortran;
+with Interfaces.Fortran.BLAS;
 with System.Generic_Array_Operations;
 
 package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
@@ -62,48 +61,64 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    --  function To_Real (X : Interfaces.Fortran.Double_Precision) return Real;
    --  pragma Inline (To_Real);
 
-   --  function To_Double_Complex
-   --    (X : Complex)
-   --    return Interfaces.Fortran.Double_Complex;
-   --  pragma Inline (To_Double_Complex);
+   function To_Double_Complex
+     (X : Complex)
+     return Interfaces.Fortran.Double_Complex;
+   pragma Inline (To_Double_Complex);
 
-   --  function To_Complex
-   --    (X : Interfaces.Fortran.Double_Complex) return Complex;
-   --  pragma Inline (To_Complex);
+   function To_Complex
+     (X : Interfaces.Fortran.Double_Complex) return Complex;
+   pragma Inline (To_Complex);
 
-   --  --  Instantiations
+   --  Instantiations
 
    --  function To_Double_Precision is new
-   --     System.Generic_Array_Operations.Vector_Elementwise_Operation
-   --      (X_Scalar      => Real'Base,
-   --       Result_Scalar => Interfaces.Fortran.Double_Precision,
-   --       X_Vector      => Real_Vector,
-   --       Result_Vector => Interfaces.Fortran.BLAS.Double_Precision_Vector,
-   --       Operation     => To_Double_Precision);
+   --    System.Generic_Array_Operations.Vector_Elementwise_Operation
+   --    (X_Scalar      => Real'Base,
+   --     Result_Scalar => Interfaces.Fortran.Double_Precision,
+   --     X_Vector      => Real_Vector,
+   --     Result_Vector => Interfaces.Fortran.BLAS.Double_Precision_Vector,
+   --     Operation     => To_Double_Precision);
 
    --  function To_Real is new
-   --     System.Generic_Array_Operations.Vector_Elementwise_Operation
-   --      (X_Scalar      => Interfaces.Fortran.Double_Precision,
-   --       Result_Scalar => Real'Base,
-   --       X_Vector      => Interfaces.Fortran.BLAS.Double_Precision_Vector,
-   --       Result_Vector => Real_Vector,
-   --       Operation     => To_Real);
+   --    System.Generic_Array_Operations.Vector_Elementwise_Operation
+   --    (X_Scalar      => Interfaces.Fortran.Double_Precision,
+   --     Result_Scalar => Real'Base,
+   --     X_Vector      => Interfaces.Fortran.BLAS.Double_Precision_Vector,
+   --     Result_Vector => Real_Vector,
+   --     Operation     => To_Real);
 
    --  function To_Double_Complex is new
-   --    System.Generic_Array_Operations.Matrix_Elementwise_Operation
-   --      (X_Scalar      => Complex,
-   --       Result_Scalar => Interfaces.Fortran.Double_Complex,
-   --       X_Matrix      => Complex_Matrix,
-   --       Result_Matrix => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
-   --       Operation     => To_Double_Complex);
+   --    System.Generic_Array_Operations.Vector_Elementwise_Operation
+   --    (X_Scalar      => Complex,
+   --     Result_Scalar => Interfaces.Fortran.Double_Complex,
+   --     X_Vector      => Complex_Vector,
+   --     Result_Vector => Interfaces.Fortran.BLAS.Double_Complex_Vector,
+   --     Operation     => To_Double_Complex);
 
-   --  function To_Complex is new
-   --    System.Generic_Array_Operations.Matrix_Elementwise_Operation
-   --      (X_Scalar      => Interfaces.Fortran.Double_Complex,
-   --       Result_Scalar => Complex,
-   --       X_Matrix      => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
-   --       Result_Matrix => Complex_Matrix,
-   --       Operation     => To_Complex);
+   function To_Complex is new
+     System.Generic_Array_Operations.Vector_Elementwise_Operation
+     (X_Scalar      => Interfaces.Fortran.Double_Complex,
+      Result_Scalar => Complex,
+      X_Vector      => Interfaces.Fortran.BLAS.Double_Complex_Vector,
+      Result_Vector => Complex_Vector,
+      Operation     => To_Complex);
+
+   function To_Double_Complex is new
+     System.Generic_Array_Operations.Matrix_Elementwise_Operation
+     (X_Scalar      => Complex,
+      Result_Scalar => Interfaces.Fortran.Double_Complex,
+      X_Matrix      => Complex_Matrix,
+      Result_Matrix => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
+      Operation     => To_Double_Complex);
+
+   function To_Complex is new
+     System.Generic_Array_Operations.Matrix_Elementwise_Operation
+     (X_Scalar      => Interfaces.Fortran.Double_Complex,
+      Result_Scalar => Complex,
+      X_Matrix      => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
+      Result_Matrix => Complex_Matrix,
+      Operation     => To_Complex);
 
    --  function To_Double_Precision
    --    (X : Real)
@@ -119,33 +134,32 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    --     return Real (X);
    --  end To_Real;
 
-   --  function To_Double_Complex
-   --    (X : Complex) return Interfaces.Fortran.Double_Complex
-   --  is
-   --  begin
-   --     return (To_Double_Precision (X.Re), To_Double_Precision (X.Im));
-   --  end To_Double_Complex;
+   function To_Double_Complex
+     (X : Complex) return Interfaces.Fortran.Double_Complex
+   is
+   begin
+      return (Interfaces.Fortran.Double_Precision (X.Re),
+              Interfaces.Fortran.Double_Precision (X.Im));
+   end To_Double_Complex;
 
-   --  function To_Complex
-   --    (X : Interfaces.Fortran.Double_Complex) return Complex
-   --  is
-   --  begin
-   --     return (Real (X.Re), Real (X.Im));
-   --  end To_Complex;
+   function To_Complex
+     (X : Interfaces.Fortran.Double_Complex) return Complex
+   is
+   begin
+      return (Real (X.Re), Real (X.Im));
+   end To_Complex;
 
+   --  This declaration is an Ada-ised version of the Fortran geev,
+   --  without the order/leading dimension parameters necessary for
+   --  Fortran.
    procedure geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      N      :        Positive;
       A      : in out Complex_Matrix;
-      Ld_A   :        Positive;
       W      :    out Complex_Vector;
       V_L    :    out Complex_Matrix;
-      Ld_V_L :        Integer;
       V_R    :    out Complex_Matrix;
-      Ld_V_R :        Integer;
       Work   :    out Complex_Vector;
-      L_Work :        Integer;
       R_Work :    out Complex_Vector;
       Info   :    out Integer);
 
@@ -168,16 +182,11 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
       Transpose (A, Working_A);
 
       geev (Jobv_L => 'N', Jobv_R => 'N',
-            N => Working_A'Length (1),
             A => Working_A,
-            Ld_A => A'Length (1),
             W => Result,
             V_L => Dummy_Eigenvectors,
-            Ld_V_L => Dummy_Eigenvectors'Length (1),
             V_R => Dummy_Eigenvectors,
-            Ld_V_R => Dummy_Eigenvectors'Length (1),
             Work => Work,
-            L_Work => Work'Length,
             R_Work => R_Work,
             Info => Info);
 
@@ -192,77 +201,111 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    procedure geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      N      :        Positive;
       A      : in out Complex_Matrix;
-      Ld_A   :        Positive;
       W      :    out Complex_Vector;
       V_L    :    out Complex_Matrix;
-      Ld_V_L :        Integer;
       V_R    :    out Complex_Matrix;
-      Ld_V_R :        Integer;
       Work   :    out Complex_Vector;
-      L_Work :        Integer;
       R_Work :    out Complex_Vector;
       Info   :    out Integer)
    is
-      procedure cgeev
-        (Jobv_L :        Character;
-         Jobv_R :        Character;
-         N      :        Positive;
-         A      : in out Complex_Matrix;
-         Ld_A   :        Positive;
-         W      :    out Complex_Vector;
-         V_L    :    out Complex_Matrix;
-         Ld_V_L :        Integer;
-         V_R    :    out Complex_Matrix;
-         Ld_V_R :        Integer;
-         Work   :    out Complex_Vector;
-         L_Work :        Integer;
-         R_Work :    out Complex_Vector;
-         Info   :    out Integer);
-      pragma Import (Fortran, cgeev, "cgeev_");
-      procedure zgeev
-        (Jobv_L :        Character;
-         Jobv_R :        Character;
-         N      :        Positive;
-         A      : in out Complex_Matrix;
-         Ld_A   :        Positive;
-         W      :    out Complex_Vector;
-         V_L    :    out Complex_Matrix;
-         Ld_V_L :        Integer;
-         V_R    :    out Complex_Matrix;
-         Ld_V_R :        Integer;
-         Work   :    out Complex_Vector;
-         L_Work :        Integer;
-         R_Work :    out Complex_Vector;
-         Info   :    out Integer);
-      pragma Import (Fortran, zgeev, "zgeev_");
    begin
       if Is_Single then
-         cgeev (Jobv_L, Jobv_R,
-                N, A, Ld_A,
-                W,
-                V_L, Ld_V_L,
-                V_R, Ld_V_R,
-                Work, L_Work, R_Work,
-                Info);
+         declare
+            procedure cgeev
+              (Jobv_L :        Character;
+               Jobv_R :        Character;
+               N      :        Positive;
+               A      : in out Complex_Matrix;
+               Ld_A   :        Positive;
+               W      :    out Complex_Vector;
+               V_L    :    out Complex_Matrix;
+               Ld_V_L :        Integer;
+               V_R    :    out Complex_Matrix;
+               Ld_V_R :        Integer;
+               Work   :    out Complex_Vector;
+               L_Work :        Integer;
+               R_Work :    out Complex_Vector;
+               Info   :    out Integer);
+            pragma Import (Fortran, cgeev, "cgeev_");
+         begin
+            cgeev (Jobv_L, Jobv_R,
+                   A'Length (1), A, A'Length (1),
+                   W,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Work, Work'Length,
+                   R_Work,
+                   Info);
+         end;
       elsif Is_Double then
-         zgeev (Jobv_L, Jobv_R,
-                N, A, Ld_A,
-                W,
-                V_L, Ld_V_L,
-                V_R, Ld_V_R,
-                Work, L_Work, R_Work,
-                Info);
+         declare
+            procedure zgeev
+              (Jobv_L :        Character;
+               Jobv_R :        Character;
+               N      :        Positive;
+               A      : in out Complex_Matrix;
+               Ld_A   :        Positive;
+               W      :    out Complex_Vector;
+               V_L    :    out Complex_Matrix;
+               Ld_V_L :        Integer;
+               V_R    :    out Complex_Matrix;
+               Ld_V_R :        Integer;
+               Work   :    out Complex_Vector;
+               L_Work :        Integer;
+               R_Work :    out Complex_Vector;
+               Info   :    out Integer);
+            pragma Import (Fortran, zgeev, "zgeev_");
+         begin
+            zgeev (Jobv_L, Jobv_R,
+                   A'Length (1), A, A'Length (1),
+                   W,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Work, Work'Length,
+                   R_Work,
+                   Info);
+         end;
       else
-         raise Program_Error with "oops, haven't done this yet";
-         --  zgeev (Jobv_L, Jobv_R,
-         --         N, A, Ld_A,
-         --         W,
-         --         V_L, Ld_V_L,
-         --         V_R, Ld_V_R,
-         --         Work, L_Work, R_Work,
-         --         Info);
+         declare
+            package IFB renames Interfaces.Fortran.BLAS;
+            procedure zgeev
+              (Jobv_L :        Character;
+               Jobv_R :        Character;
+               N      :        Positive;
+               A      : in out IFB.Double_Complex_Matrix;
+               Ld_A   :        Positive;
+               W      :    out IFB.Double_Complex_Vector;
+               V_L    :    out IFB.Double_Complex_Matrix;
+               Ld_V_L :        Integer;
+               V_R    :    out IFB.Double_Complex_Matrix;
+               Ld_V_R :        Integer;
+               Work   :    out IFB.Double_Complex_Vector;
+               L_Work :        Integer;
+               R_Work :    out IFB.Double_Complex_Vector;
+               Info   :    out Integer);
+            pragma Import (Fortran, zgeev, "zgeev_");
+            F_A : IFB.Double_Complex_Matrix := To_Double_Complex (A);
+            F_W : IFB.Double_Complex_Vector (W'Range);
+            F_V_L : IFB.Double_Complex_Matrix (V_L'Range (1), V_L'Range (2));
+            F_V_R : IFB.Double_Complex_Matrix (V_R'Range (1), V_R'Range (2));
+            F_Work : IFB.Double_Complex_Vector (Work'Range);
+            F_R_Work : IFB.Double_Complex_Vector (R_Work'Range);
+         begin
+            zgeev (Jobv_L, Jobv_R,
+                   F_A'Length (1), F_A, F_A'Length (1),
+                   F_W,
+                   F_V_L, F_V_L'Length (1),
+                   F_V_R, F_V_R'Length (1),
+                   F_Work, F_Work'Length,
+                   F_R_Work,
+                   Info);
+            W := To_Complex (F_W);
+            V_R := To_Complex (F_V_R);
+            V_L := To_Complex (F_V_L);
+            Work := To_Complex (F_Work);
+            R_Work := To_Complex (F_R_Work);
+         end;
       end if;
    end geev;
 

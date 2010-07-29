@@ -19,10 +19,12 @@ with Ada.Numerics.Generic_Complex_Arrays.Extensions;
 
 procedure Test_Extensions is
 
+   subtype My_Float is Float range -100.0 .. 100.0;
+
    package Real_Arrays
-   is new Ada.Numerics.Generic_Real_Arrays (Long_Float);
+   is new Ada.Numerics.Generic_Real_Arrays (My_Float);
    package Complex_Types
-   is new Ada.Numerics.Generic_Complex_Types (Long_Float);
+   is new Ada.Numerics.Generic_Complex_Types (My_Float);
    package Complex_Arrays
    is new Ada.Numerics.Generic_Complex_Arrays (Real_Arrays, Complex_Types);
    package Extensions
@@ -43,9 +45,9 @@ begin
    Result := Extensions.Eigenvalues (Input);
 
    for J in Result'Range loop
-      Put_Line (Long_Float'Image (Result (J).Re)
+      Put_Line (My_Float'Base'Image (Result (J).Re)
                   & " "
-                  & Long_Float'Image (Result (J).Im));
+                  & My_Float'Base'Image (Result (J).Im));
    end loop;
 
 end Test_Extensions;
