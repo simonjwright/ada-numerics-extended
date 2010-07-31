@@ -72,6 +72,8 @@ begin
             7 => (Z, Z, Z, Z, Z, A, Z)
            );
    begin
+
+      -- GNAT: Eigenvalues of symmetrix complex matrix are real
       declare
          Result : constant Real_Vector := Complex_Arrays.Eigenvalues (Input);
       begin
@@ -80,6 +82,8 @@ begin
          end loop;
       end;
       New_Line;
+
+      --  Extension: Eigenvalues of general complex matrix are complex.
       declare
          Result : constant Complex_Vector := Extensions.Eigenvalues (Input);
       begin
@@ -90,6 +94,7 @@ begin
          end loop;
       end;
       New_Line;
+
    end;
 
 end Test_Extensions;
