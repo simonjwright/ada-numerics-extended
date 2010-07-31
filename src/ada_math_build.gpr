@@ -28,7 +28,12 @@ project Ada_Math_Build is
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatpg", "-gnatqQ");
+      for Default_Switches ("ada") use
+        (
+         "-gnatpg",  --  to build Ada library items
+         "-gnatqQ",  --  to keep ALI files even if there are compilation errors
+         "-gnat05"   --  GNAT GPL 2010 requires this (GCC 4.5.0 doesn't)
+        );
    end Compiler;
 
 end Ada_Math_Build;

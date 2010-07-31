@@ -26,7 +26,11 @@ project Test_Extensions is
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatqQ");
+      for Default_Switches ("ada") use
+        (
+         "-gnatqQ",
+         "-gnat05"   --  GNAT GPL 2010 requires this (GCC 4.5.0 doesn't)
+         );
    end Compiler;
 
    package Binder is
