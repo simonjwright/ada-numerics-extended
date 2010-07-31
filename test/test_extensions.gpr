@@ -28,7 +28,7 @@ project Test_Extensions is
    package Compiler is
       for Default_Switches ("ada") use
         (
-         "-gnatqQ",
+         "-gnatqQ",  --  to keep ALI files even if there are compilation errors
          "-gnat05"   --  GNAT GPL 2010 requires this (GCC 4.5.0 doesn't)
          );
    end Compiler;
