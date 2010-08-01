@@ -1,0 +1,7 @@
+syntax: glob
+lib
+.build
+*.orig
+gnat-math-extn-*
+test/test_extensions
+test/test_extensions.exe

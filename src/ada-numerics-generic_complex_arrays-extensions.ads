@@ -18,6 +18,8 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
+pragma License (Modified_GPL);
+
 generic
 package Ada.Numerics.Generic_Complex_Arrays.Extensions is
 

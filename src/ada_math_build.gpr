@@ -15,7 +15,7 @@
 project Ada_Math_Build is
 
    for Library_Name use "ada_math";
-   for Library_Kind use "dynamic";
+   for Library_Kind use "static";
    for Library_Dir use "../lib";
    for Library_Src_Dir use "../include";
 
