@@ -16,9 +16,13 @@
 --  program; see the files COPYING3 and COPYING.RUNTIME respectively.
 --  If not, see <http://www.gnu.org/licenses/>.
 --
---  Much of this unit is adapted from the GNAT compiler, Copyright (C)
---  2006-2009, Free Software Foundation, Inc.  The adaptation and the
---  original work are Copyright Simon Wright <simon@pushface.org>
+--  Much of this unit is adapted from the Ada Runtime components of
+--  the GNAT compiler, Copyright (C) 2006-2009, Free Software
+--  Foundation, Inc under the same licence terms as above. The
+--  adaptation and the original work are Copyright Simon Wright
+--  <simon@pushface.org>.
+
+pragma License (Modified_GPL);
 
 with Interfaces.Fortran.BLAS;
 with System.Generic_Array_Operations;

@@ -1,0 +1,43 @@
+This is the README file for distributions of the Ada 2005 Math
+Extensions project (https://sourceforge.net/projects/gnat-math-extn/)
+on SourceForge.
+
+The purpose of this project is to provide additional matrix
+capabilities beyond those defined in the Standard Library (Annex G of
+the ARM). The implementations, which are only for GNAT, are in the
+form of bindings to the LAPACK and BLAS libraries which are widely
+available if not already provided on all operating systems, and in any
+case form part of GNAT GPL.
+
+Installation
+============
+
+The software unpacks into a directory structure of the form
+
+gnat-math-extn-YYYYMMDD
+   /src  contains the library code
+   /test contains an installation verification program.
+
+Go to the test/ directory. If on a Unix-based system, run
+   $ gnatmake -p -P test_extensions
+   $ ./test_extensions
+or if on Windows,
+   > gnatmake -p -P test_extensions
+   > test_extensions
+
+This should output the results of a simple set of tests.
+[At some future release, we will list the expected output]
+
+As a side-effect, it builds a static library for use in your own
+programs.
+
+In order to use this library within your own code, you need to use a
+GPR referencing the extensions' GPR, "ada_math_build" [This name is
+subject to change]. Either
+
+* say 'with "ada_math_build";' and include
+  /where/ever/gnat-math-extn-YYYYMMDD/src in your ADA_PROJECTS_PATH
+  environment variable; or
+
+* say 'with "/where/ever/gnat-math-extn-YYYYMMDD/src/ada_math_build";'
+  (this path can be relative, if you like).
