@@ -7,8 +7,8 @@
 #  PARTICULAR PURPOSE.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; see the file COPYING3 respectively.  If
-#  not, see <http://www.gnu.org/licenses/>.
+#  along with this program; see the file COPYING3.  If not, see
+#  <http://www.gnu.org/licenses/>.
 #
 #  Copyright Simon Wright <simon@pushface.org>
 
