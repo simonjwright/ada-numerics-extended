@@ -155,7 +155,7 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
 
    --  This declaration is an Ada-ised version of the Fortran geev,
    --  without the order/leading dimension parameters necessary for
-   --  Fortran.
+   --  Fortran; the work areas are internally allocated.
    procedure geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
@@ -163,8 +163,6 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
       W      :    out Complex_Vector;
       V_L    :    out Complex_Matrix;
       V_R    :    out Complex_Matrix;
-      Work   :    out Complex_Vector;
-      R_Work :    out Complex_Vector;
       Info   :    out Integer);
 
    function Eigenvalues (A : Complex_Matrix) return Complex_Vector
@@ -173,8 +171,6 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
       Working_A : Complex_Matrix (A'Range (2), A'Range (1));
       Result : Complex_Vector (1 .. A'Length (1));
       Dummy_Eigenvectors : Complex_Matrix (1 .. 1, 1 .. 1);
-      Work : Complex_Vector (1 .. 2 * A'Length (1));
-      R_Work : Complex_Vector (1 .. 2 * A'Length (1));
       Info : Integer;
 
    begin
@@ -190,8 +186,6 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
             W => Result,
             V_L => Dummy_Eigenvectors,
             V_R => Dummy_Eigenvectors,
-            Work => Work,
-            R_Work => R_Work,
             Info => Info);
 
       if Info /= 0 then
@@ -209,8 +203,6 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
       W      :    out Complex_Vector;
       V_L    :    out Complex_Matrix;
       V_R    :    out Complex_Matrix;
-      Work   :    out Complex_Vector;
-      R_Work :    out Complex_Vector;
       Info   :    out Integer)
    is
    begin
@@ -232,15 +224,31 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                R_Work :    out Complex_Vector;
                Info   :    out Integer);
             pragma Import (Fortran, cgeev, "cgeev_");
+            Querying_Work : Complex_Vector (1 .. 1);
+            R_Work : Complex_Vector (1 .. 2 * A'Length (1));
          begin
+            --  Query the optimum size of the Work vector
             cgeev (Jobv_L, Jobv_R,
                    A'Length (1), A, A'Length (1),
                    W,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
-                   Work, Work'Length,
+                   Querying_Work, -1,
                    R_Work,
                    Info);
+            declare
+               Local_Work :
+                 Complex_Vector (1 .. Integer (Querying_Work (1).Re));
+            begin
+               cgeev (Jobv_L, Jobv_R,
+                      A'Length (1), A, A'Length (1),
+                      W,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      R_Work,
+                      Info);
+            end;
          end;
       elsif Is_Double then
          declare
@@ -260,15 +268,31 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                R_Work :    out Complex_Vector;
                Info   :    out Integer);
             pragma Import (Fortran, zgeev, "zgeev_");
+            Querying_Work : Complex_Vector (1 .. 1);
+            R_Work : Complex_Vector (1 .. 2 * A'Length (1));
          begin
+            --  Query the optimum size of the Work vector
             zgeev (Jobv_L, Jobv_R,
                    A'Length (1), A, A'Length (1),
                    W,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
-                   Work, Work'Length,
+                   Querying_Work, -1,
                    R_Work,
                    Info);
+            declare
+               Local_Work :
+                 Complex_Vector (1 .. Integer (Querying_Work (1).Re));
+            begin
+               zgeev (Jobv_L, Jobv_R,
+                      A'Length (1), A, A'Length (1),
+                      W,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      R_Work,
+                      Info);
+            end;
          end;
       else
          declare
@@ -293,22 +317,35 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
             F_W : IFB.Double_Complex_Vector (W'Range);
             F_V_L : IFB.Double_Complex_Matrix (V_L'Range (1), V_L'Range (2));
             F_V_R : IFB.Double_Complex_Matrix (V_R'Range (1), V_R'Range (2));
-            F_Work : IFB.Double_Complex_Vector (Work'Range);
-            F_R_Work : IFB.Double_Complex_Vector (R_Work'Range);
+            F_Querying_Work : IFB.Double_Complex_Vector (1 .. 1);
+            F_R_Work : IFB.Double_Complex_Vector (1 .. 2 * A'Length (1));
          begin
+            --  Query the optimum size of the Work vector
             zgeev (Jobv_L, Jobv_R,
                    F_A'Length (1), F_A, F_A'Length (1),
                    F_W,
                    F_V_L, F_V_L'Length (1),
                    F_V_R, F_V_R'Length (1),
-                   F_Work, F_Work'Length,
+                   F_Querying_Work, -1,
                    F_R_Work,
                    Info);
-            W := To_Complex (F_W);
-            V_R := To_Complex (F_V_R);
-            V_L := To_Complex (F_V_L);
-            Work := To_Complex (F_Work);
-            R_Work := To_Complex (F_R_Work);
+            declare
+               F_Local_Work :
+                 IFB.Double_Complex_Vector
+                 (1 .. Integer (F_Querying_Work (1).Re));
+            begin
+               zgeev (Jobv_L, Jobv_R,
+                      F_A'Length (1), F_A, F_A'Length (1),
+                      F_W,
+                      F_V_L, F_V_L'Length (1),
+                      F_V_R, F_V_R'Length (1),
+                      F_Local_Work, F_Local_Work'Length,
+                      F_R_Work,
+                      Info);
+               W := To_Complex (F_W);
+               V_R := To_Complex (F_V_R);
+               V_L := To_Complex (F_V_L);
+            end;
          end;
       end if;
    end geev;
