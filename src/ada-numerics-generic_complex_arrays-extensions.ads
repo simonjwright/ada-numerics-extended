@@ -23,7 +23,7 @@ pragma License (Modified_GPL);
 generic
 package Ada.Numerics.Generic_Complex_Arrays.Extensions is
 
-   pragma Pure;
+   pragma Pure (Ada.Numerics.Generic_Complex_Arrays.Extensions);
 
    function Eigenvalues (A : Complex_Matrix) return Complex_Vector;
 
