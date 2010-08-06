@@ -13,6 +13,7 @@
 --  Copyright Simon Wright <simon@pushface.org>
 
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO.Complex_IO;
 with Ada.Numerics.Generic_Real_Arrays;
 with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays.Extensions;
@@ -21,7 +22,6 @@ procedure Test_Extensions is
 
    subtype My_Float is Long_Float;
    package My_Float_IO is new Float_IO (My_Float);
-   use My_Float_IO;
 
    package Real_Arrays
    is new Ada.Numerics.Generic_Real_Arrays (My_Float);
@@ -32,9 +32,14 @@ procedure Test_Extensions is
    package Extensions
    is new Complex_Arrays.Extensions;
 
+   package My_Complex_IO is new Complex_IO (Complex_Types);
+
    use Real_Arrays;
    use Complex_Types;
    use Complex_Arrays;
+
+   use My_Float_IO;
+   use My_Complex_IO;
 
 begin
 
@@ -53,9 +58,7 @@ begin
       Result := Extensions.Eigenvalues (Input);
 
       for J in Result'Range loop
-         Put (Result (J).Re, Exp => 0);
-         Put (" ");
-         Put (Result (J).Im, Exp => 0);
+         Put (Result (J), Exp => 0);
          New_Line;
       end loop;
 
@@ -64,8 +67,8 @@ begin
    end;
 
    declare
-   --  Values in Test 16 of
-   --  http://people.sc.fsu.edu/~jburkardt/f_src/lapack/lapack_OSX_prb_output.txt
+    --  Values in Test 16 of
+    --  http://people.sc.fsu.edu/~jburkardt/f_src/lapack/lapack_OSX_prb_output.txt
       Z : constant Complex := (0.0, 0.0);
       A : constant Complex := (2.44949, 0.0);
       B : constant Complex := (3.16228, 0.0);
@@ -104,9 +107,7 @@ begin
          Result : constant Complex_Vector := Extensions.Eigenvalues (Input);
       begin
          for J in Result'Range loop
-            Put (Result (J).Re, Exp => 0);
-            Put (" ");
-            Put (Result (J).Im, Exp => 0);
+            Put (Result (J), Exp => 0);
             New_Line;
          end loop;
       end;
@@ -129,9 +130,7 @@ begin
       Result := Extensions.Eigenvalues (Input);
 
       for J in Result'Range loop
-         Put (Result (J).Re, Exp => 0);
-         Put (" ");
-         Put (Result (J).Im, Exp => 0);
+         Put (Result (J), Exp => 0);
          New_Line;
       end loop;
       New_Line;
@@ -153,9 +152,7 @@ begin
       Result := Extensions.Eigenvalues (Input);
 
       for J in Result'Range loop
-         Put (Result (J).Re, Exp => 0);
-         Put (" ");
-         Put (Result (J).Im, Exp => 0);
+         Put (Result (J), Exp => 0);
          New_Line;
       end loop;
       New_Line;
