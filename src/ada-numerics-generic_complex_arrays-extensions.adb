@@ -169,7 +169,7 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    is
 
       Working_A : Complex_Matrix (A'Range (2), A'Range (1));
-      Result : Complex_Vector (1 .. A'Length (1));
+      Result : Complex_Vector (A'Range (1));
       Dummy_Eigenvectors : Complex_Matrix (1 .. 1, 1 .. 1);
       Info : Integer;
 

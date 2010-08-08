@@ -1,7 +1,11 @@
 syntax: glob
 lib
 .build
+*~
 *.orig
 gnat-math-extn-*
+test/*.exe
+test/*.o
 test/test_extensions
-test/test_extensions.exe
+test/tests-main
+test/zgeev_generator
