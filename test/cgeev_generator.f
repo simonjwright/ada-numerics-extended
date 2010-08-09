@@ -1,20 +1,20 @@
-*     zgeev_generator.f
+*     cgeev_generator.f
 
 *     generates test data sets for the Ada 2005 Math Extensions project
-*     by creating a random double-precision complex matrix, calling
-*     zgeev, and outputting the inputs and the results.
+*     by creating a random single-precision complex matrix, calling
+*     cgeev, and outputting the inputs and the results.
 
-      program zgeev_generator
+      program cgeev_generator
 
-      external zgeev
+      external cgeev
 
       integer n
       parameter (n = 6)
 
       integer info
 
-      complex*16 h(n, n), w(n), l(n, n), r(n, n), work(128), rwork(n*2)
-      real*8 v(2)
+      complex*8 h(n, n), w(n), l(n, n), r(n, n), work(128), rwork(n*2)
+      real*4 v(2)
 
       do 10 j=1,n
          do 20 k=1,n
@@ -28,7 +28,7 @@
          print *, (h(j, k), k=1,n)
  30   continue
 
-      call zgeev('V', 'V', n, h, n, w, l, n, r, n,
+      call cgeev('V', 'V', n, h, n, w, l, n, r, n,
      $     work, 128, rwork, info)
 
       print *, 'info (should be 0): ', info
