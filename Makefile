@@ -30,9 +30,19 @@ DISTRIBUTION_FILES =						\
   README							\
   src/ada-numerics-generic_complex_arrays-extensions.adb	\
   src/ada-numerics-generic_complex_arrays-extensions.ads	\
-  src/ada_math_build.gpr					\
-  test/test_extensions.adb					\
+  src/ada_math_build.gpr
+
+DISTRIBUTION_FILES +=				\
+  test/test_extensions.adb			\
   test/test_extensions.gpr
+
+DISTRIBUTION_FILES +=				\
+  test/aunit.gpr				\
+  test/tests.gpr				\
+  test/tests.ads				\
+  test/tests-main.adb				\
+  test/tests-complex_general_eigenvalues.adb	\
+  test/tests-complex_general_eigenvalues.ads
 
 gnat-math-extn-$(DATE).tar.gz: gnat-math-extn-$(DATE)
 	rm -f $@
