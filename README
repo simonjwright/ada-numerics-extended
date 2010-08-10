@@ -16,7 +16,7 @@ The software unpacks into a directory structure of the form
 
 gnat-math-extn-YYYYMMDD
    /src  contains the library code
-   /test contains an installation verification program.
+   /test contains an installation verification program and unit tests.
 
 Go to the test/ directory. If on a Unix-based system, run
    $ gnatmake -p -P test_extensions
@@ -41,3 +41,8 @@ subject to change]. Either
 
 * say 'with "/where/ever/gnat-math-extn-YYYYMMDD/src/ada_math_build";'
   (this path can be relative, if you like).
+
+Testing
+=======
+
+Unit tests are based on AUnit (). For instructions, see test/aunit.gpr.
