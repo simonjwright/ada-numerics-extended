@@ -18,6 +18,7 @@ with AUnit.Run;
 with AUnit.Test_Suites;
 
 with Tests.Complex_General_Eigenvalues;
+with Tests.Real_General_Eigenvalues;
 
 procedure Tests.Main is
 
@@ -29,6 +30,7 @@ procedure Tests.Main is
         := new AUnit.Test_Suites.Test_Suite;
    begin
       AUnit.Test_Suites.Add_Test (Result, Complex_General_Eigenvalues.Suite);
+      AUnit.Test_Suites.Add_Test (Result, Real_General_Eigenvalues.Suite);
       return Result;
    end Suites;
 
