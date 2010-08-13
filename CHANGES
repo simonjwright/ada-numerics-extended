@@ -1,7 +1,10 @@
-yyyymmdd
+This is the change log for the Ada 2005 Math Extensions project
+(https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
-        An overloaded function Eigenvalues returns the complex
-        eigenvalues of a non-symmetric real matrix.
+2010mmdd
+
+        An additional overloaded function Eigenvalues returns the
+        complex eigenvalues of a non-symmetric real matrix.
 
 20100810
 
