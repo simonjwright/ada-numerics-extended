@@ -8,4 +8,4 @@ test/*.exe
 test/*.o
 test/test_extensions
 test/tests-main
-test/zgeev_generator
+test/[c,s]geev_generator

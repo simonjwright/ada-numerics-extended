@@ -14,8 +14,8 @@
 
 with AUnit.Test_Suites;
 
-package Tests.Complex_General_Eigenvalues is
+package Tests.Real_General_Eigenvalues is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
 
-end Tests.Complex_General_Eigenvalues;
+end Tests.Real_General_Eigenvalues;

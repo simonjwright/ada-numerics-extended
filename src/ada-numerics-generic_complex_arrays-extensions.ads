@@ -25,6 +25,10 @@ package Ada.Numerics.Generic_Complex_Arrays.Extensions is
 
    pragma Pure (Ada.Numerics.Generic_Complex_Arrays.Extensions);
 
+   --  Obtain the eigenvalues of a non-hermitian complex matrix.
    function Eigenvalues (A : Complex_Matrix) return Complex_Vector;
+
+   --  Obtain the eigenvalues of a non-symmetric real matrix.
+   function Eigenvalues (A : Real_Matrix) return Complex_Vector;
 
 end Ada.Numerics.Generic_Complex_Arrays.Extensions;

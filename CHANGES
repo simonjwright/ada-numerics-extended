@@ -1,0 +1,11 @@
+yyyymmdd
+
+        An overloaded function Eigenvalues returns the complex
+        eigenvalues of a non-symmetric real matrix.
+
+20100810
+
+        This is the first release.
+
+        There is only one operation: the function Eigenvalues returns
+        the eigenvalues of a general (non-Hermitian) complex matrix.
