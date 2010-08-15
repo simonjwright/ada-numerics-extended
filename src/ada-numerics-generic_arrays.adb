@@ -24,67 +24,71 @@
 
 pragma License (Modified_GPL);
 
+pragma Warnings (Off);
 with Interfaces.Fortran.BLAS;
 with System.Generic_Array_Operations;
+pragma Warnings (On);
 
-package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
+package body Ada.Numerics.Generic_Arrays is
 
-   --  We have to be specific about which Real we mean here. GNAT
-   --  (GNAT GPL 2010, GCC 4.5.0) fails if not, because multiple use
-   --  clauses cause hiding. The contenders are the formal Real of
-   --  Generic_Complex_Types and the formal Real of
-   --  Generic_Real_Arrays.
-   --
-   --  The problem doesn't arise until instantiation.
-   procedure Transpose
-   is new System.Generic_Array_Operations.Transpose
-     (Scalar => Real_Arrays.Real'Base,
-      Matrix => Real_Matrix);
-
-   procedure Transpose
-   is new System.Generic_Array_Operations.Transpose
-     (Scalar => Complex,
-      Matrix => Complex_Matrix);
+   --  use Complex_Arrays;
+   --  use Complex_Arrays.Complex_Types;
+   --  use Complex_Arrays.Real_Arrays;
 
    use type Interfaces.Fortran.Real;
    use type Interfaces.Fortran.Double_Precision;
 
-   subtype Real is Generic_Complex_Arrays.Real_Arrays.Real;
+   --  subtype Real is Complex_Arrays.Real_Arrays.Real;
+
+   procedure Transpose
+   is new System.Generic_Array_Operations.Transpose
+     (Scalar => Complex_Arrays.Real_Arrays.Real'Base,
+      Matrix => Complex_Arrays.Real_Arrays.Real_Matrix);
+
+   procedure Transpose
+   is new System.Generic_Array_Operations.Transpose
+     (Scalar => Complex_Arrays.Complex_Types.Complex,
+      Matrix => Complex_Arrays.Complex_Matrix);
 
    Is_Single : constant Boolean :=
-     Real'Machine_Mantissa
+     Complex_Arrays.Real_Arrays.Real'Machine_Mantissa
        = Interfaces.Fortran.Real'Machine_Mantissa
-     and then Interfaces.Fortran.Real (Real'First)
+     and then Interfaces.Fortran.Real (Complex_Arrays.Real_Arrays.Real'First)
        = Interfaces.Fortran.Real'First
-     and then Interfaces.Fortran.Real (Real'Last)
+     and then Interfaces.Fortran.Real (Complex_Arrays.Real_Arrays.Real'Last)
        = Interfaces.Fortran.Real'Last;
 
    Is_Double : constant Boolean :=
-     Real'Machine_Mantissa
+     Complex_Arrays.Real_Arrays.Real'Machine_Mantissa
        = Interfaces.Fortran.Double_Precision'Machine_Mantissa
-     and then Interfaces.Fortran.Double_Precision (Real'First)
+     and then Interfaces.Fortran.Double_Precision
+     (Complex_Arrays.Real_Arrays.Real'First)
        = Interfaces.Fortran.Double_Precision'First
-     and then Interfaces.Fortran.Double_Precision (Real'Last)
+     and then Interfaces.Fortran.Double_Precision
+     (Complex_Arrays.Real_Arrays.Real'Last)
        = Interfaces.Fortran.Double_Precision'Last;
 
    --  Local subprograms for handling Real when it isn't directly
    --  supportable by BLAS/LAPACK
 
    function To_Double_Precision
-     (X : Real)
+     (X : Complex_Arrays.Real_Arrays.Real)
      return Interfaces.Fortran.Double_Precision;
    pragma Inline (To_Double_Precision);
 
-   function To_Real (X : Interfaces.Fortran.Double_Precision) return Real;
+   function To_Real
+     (X : Interfaces.Fortran.Double_Precision)
+     return Complex_Arrays.Real_Arrays.Real;
    pragma Inline (To_Real);
 
    function To_Double_Complex
-     (X : Complex)
+     (X : Complex_Arrays.Complex_Types.Complex)
      return Interfaces.Fortran.Double_Complex;
    pragma Inline (To_Double_Complex);
 
    function To_Complex
-     (X : Interfaces.Fortran.Double_Complex) return Complex;
+     (X : Interfaces.Fortran.Double_Complex)
+     return Complex_Arrays.Complex_Types.Complex;
    pragma Inline (To_Complex);
 
    --  Instantiations
@@ -100,25 +104,25 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    function To_Real is new
      System.Generic_Array_Operations.Vector_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
-      Result_Scalar => Real'Base,
+      Result_Scalar => Complex_Arrays.Real_Arrays.Real'Base,
       X_Vector      => Interfaces.Fortran.BLAS.Double_Precision_Vector,
-      Result_Vector => Real_Vector,
+      Result_Vector => Complex_Arrays.Real_Arrays.Real_Vector,
       Operation     => To_Real);
 
    function To_Double_Precision is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
-     (X_Scalar      => Real'Base,
+     (X_Scalar      => Complex_Arrays.Real_Arrays.Real'Base,
       Result_Scalar => Interfaces.Fortran.Double_Precision,
-      X_Matrix      => Real_Matrix,
+      X_Matrix      => Complex_Arrays.Real_Arrays.Real_Matrix,
       Result_Matrix => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
       Operation     => To_Double_Precision);
 
    function To_Real is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
-      Result_Scalar => Real'Base,
+      Result_Scalar => Complex_Arrays.Real_Arrays.Real'Base,
       X_Matrix      => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
-      Result_Matrix => Real_Matrix,
+      Result_Matrix => Complex_Arrays.Real_Arrays.Real_Matrix,
       Operation     => To_Real);
 
    --  function To_Double_Complex is new
@@ -132,54 +136,59 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    function To_Complex is new
      System.Generic_Array_Operations.Vector_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Complex,
-      Result_Scalar => Complex,
+      Result_Scalar => Complex_Arrays.Complex_Types.Complex,
       X_Vector      => Interfaces.Fortran.BLAS.Double_Complex_Vector,
-      Result_Vector => Complex_Vector,
+      Result_Vector => Complex_Arrays.Complex_Vector,
       Operation     => To_Complex);
 
    function To_Double_Complex is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
-     (X_Scalar      => Complex,
+     (X_Scalar      => Complex_Arrays.Complex_Types.Complex,
       Result_Scalar => Interfaces.Fortran.Double_Complex,
-      X_Matrix      => Complex_Matrix,
+      X_Matrix      => Complex_Arrays.Complex_Matrix,
       Result_Matrix => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
       Operation     => To_Double_Complex);
 
    function To_Complex is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Complex,
-      Result_Scalar => Complex,
+      Result_Scalar => Complex_Arrays.Complex_Types.Complex,
       X_Matrix      => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
-      Result_Matrix => Complex_Matrix,
+      Result_Matrix => Complex_Arrays.Complex_Matrix,
       Operation     => To_Complex);
 
    function To_Double_Precision
-     (X : Real)
+     (X : Complex_Arrays.Real_Arrays.Real)
      return Interfaces.Fortran.Double_Precision
    is
    begin
       return Interfaces.Fortran.Double_Precision (X);
    end To_Double_Precision;
 
-   function To_Real (X : Interfaces.Fortran.Double_Precision) return Real
+   function To_Real
+     (X : Interfaces.Fortran.Double_Precision)
+     return Complex_Arrays.Real_Arrays.Real
    is
    begin
-      return Real (X);
+      return Complex_Arrays.Real_Arrays.Real (X);
    end To_Real;
 
    function To_Double_Complex
-     (X : Complex) return Interfaces.Fortran.Double_Complex
+     (X : Complex_Arrays.Complex_Types.Complex)
+     return Interfaces.Fortran.Double_Complex
    is
    begin
-      return (Interfaces.Fortran.Double_Precision (X.Re),
-              Interfaces.Fortran.Double_Precision (X.Im));
+      return (Re => Interfaces.Fortran.Double_Precision (X.Re),
+              Im => Interfaces.Fortran.Double_Precision (X.Im));
    end To_Double_Complex;
 
    function To_Complex
-     (X : Interfaces.Fortran.Double_Complex) return Complex
+     (X : Interfaces.Fortran.Double_Complex)
+     return Complex_Arrays.Complex_Types.Complex
    is
    begin
-      return (Real (X.Re), Real (X.Im));
+      return (Re => Complex_Arrays.Real_Arrays.Real (X.Re),
+              Im => Complex_Arrays.Real_Arrays.Real (X.Im));
    end To_Complex;
 
    --  This declaration is an Ada-ised version of the Fortran
@@ -188,10 +197,10 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    procedure Complex_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Complex_Matrix;
-      W      :    out Complex_Vector;
-      V_L    :    out Complex_Matrix;
-      V_R    :    out Complex_Matrix;
+      A      : in out Complex_Arrays.Complex_Matrix;
+      W      :    out Complex_Arrays.Complex_Vector;
+      V_L    :    out Complex_Arrays.Complex_Matrix;
+      V_R    :    out Complex_Arrays.Complex_Matrix;
       Info   :    out Integer);
 
    --  This declaration is an Ada-ised version of the Fortran
@@ -200,19 +209,21 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    procedure Real_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Real_Matrix;
-      W_R    :    out Real_Vector;
-      W_I    :    out Real_Vector;
-      V_L    :    out Real_Matrix;
-      V_R    :    out Real_Matrix;
+      A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
+      W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+      W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+      V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+      V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
       Info   :    out Integer);
 
-   function Eigenvalues (A : Complex_Matrix) return Complex_Vector
+   function Eigenvalues
+     (A : Complex_Arrays.Complex_Matrix)
+     return Complex_Arrays.Complex_Vector
    is
 
-      Working_A : Complex_Matrix (A'Range (2), A'Range (1));
-      Result : Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Complex_Matrix (1 .. 1, 1 .. 1);
+      Working_A : Complex_Arrays.Complex_Matrix (A'Range (2), A'Range (1));
+      Result : Complex_Arrays.Complex_Vector (A'Range (1));
+      Dummy_Eigenvectors : Complex_Arrays.Complex_Matrix (1 .. 1, 1 .. 1);
       Info : Integer;
 
    begin
@@ -238,13 +249,17 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
 
    end Eigenvalues;
 
-   function Eigenvalues (A : Real_Matrix) return Complex_Vector
+   function Eigenvalues
+     (A : Complex_Arrays.Real_Arrays.Real_Matrix)
+     return Complex_Arrays.Complex_Vector
    is
 
-      Working_A : Real_Matrix (A'Range (2), A'Range (1));
-      W_R, W_I : Real_Vector (A'Range (1));
-      Result : Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Real_Matrix (1 .. 1, 1 .. 1);
+      Working_A : Complex_Arrays.Real_Arrays.Real_Matrix
+        (A'Range (2), A'Range (1));
+      W_R, W_I : Complex_Arrays.Real_Arrays.Real_Vector (A'Range (1));
+      Result : Complex_Arrays.Complex_Vector (A'Range (1));
+      Dummy_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix
+        (1 .. 1, 1 .. 1);
       Info : Integer;
 
    begin
@@ -267,8 +282,8 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
          raise Constraint_Error with "no or incomplete result";
       end if;
 
-      Set_Re (Result, W_R);
-      Set_Im (Result, W_I);
+      Complex_Arrays.Set_Re (Result, W_R);
+      Complex_Arrays.Set_Im (Result, W_I);
 
       return Result;
 
@@ -277,10 +292,10 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    procedure Complex_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Complex_Matrix;
-      W      :    out Complex_Vector;
-      V_L    :    out Complex_Matrix;
-      V_R    :    out Complex_Matrix;
+      A      : in out Complex_Arrays.Complex_Matrix;
+      W      :    out Complex_Arrays.Complex_Vector;
+      V_L    :    out Complex_Arrays.Complex_Matrix;
+      V_R    :    out Complex_Arrays.Complex_Matrix;
       Info   :    out Integer)
    is
    begin
@@ -290,20 +305,20 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Complex_Matrix;
+               A      : in out Complex_Arrays.Complex_Matrix;
                Ld_A   :        Positive;
-               W      :    out Complex_Vector;
-               V_L    :    out Complex_Matrix;
+               W      :    out Complex_Arrays.Complex_Vector;
+               V_L    :    out Complex_Arrays.Complex_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Complex_Matrix;
+               V_R    :    out Complex_Arrays.Complex_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Complex_Vector;
+               Work   :    out Complex_Arrays.Complex_Vector;
                L_Work :        Integer;
-               R_Work :    out Complex_Vector;
+               R_Work :    out Complex_Arrays.Complex_Vector;
                Info   :    out Integer);
             pragma Import (Fortran, cgeev, "cgeev_");
-            Querying_Work : Complex_Vector (1 .. 1);
-            R_Work : Complex_Vector (1 .. 2 * A'Length (1));
+            Querying_Work : Complex_Arrays.Complex_Vector (1 .. 1);
+            R_Work : Complex_Arrays.Complex_Vector (1 .. 2 * A'Length (1));
          begin
             --  Query the optimum size of the Work vector
             cgeev (Jobv_L, Jobv_R,
@@ -315,8 +330,8 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                    R_Work,
                    Info);
             declare
-               Local_Work :
-                 Complex_Vector (1 .. Integer (Querying_Work (1).Re));
+               Local_Work : Complex_Arrays.Complex_Vector
+                 (1 .. Integer (Querying_Work (1).Re));
             begin
                cgeev (Jobv_L, Jobv_R,
                       A'Length (1), A, A'Length (1),
@@ -334,20 +349,20 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Complex_Matrix;
+               A      : in out Complex_Arrays.Complex_Matrix;
                Ld_A   :        Positive;
-               W      :    out Complex_Vector;
-               V_L    :    out Complex_Matrix;
+               W      :    out Complex_Arrays.Complex_Vector;
+               V_L    :    out Complex_Arrays.Complex_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Complex_Matrix;
+               V_R    :    out Complex_Arrays.Complex_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Complex_Vector;
+               Work   :    out Complex_Arrays.Complex_Vector;
                L_Work :        Integer;
-               R_Work :    out Complex_Vector;
+               R_Work :    out Complex_Arrays.Complex_Vector;
                Info   :    out Integer);
             pragma Import (Fortran, zgeev, "zgeev_");
-            Querying_Work : Complex_Vector (1 .. 1);
-            R_Work : Complex_Vector (1 .. 2 * A'Length (1));
+            Querying_Work : Complex_Arrays.Complex_Vector (1 .. 1);
+            R_Work : Complex_Arrays.Complex_Vector (1 .. 2 * A'Length (1));
          begin
             --  Query the optimum size of the Work vector
             zgeev (Jobv_L, Jobv_R,
@@ -359,8 +374,8 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                    R_Work,
                    Info);
             declare
-               Local_Work :
-                 Complex_Vector (1 .. Integer (Querying_Work (1).Re));
+               Local_Work : Complex_Arrays.Complex_Vector
+                 (1 .. Integer (Querying_Work (1).Re));
             begin
                zgeev (Jobv_L, Jobv_R,
                       A'Length (1), A, A'Length (1),
@@ -431,11 +446,11 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
    procedure Real_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Real_Matrix;
-      W_R    :    out Real_Vector;
-      W_I    :    out Real_Vector;
-      V_L    :    out Real_Matrix;
-      V_R    :    out Real_Matrix;
+      A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
+      W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+      W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+      V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+      V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
       Info   :    out Integer)
    is
    begin
@@ -445,19 +460,19 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Real_Matrix;
+               A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_A   :        Positive;
-               W_R    :    out Real_Vector;
-               W_I    :    out Real_Vector;
-               V_L    :    out Real_Matrix;
+               W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Real_Matrix;
+               V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Real_Vector;
+               Work   :    out Complex_Arrays.Real_Arrays.Real_Vector;
                L_Work :        Integer;
                Info   :    out Integer);
             pragma Import (Fortran, sgeev, "sgeev_");
-            Querying_Work : Real_Vector (1 .. 1);
+            Querying_Work : Complex_Arrays.Real_Arrays.Real_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             sgeev (Jobv_L, Jobv_R,
@@ -468,8 +483,8 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work :
-                 Real_Vector (1 .. Integer (Querying_Work (1)));
+               Local_Work : Complex_Arrays.Real_Arrays.Real_Vector
+                 (1 .. Integer (Querying_Work (1)));
             begin
                sgeev (Jobv_L, Jobv_R,
                       A'Length (1), A, A'Length (1),
@@ -486,19 +501,19 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Real_Matrix;
+               A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_A   :        Positive;
-               W_R    :    out Real_Vector;
-               W_I    :    out Real_Vector;
-               V_L    :    out Real_Matrix;
+               W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Real_Matrix;
+               V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Real_Vector;
+               Work   :    out Complex_Arrays.Real_Arrays.Real_Vector;
                L_Work :        Integer;
                Info   :    out Integer);
             pragma Import (Fortran, dgeev, "dgeev_");
-            Querying_Work : Real_Vector (1 .. 1);
+            Querying_Work : Complex_Arrays.Real_Arrays.Real_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             dgeev (Jobv_L, Jobv_R,
@@ -509,8 +524,8 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work :
-                 Real_Vector (1 .. Integer (Querying_Work (1)));
+               Local_Work : Complex_Arrays.Real_Arrays.Real_Vector
+                 (1 .. Integer (Querying_Work (1)));
             begin
                dgeev (Jobv_L, Jobv_R,
                       A'Length (1), A, A'Length (1),
@@ -576,4 +591,4 @@ package body Ada.Numerics.Generic_Complex_Arrays.Extensions is
       end if;
    end Real_geev;
 
-end Ada.Numerics.Generic_Complex_Arrays.Extensions;
+end Ada.Numerics.Generic_Arrays;

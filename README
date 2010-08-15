@@ -45,4 +45,6 @@ subject to change]. Either
 Testing
 =======
 
-Unit tests are based on AUnit (). For instructions, see test/aunit.gpr.
+Unit tests are based on AUnit
+(http://svn.eu.adacore.com/anonsvn/US/trunk/AUnit). For instructions,
+see test/aunit.gpr.

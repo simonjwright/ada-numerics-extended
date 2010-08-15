@@ -6,6 +6,8 @@ This is the change log for the Ada 2005 Math Extensions project
         An additional overloaded function Eigenvalues returns the
         complex eigenvalues of a non-symmetric real matrix.
 
+        The package is renamed to Ada.Numerics.Generic_Arrays.
+
 20100810
 
         This is the first release.
