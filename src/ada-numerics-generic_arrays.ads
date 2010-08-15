@@ -20,15 +20,25 @@
 
 pragma License (Modified_GPL);
 
-generic
-package Ada.Numerics.Generic_Complex_Arrays.Extensions is
+with Ada.Numerics.Generic_Complex_Arrays;
 
-   pragma Pure (Ada.Numerics.Generic_Complex_Arrays.Extensions);
+generic
+   with package Complex_Arrays
+      is new Ada.Numerics.Generic_Complex_Arrays (<>);
+package Ada.Numerics.Generic_Arrays is
+
+   --  use Complex_Arrays;
+   --  use Complex_Arrays.Complex_Types;
+   --  use Complex_Arrays.Real_Arrays;
 
    --  Obtain the eigenvalues of a non-hermitian complex matrix.
-   function Eigenvalues (A : Complex_Matrix) return Complex_Vector;
+   function Eigenvalues
+     (A : Complex_Arrays.Complex_Matrix)
+     return Complex_Arrays.Complex_Vector;
 
    --  Obtain the eigenvalues of a non-symmetric real matrix.
-   function Eigenvalues (A : Real_Matrix) return Complex_Vector;
+   function Eigenvalues
+     (A : Complex_Arrays.Real_Arrays.Real_Matrix)
+     return Complex_Arrays.Complex_Vector;
 
-end Ada.Numerics.Generic_Complex_Arrays.Extensions;
+end Ada.Numerics.Generic_Arrays;

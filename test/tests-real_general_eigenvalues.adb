@@ -17,7 +17,8 @@ with AUnit.Test_Cases; use AUnit.Test_Cases;
 
 with Ada.Numerics.Generic_Real_Arrays;
 with Ada.Numerics.Generic_Complex_Types;
-with Ada.Numerics.Generic_Complex_Arrays.Extensions;
+with Ada.Numerics.Generic_Complex_Arrays;
+with Ada.Numerics.Generic_Arrays;
 
 with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 --  May not be referenced for released versions
@@ -71,7 +72,7 @@ package body Tests.Real_General_Eigenvalues is
       package Complex_Arrays
       is new Ada.Numerics.Generic_Complex_Arrays (Real_Arrays, Complex_Types);
       package Extensions
-      is new Complex_Arrays.Extensions;
+      is new Ada.Numerics.Generic_Arrays (Complex_Arrays);
 
       package Real_IO is new Float_IO (Real);
       package My_Complex_IO is new Complex_IO (Complex_Types);
