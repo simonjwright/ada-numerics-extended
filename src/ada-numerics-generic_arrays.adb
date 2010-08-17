@@ -31,10 +31,6 @@ pragma Warnings (On);
 
 package body Ada.Numerics.Generic_Arrays is
 
-   --  use Complex_Arrays;
-   --  use Complex_Arrays.Complex_Types;
-   --  use Complex_Arrays.Real_Arrays;
-
    use type Interfaces.Fortran.Real;
    use type Interfaces.Fortran.Double_Precision;
 
@@ -248,6 +244,62 @@ package body Ada.Numerics.Generic_Arrays is
       return Result;
 
    end Eigenvalues;
+
+   procedure Eigensystem
+     (A       :     Complex_Arrays.Complex_Matrix;
+      Values  : out Complex_Arrays.Complex_Vector;
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   is
+
+      Working_A : Complex_Arrays.Complex_Matrix (A'Range (2), A'Range (1));
+      Dummy_L_Eigenvectors : Complex_Arrays.Complex_Matrix (1 .. 1, 1 .. 1);
+      Working_R_Eigenvectors :
+        Complex_Arrays.Complex_Matrix (Vectors'Range (2), Vectors'Range (1));
+      Info : Integer;
+
+   begin
+
+      if A'Length (1) /= A'Length (2) then
+         raise Constraint_Error with "A not square";
+      end if;
+
+      if Values'Length /= A'Length (1) then
+         raise Constraint_Error with "Values has wrong length";
+      end if;
+
+      if Values'First /= A'First (1) then
+         raise Constraint_Error with "Values has wrong range";
+      end if;
+
+      if Vectors'Length (1) /= Vectors'Length (2) then
+         raise Constraint_Error with "Vectors not square";
+      end if;
+
+      if Vectors'Length (1) /= A'Length (1) then
+         raise Constraint_Error with "Vectors has wrong size";
+      end if;
+
+      if Vectors'First (1) /= A'First (1)
+        or Vectors'First (2) /= A'First (2) then
+         raise Constraint_Error with "Vectors has wrong range(s)";
+      end if;
+
+      Transpose (A, Working_A);
+
+      Complex_geev (Jobv_L => 'N', Jobv_R => 'V',
+                    A => Working_A,
+                    W => Values,
+                    V_L => Dummy_L_Eigenvectors,
+                    V_R => Working_R_Eigenvectors,
+                    Info => Info);
+
+      if Info /= 0 then
+         raise Constraint_Error with "no or incomplete result";
+      end if;
+
+      Transpose (Working_R_Eigenvectors, Vectors);
+
+   end Eigensystem;
 
    function Eigenvalues
      (A : Complex_Arrays.Real_Arrays.Real_Matrix)
