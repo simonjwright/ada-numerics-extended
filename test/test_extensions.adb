@@ -22,7 +22,7 @@ with Ada.Numerics.Generic_Arrays;
 
 procedure Test_Extensions is
 
-   subtype My_Float is Long_Float;
+   subtype My_Float is Float;
    package My_Float_IO is new Float_IO (My_Float);
 
    package Real_Arrays
@@ -145,16 +145,40 @@ begin
         := (((0.0, 0.0), (-0.8, 0.0), (-0.6, 0.0)),
             ((0.8, 0.0), (-0.36, 0.0), (0.48, 0.0)),
             ((0.6, 0.0), (0.48, 0.0), (-0.64, 0.0)));
-      Result : Complex_Vector (1 .. Input'Length (1));
+      Result : Complex_Vector (Input'Range (1));
+      Values : Complex_Vector (Input'Range (1));
+      Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
    begin
 
       Put_Line
-        ("Values from http://en.wikipedia.org/wiki/Orthogonal_matrix");
+        ("Result from http://en.wikipedia.org/wiki/Orthogonal_matrix");
 
       Result := Extensions.Eigenvalues (Input);
 
       for J in Result'Range loop
          Put (Result (J), Exp => 0);
+         New_Line;
+      end loop;
+      New_Line;
+
+      Put_Line
+        ("Values, Vectors from http://en.wikipedia.org/wiki/Orthogonal_matrix");
+
+      Extensions.Eigensystem (Input, Values, Vectors);
+
+      Put_Line ("Values:");
+      for J in Values'Range loop
+         Put (Values (J), Exp => 0);
+         New_Line;
+      end loop;
+      New_Line;
+
+      Put_Line ("Vectors:");
+      for J in Vectors'Range (1) loop
+         for K in Vectors'Range loop
+            Put (Vectors (J, K), Exp => 0);
+            Put (" ");
+         end loop;
          New_Line;
       end loop;
       New_Line;

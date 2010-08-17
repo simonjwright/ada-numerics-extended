@@ -27,14 +27,17 @@ generic
       is new Ada.Numerics.Generic_Complex_Arrays (<>);
 package Ada.Numerics.Generic_Arrays is
 
-   --  use Complex_Arrays;
-   --  use Complex_Arrays.Complex_Types;
-   --  use Complex_Arrays.Real_Arrays;
-
    --  Obtain the eigenvalues of a non-hermitian complex matrix.
    function Eigenvalues
      (A : Complex_Arrays.Complex_Matrix)
      return Complex_Arrays.Complex_Vector;
+
+   --  Obtain the eigenvalues and eigenvectors of a non-hermitian
+   --  complex matrix.
+   procedure Eigensystem
+     (A       :     Complex_Arrays.Complex_Matrix;
+      Values  : out Complex_Arrays.Complex_Vector;
+      Vectors : out Complex_Arrays.Complex_Matrix);
 
    --  Obtain the eigenvalues of a non-symmetric real matrix.
    function Eigenvalues
