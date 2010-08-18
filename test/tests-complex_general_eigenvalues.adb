@@ -25,8 +25,6 @@ with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 pragma Warnings (Off, Ada.Text_IO);
 pragma Warnings (Off, Ada.Text_IO.Complex_IO);
 
-with Whatever;
-
 package body Tests.Complex_General_Eigenvalues is
 
    generic
