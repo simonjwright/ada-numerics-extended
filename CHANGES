@@ -1,10 +1,13 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
-2010mmdd
+20100818
 
         An additional overloaded function Eigenvalues returns the
         complex eigenvalues of a non-symmetric real matrix.
+
+        procedure Eigensystem returns the complex eigenvalues and
+        eigenvectors of a non-hermitian complex matrix.
 
         The package is renamed to Ada.Numerics.Generic_Arrays.
 
