@@ -34,8 +34,6 @@ package body Ada.Numerics.Generic_Arrays is
    use type Interfaces.Fortran.Real;
    use type Interfaces.Fortran.Double_Precision;
 
-   --  subtype Real is Complex_Arrays.Real_Arrays.Real;
-
    procedure Transpose
    is new System.Generic_Array_Operations.Transpose
      (Scalar => Complex_Arrays.Real_Arrays.Real'Base,
