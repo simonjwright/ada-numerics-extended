@@ -13,7 +13,7 @@
 
       integer info
 
-      real*4 h(n, n), wr(n), wi(n), l(n, n), r(n, n), work(128),
+      real*4 h(n, n), wr(n), wi(n), l(n, n), r(n, n), work(1024),
      $     rwork(n*2)
       real*4 v(1)
 
@@ -30,7 +30,7 @@
  30   continue
 
       call sgeev('V', 'V', n, h, n, wr, wi, l, n, r, n,
-     $     work, 128, info)
+     $     work, 1024, info)
 
       print *, 'info (should be 0): ', info
 

@@ -31,6 +31,8 @@ project Tests is
      for Default_Switches ("Ada") use
        (
          "-gnatqQ",  --  to keep ALI files even if there are compilation errors
+         "-gnatafo", --  assertions, full reports, integer overflow
+         "-gnatwaL", --  all standard warnings except for elaboration
          "-gnat05"   --  GNAT GPL 2010 requires this (GCC 4.5.0 doesn't)
        );
   end Compiler;

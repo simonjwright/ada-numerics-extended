@@ -308,8 +308,8 @@ package body Ada.Numerics.Generic_Arrays is
         (A'Range (2), A'Range (1));
       W_R, W_I : Complex_Arrays.Real_Arrays.Real_Vector (A'Range (1));
       Result : Complex_Arrays.Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix
-        (1 .. 1, 1 .. 1);
+      Dummy_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix (1 .. 1,
+                                                                   1 .. 1);
       Info : Integer;
 
    begin
@@ -338,6 +338,119 @@ package body Ada.Numerics.Generic_Arrays is
       return Result;
 
    end Eigenvalues;
+
+   procedure Eigensystem
+     (A       :     Complex_Arrays.Real_Arrays.Real_Matrix;
+      Values  : out Complex_Arrays.Complex_Vector;
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   is
+
+      Working_A : Complex_Arrays.Real_Arrays.Real_Matrix
+        (A'Range (2), A'Range (1));
+      W_R, W_I : Complex_Arrays.Real_Arrays.Real_Vector (A'Range (1));
+      Dummy_L_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix (1 .. 1,
+                                                                     1 .. 1);
+      Working_R_Eigenvectors :
+        Complex_Arrays.Real_Arrays.Real_Matrix (Vectors'Range (2),
+                                                Vectors'Range (1));
+      Info : Integer;
+
+      use type Complex_Arrays.Real_Arrays.Real;
+
+   begin
+
+      if A'Length (1) /= A'Length (2) then
+         raise Constraint_Error with "not square";
+      end if;
+
+      if Values'Length /= A'Length (1) then
+         raise Constraint_Error with "Values has wrong length";
+      end if;
+
+      if Values'First /= A'First (1) then
+         raise Constraint_Error with "Values has wrong range";
+      end if;
+
+      if Vectors'Length (1) /= Vectors'Length (2) then
+         raise Constraint_Error with "Vectors not square";
+      end if;
+
+      if Vectors'Length (1) /= A'Length (1) then
+         raise Constraint_Error with "Vectors has wrong size";
+      end if;
+
+      if Vectors'First (1) /= A'First (1)
+        or Vectors'First (2) /= A'First (2) then
+         raise Constraint_Error with "Vectors has wrong range(s)";
+      end if;
+
+      Transpose (A, Working_A);
+
+      Real_geev (Jobv_L => 'N', Jobv_R => 'V',
+                 A => Working_A,
+                 W_R => W_R,
+                 W_I => W_I,
+                 V_L => Dummy_L_Eigenvectors,
+                 V_R => Working_R_Eigenvectors,
+                 Info => Info);
+
+      if Info /= 0 then
+         raise Constraint_Error with "no or incomplete result";
+      end if;
+
+      Complex_Arrays.Set_Re (Values, W_R);
+      Complex_Arrays.Set_Im (Values, W_I);
+
+      --  This is from the man page for SGEEV:
+      --
+      --  If JOBVR = 'V', the right eigenvectors v(j) are stored one
+      --  after another in the columns of VR, in the same order as
+      --  their eigenvalues.  If JOBVR = 'N', VR is not referenced.
+      --  If the j-th eigenvalue is real, then v(j) = VR(:,j), the
+      --  j-th column of VR.  If the j-th and (j+1)-st eigenvalues
+      --  form a complex conjugate pair, then v(j) = VR(:,j) +
+      --  i*VR(:,j+1) and v(j+1) = VR(:,j) - i*VR(:,j+1).
+      declare
+
+         --  The current Value
+         C : Integer := Values'First;
+
+         --  We leave Working_R_Eigenvectors in Fortran order, so the
+         --  row/column indices are transposed.
+         --
+         --  The result of this is that the 'column' index in the
+         --  working matrix has to be adjusted to the corresponding
+         --  'row' index range.
+         J : Integer;
+
+      begin
+         loop
+
+            J := C - Vectors'First (1) + Vectors'First (2);
+
+            if W_I (C) = 0.0 then
+               for K in Vectors'Range (1) loop
+                  Vectors (K, J) := (Working_R_Eigenvectors (J, K), 0.0);
+               end loop;
+               C := C + 1;
+            else
+               pragma Assert (W_I (C) = -W_I (C + 1),
+                              "eigenvalue pair is not complex conjugate");
+               for K in Vectors'Range (1) loop
+                  Vectors (K, J) := (Working_R_Eigenvectors (J, K),
+                                     Working_R_Eigenvectors (J + 1, K));
+                  Vectors (K, J + 1) := (Working_R_Eigenvectors (J, K),
+                                         -Working_R_Eigenvectors (J + 1, K));
+               end loop;
+               C := C + 2;
+            end if;
+            pragma Assert (C <= Values'Last + 1,
+                           "ran off end of eigenvalues");
+            exit when C > Values'Last;
+         end loop;
+      end;
+
+   end Eigensystem;
 
    procedure Complex_geev
      (Jobv_L :        Character;
