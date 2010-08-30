@@ -28,20 +28,43 @@ generic
 package Ada.Numerics.Generic_Arrays is
 
    --  Obtain the eigenvalues of a non-hermitian complex matrix.
+   --
+   --  The range of the result is A'Range (1).
    function Eigenvalues
      (A : Complex_Arrays.Complex_Matrix)
      return Complex_Arrays.Complex_Vector;
 
    --  Obtain the eigenvalues and eigenvectors of a non-hermitian
    --  complex matrix.
+   --
+   --  Values'Range must be the same as Vectors'Range (1).
+   --  The ranges of Vectors must be the same as those of A.
+   --
+   --  The eigenvector corresponding to the jth element of Values is
+   --  output in the jth column of Vectors.
    procedure Eigensystem
      (A       :     Complex_Arrays.Complex_Matrix;
       Values  : out Complex_Arrays.Complex_Vector;
       Vectors : out Complex_Arrays.Complex_Matrix);
 
    --  Obtain the eigenvalues of a non-symmetric real matrix.
+   --
+   --  The range of the result is A'Range (1).
    function Eigenvalues
      (A : Complex_Arrays.Real_Arrays.Real_Matrix)
      return Complex_Arrays.Complex_Vector;
+
+   --  Obtain the eigenvalues and eigenvectors of a non-symmetric real
+   --  matrix.
+   --
+   --  Values'Range must be the same as Vectors'Range (1).
+   --  The ranges of Vectors must be the same as those of A.
+   --
+   --  The eigenvector corresponding to the jth element of Values is
+   --  output in the jth column of Vectors.
+   procedure Eigensystem
+     (A       :     Complex_Arrays.Real_Arrays.Real_Matrix;
+      Values  : out Complex_Arrays.Complex_Vector;
+      Vectors : out Complex_Arrays.Complex_Matrix);
 
 end Ada.Numerics.Generic_Arrays;

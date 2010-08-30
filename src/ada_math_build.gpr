@@ -32,6 +32,8 @@ project Ada_Math_Build is
         (
          "-gnatpg",  --  to build Ada library items
          "-gnatqQ",  --  to keep ALI files even if there are compilation errors
+         "-gnatafo", --  assertions, full reports, integer overflow
+         "-gnatwaL", --  all standard warnings except for elaboration
          "-gnat05"   --  GNAT GPL 2010 requires this (GCC 4.5.0 doesn't)
         );
    end Compiler;

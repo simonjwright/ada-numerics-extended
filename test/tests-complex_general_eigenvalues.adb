@@ -143,7 +143,7 @@ package body Tests.Complex_General_Eigenvalues is
           ( 0.94684845    , 0.70617634    ),
           ( 0.81380963    , 0.55859447    )));
 
-      Expected_Eigenvalues : Complex_Vector (3 .. 8) :=
+      Expected_Eigenvalues : constant Complex_Vector (Input'Range (1)) :=
         ((  3.3980660    ,  3.5673485    ),
          (  1.0080026    , 5.52535392E-02),
          (-0.62701023    ,-0.18942726    ),
@@ -151,8 +151,8 @@ package body Tests.Complex_General_Eigenvalues is
          ( 0.18741301    , 0.50275004    ),
          (-0.10657825    , 0.51211989    ));
 
-      Expected_Eigenvectors : Complex_Matrix (Input'Range (1),
-                                              Input'Range (2)) :=
+      Expected_Eigenvectors : constant Complex_Matrix (Input'Range (1),
+                                                       Input'Range (2)) :=
         ((( 0.26146498    , 5.53096458E-03),
           ( 0.69007766    ,  0.0000000    ),
           (-0.33993864    ,-0.12087621    ),
@@ -192,12 +192,14 @@ package body Tests.Complex_General_Eigenvalues is
 
       procedure Eigenvalues_Constraints (C : in out Test_Case'Class)
       is
-         Unsquare : Complex_Matrix (1 .. 2, 1 .. 3)
+         pragma Unreferenced (C);
+         Unsquare : constant Complex_Matrix (1 .. 2, 1 .. 3)
            := (others => (others => (0.0, 0.0)));
       begin
          declare
             Result : constant Complex_Vector
               := Extensions.Eigenvalues (Unsquare);
+            pragma Unreferenced (Result);
          begin
             Assert (False, "should have raised Constraint_Error");
          end;
@@ -207,6 +209,7 @@ package body Tests.Complex_General_Eigenvalues is
 
       procedure Eigenvalues (C : in out Test_Case'Class)
       is
+         pragma Unreferenced (C);
          Result : constant Complex_Vector := Extensions.Eigenvalues (Input);
       begin
          Assert (Result'First = Input'First (1)
@@ -218,11 +221,12 @@ package body Tests.Complex_General_Eigenvalues is
 
       procedure Eigensystem_Constraints (C : in out Test_Case'Class)
       is
+         pragma Unreferenced (C);
          Good_Values : Complex_Vector (Input'Range (1));
          Good_Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
       begin
          declare
-            Bad_Input : Complex_Matrix (1 .. 2, 1 .. 3)
+            Bad_Input : constant Complex_Matrix (1 .. 2, 1 .. 3)
               := (others => (others => (0.0, 0.0)));
          begin
             Extensions.Eigensystem (A => Bad_Input,
@@ -277,6 +281,7 @@ package body Tests.Complex_General_Eigenvalues is
 
       procedure Eigensystem (C : in out Test_Case'Class)
       is
+         pragma Unreferenced (C);
          Values : Complex_Vector (Input'Range (1));
          Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
       begin
