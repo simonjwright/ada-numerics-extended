@@ -12,7 +12,6 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
-with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases; use AUnit.Test_Cases;
 
 with Ada.Numerics.Generic_Real_Arrays;
@@ -193,7 +192,6 @@ package body Tests.Real_General_Eigenvalues is
 
       procedure Eigenvalues_Constraints (C : in out Test_Case'Class)
       is
-         pragma Unreferenced (C);
          Unsquare : constant Real_Matrix (1 .. 2, 1 .. 3)
            := (others => (others => 0.0));
       begin
@@ -202,7 +200,7 @@ package body Tests.Real_General_Eigenvalues is
               := Extensions.Eigenvalues (Unsquare);
             pragma Unreferenced (Result);
          begin
-            Assert (False, "should have raised Constraint_Error");
+            Assert (C, False, "should have raised Constraint_Error");
          end;
       exception
          when Constraint_Error => null;
@@ -210,19 +208,19 @@ package body Tests.Real_General_Eigenvalues is
 
       procedure Eigenvalues (C : in out Test_Case'Class)
       is
-         pragma Unreferenced (C);
          Result : constant Complex_Vector := Extensions.Eigenvalues (Input);
       begin
-         Assert (Result'First = Input'First (1)
+         Assert (C,
+                 Result'First = Input'First (1)
                    and Result'Last = Input'Last (1),
                  "result'range not same as input'range (1)");
-         Assert (Close_Enough (Result, Expected_Eigenvalues),
+         Assert (C,
+                 Close_Enough (Result, Expected_Eigenvalues),
                  "incorrect result");
       end Eigenvalues;
 
       procedure Eigensystem_Constraints (C : in out Test_Case'Class)
       is
-         pragma Unreferenced (C);
          Good_Values : Complex_Vector (Input'Range (1));
          Good_Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
       begin
@@ -233,7 +231,7 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Bad_Input,
                                     Values => Good_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (1)");
+            Assert (C, False, "should have raised Constraint_Error (1)");
          exception
             when Constraint_Error => null;
          end;
@@ -243,7 +241,7 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (2)");
+            Assert (C, False, "should have raised Constraint_Error (2)");
          exception
             when Constraint_Error => null;
          end;
@@ -253,7 +251,7 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (3)");
+            Assert (C, False, "should have raised Constraint_Error (3)");
          exception
             when Constraint_Error => null;
          end;
@@ -263,7 +261,7 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (4)");
+            Assert (C, False, "should have raised Constraint_Error (4)");
          exception
             when Constraint_Error => null;
          end;
@@ -274,7 +272,7 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (5)");
+            Assert (C, False, "should have raised Constraint_Error (5)");
          exception
             when Constraint_Error => null;
          end;
@@ -282,14 +280,14 @@ package body Tests.Real_General_Eigenvalues is
 
       procedure Eigensystem (C : in out Test_Case'Class)
       is
-         pragma Unreferenced (C);
          Values : Complex_Vector (Input'Range (1));
          Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
       begin
          Extensions.Eigensystem (A => Input,
                                  Values => Values,
                                  Vectors => Vectors);
-         Assert (Close_Enough (Values, Expected_Eigenvalues),
+         Assert (C,
+                 Close_Enough (Values, Expected_Eigenvalues),
                  "incorrect values");
 
          --  At this point you might have expected to see
@@ -311,7 +309,8 @@ package body Tests.Real_General_Eigenvalues is
             K : Integer := Expected_Eigenvectors'First (2);
          begin
             loop
-               Assert (Close_Enough
+               Assert (C,
+                       Close_Enough
                          (Column (Vectors, J),
                           Column (Expected_Eigenvectors, K))
                          or else
@@ -333,7 +332,8 @@ package body Tests.Real_General_Eigenvalues is
             declare
                K : constant Integer := J - Values'First + Vectors'First (2);
             begin
-               Assert (Close_Enough (Input * Column (Vectors, K),
+               Assert (C,
+                       Close_Enough (Input * Column (Vectors, K),
                                      Values (J) * Column (Vectors, K)),
                        "incorrect vector " & J'Img);
             end;
