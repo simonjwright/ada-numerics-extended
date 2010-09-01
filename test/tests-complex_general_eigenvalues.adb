@@ -101,7 +101,8 @@ package body Tests.Complex_General_Eigenvalues is
       function Close_Enough (L, R : Complex_Vector) return Boolean;
       function Close_Enough (L, R : Complex_Matrix) return Boolean;
 
-      --  The values in Input, Eigenvalues were derived from a run of
+      --  The values in Input, Expected_Eigenvalues,
+      --  Expected_Eigenvectors were derived from a run of
       --  cgeev_generator.
 
       Input : constant Complex_Matrix (3 .. 8, 13 .. 18) :=
