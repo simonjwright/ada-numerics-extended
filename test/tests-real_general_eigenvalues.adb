@@ -102,8 +102,9 @@ package body Tests.Real_General_Eigenvalues is
       function Close_Enough (L, R : Complex_Matrix) return Boolean;
       function Column (V : Complex_Matrix; C : Integer) return Complex_Vector;
 
-      --  The values in Input, Eigenvalues were derived from a run of
-      --  cgeev_generator.
+      --  The values in Input, Expected_Eigenvalues,
+      --  Expected_Eigenvectors were derived from a run of
+      --  sgeev_generator.
 
       Input : constant Real_Matrix (3 .. 8, 13 .. 18) :=
         ((  0.99755955     ,
