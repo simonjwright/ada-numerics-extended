@@ -29,8 +29,9 @@ dist:: gnat-math-extn-$(DATE).tar.gz gnat-math-extn-$(DATE).zip
 DISTRIBUTION_FILES =				\
   README					\
   CHANGES					\
-  src/ada-numerics-generic_arrays.adb		\
-  src/ada-numerics-generic_arrays.ads		\
+  src/ada_numerics-generic_arrays.adb		\
+  src/ada_numerics-generic_arrays.ads		\
+  src/ada_numerics.ads				\
   src/ada_math_build.gpr
 
 DISTRIBUTION_FILES +=				\

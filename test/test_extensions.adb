@@ -18,7 +18,7 @@ with Ada.Text_IO.Complex_IO;
 with Ada.Numerics.Generic_Real_Arrays;
 with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays;
-with Ada.Numerics.Generic_Arrays;
+with Ada_Numerics.Generic_Arrays;
 
 procedure Test_Extensions is
 
@@ -32,7 +32,7 @@ procedure Test_Extensions is
    package Complex_Arrays
    is new Ada.Numerics.Generic_Complex_Arrays (Real_Arrays, Complex_Types);
    package Extensions
-   is new Ada.Numerics.Generic_Arrays (Complex_Arrays);
+   is new Ada_Numerics.Generic_Arrays (Complex_Arrays);
 
    package My_Complex_IO is new Complex_IO (Complex_Types);
 
