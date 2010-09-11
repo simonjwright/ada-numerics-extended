@@ -29,7 +29,7 @@ with Interfaces.Fortran.BLAS;
 with System.Generic_Array_Operations;
 pragma Warnings (On);
 
-package body Ada.Numerics.Generic_Arrays is
+package body Ada_Numerics.Generic_Arrays is
 
    use type Interfaces.Fortran.Real;
    use type Interfaces.Fortran.Double_Precision;
@@ -754,4 +754,4 @@ package body Ada.Numerics.Generic_Arrays is
       end if;
    end Real_geev;
 
-end Ada.Numerics.Generic_Arrays;
+end Ada_Numerics.Generic_Arrays;

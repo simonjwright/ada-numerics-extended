@@ -1,6 +1,8 @@
 syntax: glob
 lib
+parker
 .build
+.DS_store
 *~
 *.gcov
 *.orig

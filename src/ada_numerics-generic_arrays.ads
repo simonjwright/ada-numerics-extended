@@ -25,7 +25,7 @@ with Ada.Numerics.Generic_Complex_Arrays;
 generic
    with package Complex_Arrays
       is new Ada.Numerics.Generic_Complex_Arrays (<>);
-package Ada.Numerics.Generic_Arrays is
+package Ada_Numerics.Generic_Arrays is
 
    --  Obtain the eigenvalues of a non-hermitian complex matrix.
    --
@@ -67,4 +67,4 @@ package Ada.Numerics.Generic_Arrays is
       Values  : out Complex_Arrays.Complex_Vector;
       Vectors : out Complex_Arrays.Complex_Matrix);
 
-end Ada.Numerics.Generic_Arrays;
+end Ada_Numerics.Generic_Arrays;

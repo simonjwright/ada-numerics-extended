@@ -1,6 +1,10 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
+2010mmdd
+
+        The package is renamed to Ada_Numerics.Generic_Arrays.
+
 20100901
 
         An additional overloaded procedure Eigensystem returns the
