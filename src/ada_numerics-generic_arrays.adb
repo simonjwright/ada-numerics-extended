@@ -444,9 +444,12 @@ package body Ada_Numerics.Generic_Arrays is
                end loop;
                C := C + 2;
             end if;
+
             pragma Assert (C <= Values'Last + 1,
                            "ran off end of eigenvalues");
+
             exit when C > Values'Last;
+
          end loop;
       end;
 
