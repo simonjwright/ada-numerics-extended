@@ -2,7 +2,7 @@ syntax: glob
 lib
 parker
 .build
-.DS_store
+.DS_Store
 *~
 *.gcov
 *.orig
