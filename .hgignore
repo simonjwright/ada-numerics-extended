@@ -1,6 +1,7 @@
 syntax: glob
 lib
 parker
+lapa*
 .build
 .DS_Store
 *~
