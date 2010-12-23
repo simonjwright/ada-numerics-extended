@@ -34,58 +34,63 @@ package body Ada_Numerics.Generic_Arrays is
    use type Interfaces.Fortran.Real;
    use type Interfaces.Fortran.Double_Precision;
 
+   -------------------------------------------------------------------
+   --  Compile-time constants to determine which LAPACK subprogram  --
+   --  is needed.                                                   --
+   -------------------------------------------------------------------
+
+   Is_Single : constant Boolean :=
+     Real_Arrays.Real'Machine_Mantissa
+     = Interfaces.Fortran.Real'Machine_Mantissa
+     and then Interfaces.Fortran.Real (Real_Arrays.Real'First)
+     = Interfaces.Fortran.Real'First
+     and then Interfaces.Fortran.Real (Real_Arrays.Real'Last)
+     = Interfaces.Fortran.Real'Last;
+
+   Is_Double : constant Boolean :=
+     Real_Arrays.Real'Machine_Mantissa
+     = Interfaces.Fortran.Double_Precision'Machine_Mantissa
+     and then Interfaces.Fortran.Double_Precision
+     (Real_Arrays.Real'First)
+     = Interfaces.Fortran.Double_Precision'First
+     and then Interfaces.Fortran.Double_Precision
+     (Real_Arrays.Real'Last)
+     = Interfaces.Fortran.Double_Precision'Last;
+
+   -------------------------------------------------------------------
+   --  Specifications of local  subprograms for handling Real when  --
+   --  it isn't directly supported by BLAS/LAPACK.                  --
+   -------------------------------------------------------------------
+
+   function To_Double_Precision (X : Real_Arrays.Real)
+     return Interfaces.Fortran.Double_Precision;
+   pragma Inline (To_Double_Precision);
+
+   function To_Real (X : Interfaces.Fortran.Double_Precision)
+     return Real_Arrays.Real;
+   pragma Inline (To_Real);
+
+   function To_Double_Complex (X : Complex_Arrays.Complex_Types.Complex)
+     return Interfaces.Fortran.Double_Complex;
+   pragma Inline (To_Double_Complex);
+
+   function To_Complex (X : Interfaces.Fortran.Double_Complex)
+     return Complex_Arrays.Complex_Types.Complex;
+   pragma Inline (To_Complex);
+
+   -----------------------
+   --  Instantiations.  --
+   -----------------------
+
    procedure Transpose
    is new System.Generic_Array_Operations.Transpose
-     (Scalar => Complex_Arrays.Real_Arrays.Real'Base,
-      Matrix => Complex_Arrays.Real_Arrays.Real_Matrix);
+     (Scalar => Real_Arrays.Real'Base,
+      Matrix => Real_Arrays.Real_Matrix);
 
    procedure Transpose
    is new System.Generic_Array_Operations.Transpose
      (Scalar => Complex_Arrays.Complex_Types.Complex,
       Matrix => Complex_Arrays.Complex_Matrix);
-
-   Is_Single : constant Boolean :=
-     Complex_Arrays.Real_Arrays.Real'Machine_Mantissa
-       = Interfaces.Fortran.Real'Machine_Mantissa
-     and then Interfaces.Fortran.Real (Complex_Arrays.Real_Arrays.Real'First)
-       = Interfaces.Fortran.Real'First
-     and then Interfaces.Fortran.Real (Complex_Arrays.Real_Arrays.Real'Last)
-       = Interfaces.Fortran.Real'Last;
-
-   Is_Double : constant Boolean :=
-     Complex_Arrays.Real_Arrays.Real'Machine_Mantissa
-       = Interfaces.Fortran.Double_Precision'Machine_Mantissa
-     and then Interfaces.Fortran.Double_Precision
-     (Complex_Arrays.Real_Arrays.Real'First)
-       = Interfaces.Fortran.Double_Precision'First
-     and then Interfaces.Fortran.Double_Precision
-     (Complex_Arrays.Real_Arrays.Real'Last)
-       = Interfaces.Fortran.Double_Precision'Last;
-
-   --  Local subprograms for handling Real when it isn't directly
-   --  supportable by BLAS/LAPACK
-
-   function To_Double_Precision
-     (X : Complex_Arrays.Real_Arrays.Real)
-     return Interfaces.Fortran.Double_Precision;
-   pragma Inline (To_Double_Precision);
-
-   function To_Real
-     (X : Interfaces.Fortran.Double_Precision)
-     return Complex_Arrays.Real_Arrays.Real;
-   pragma Inline (To_Real);
-
-   function To_Double_Complex
-     (X : Complex_Arrays.Complex_Types.Complex)
-     return Interfaces.Fortran.Double_Complex;
-   pragma Inline (To_Double_Complex);
-
-   function To_Complex
-     (X : Interfaces.Fortran.Double_Complex)
-     return Complex_Arrays.Complex_Types.Complex;
-   pragma Inline (To_Complex);
-
-   --  Instantiations
 
    --  function To_Double_Precision is new
    --    System.Generic_Array_Operations.Vector_Elementwise_Operation
@@ -98,25 +103,25 @@ package body Ada_Numerics.Generic_Arrays is
    function To_Real is new
      System.Generic_Array_Operations.Vector_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
-      Result_Scalar => Complex_Arrays.Real_Arrays.Real'Base,
+      Result_Scalar => Real_Arrays.Real'Base,
       X_Vector      => Interfaces.Fortran.BLAS.Double_Precision_Vector,
-      Result_Vector => Complex_Arrays.Real_Arrays.Real_Vector,
+      Result_Vector => Real_Arrays.Real_Vector,
       Operation     => To_Real);
 
    function To_Double_Precision is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
-     (X_Scalar      => Complex_Arrays.Real_Arrays.Real'Base,
+     (X_Scalar      => Real_Arrays.Real'Base,
       Result_Scalar => Interfaces.Fortran.Double_Precision,
-      X_Matrix      => Complex_Arrays.Real_Arrays.Real_Matrix,
+      X_Matrix      => Real_Arrays.Real_Matrix,
       Result_Matrix => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
       Operation     => To_Double_Precision);
 
    function To_Real is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
-      Result_Scalar => Complex_Arrays.Real_Arrays.Real'Base,
+      Result_Scalar => Real_Arrays.Real'Base,
       X_Matrix      => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
-      Result_Matrix => Complex_Arrays.Real_Arrays.Real_Matrix,
+      Result_Matrix => Real_Arrays.Real_Matrix,
       Operation     => To_Real);
 
    --  function To_Double_Complex is new
@@ -151,24 +156,26 @@ package body Ada_Numerics.Generic_Arrays is
       Result_Matrix => Complex_Arrays.Complex_Matrix,
       Operation     => To_Complex);
 
-   function To_Double_Precision
-     (X : Complex_Arrays.Real_Arrays.Real)
+   -------------------------------------------------------------------
+   --  Bodies of local subprograms for handling Real when it isn't  --
+   --  directly supported by BLAS/LAPACK.                           --
+   -------------------------------------------------------------------
+
+   function To_Double_Precision (X : Real_Arrays.Real)
      return Interfaces.Fortran.Double_Precision
    is
    begin
       return Interfaces.Fortran.Double_Precision (X);
    end To_Double_Precision;
 
-   function To_Real
-     (X : Interfaces.Fortran.Double_Precision)
-     return Complex_Arrays.Real_Arrays.Real
+   function To_Real (X : Interfaces.Fortran.Double_Precision)
+     return Real_Arrays.Real
    is
    begin
-      return Complex_Arrays.Real_Arrays.Real (X);
+      return Real_Arrays.Real (X);
    end To_Real;
 
-   function To_Double_Complex
-     (X : Complex_Arrays.Complex_Types.Complex)
+   function To_Double_Complex (X : Complex_Arrays.Complex_Types.Complex)
      return Interfaces.Fortran.Double_Complex
    is
    begin
@@ -176,14 +183,17 @@ package body Ada_Numerics.Generic_Arrays is
               Im => Interfaces.Fortran.Double_Precision (X.Im));
    end To_Double_Complex;
 
-   function To_Complex
-     (X : Interfaces.Fortran.Double_Complex)
+   function To_Complex (X : Interfaces.Fortran.Double_Complex)
      return Complex_Arrays.Complex_Types.Complex
    is
    begin
-      return (Re => Complex_Arrays.Real_Arrays.Real (X.Re),
-              Im => Complex_Arrays.Real_Arrays.Real (X.Im));
+      return (Re => Real_Arrays.Real (X.Re),
+              Im => Real_Arrays.Real (X.Im));
    end To_Complex;
+
+   -------------------------------------------------------------------
+   --  Specifications of Ada-ised versions of LAPACK subroutines.   --
+   -------------------------------------------------------------------
 
    --  This declaration is an Ada-ised version of the Fortran
    --  {c,z}geev, without the order/leading dimension parameters
@@ -203,15 +213,33 @@ package body Ada_Numerics.Generic_Arrays is
    procedure Real_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
-      W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-      W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-      V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
-      V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+      A      : in out Real_Arrays.Real_Matrix;
+      W_R    :    out Real_Arrays.Real_Vector;
+      W_I    :    out Real_Arrays.Real_Vector;
+      V_L    :    out Real_Arrays.Real_Matrix;
+      V_R    :    out Real_Arrays.Real_Matrix;
       Info   :    out Integer);
 
-   function Eigenvalues
-     (A : Complex_Arrays.Complex_Matrix)
+   --  This declaration is an Ada-ised version of the Fortran
+   --  {s,d}ggev, without the order/leading dimension parameters
+   --  necessary for Fortran; the work areas are internally allocated.
+   procedure Real_ggev
+     (Jobv_L  :        Character;
+      Jobv_R  :        Character;
+      A       : in out Real_Arrays.Real_Matrix;
+      B       : in out Real_Arrays.Real_Matrix;
+      Alpha_R :    out Real_Arrays.Real_Vector;
+      Alpha_I :    out Real_Arrays.Real_Vector;
+      Beta    :    out Real_Arrays.Real_Vector;
+      V_L     :    out Real_Arrays.Real_Matrix;
+      V_R     :    out Real_Arrays.Real_Matrix;
+      Info    :    out Integer);
+
+   -------------------------------------
+   --  Bodies of subprograms in spec  --
+   -------------------------------------
+
+   function Eigenvalues (A : Complex_Arrays.Complex_Matrix)
      return Complex_Arrays.Complex_Vector
    is
 
@@ -274,7 +302,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong size";
+         raise Constraint_Error with "Vectors has wrong length";
       end if;
 
       if Vectors'First (1) /= A'First (1)
@@ -299,17 +327,14 @@ package body Ada_Numerics.Generic_Arrays is
 
    end Eigensystem;
 
-   function Eigenvalues
-     (A : Complex_Arrays.Real_Arrays.Real_Matrix)
+   function Eigenvalues (A : Real_Arrays.Real_Matrix)
      return Complex_Arrays.Complex_Vector
    is
 
-      Working_A : Complex_Arrays.Real_Arrays.Real_Matrix
-        (A'Range (2), A'Range (1));
-      W_R, W_I : Complex_Arrays.Real_Arrays.Real_Vector (A'Range (1));
+      Working_A : Real_Arrays.Real_Matrix (A'Range (2), A'Range (1));
+      W_R, W_I : Real_Arrays.Real_Vector (A'Range (1));
       Result : Complex_Arrays.Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix (1 .. 1,
-                                                                   1 .. 1);
+      Dummy_Eigenvectors : Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1);
       Info : Integer;
 
    begin
@@ -340,22 +365,19 @@ package body Ada_Numerics.Generic_Arrays is
    end Eigenvalues;
 
    procedure Eigensystem
-     (A       :     Complex_Arrays.Real_Arrays.Real_Matrix;
+     (A       :     Real_Arrays.Real_Matrix;
       Values  : out Complex_Arrays.Complex_Vector;
       Vectors : out Complex_Arrays.Complex_Matrix)
    is
 
-      Working_A : Complex_Arrays.Real_Arrays.Real_Matrix
-        (A'Range (2), A'Range (1));
-      W_R, W_I : Complex_Arrays.Real_Arrays.Real_Vector (A'Range (1));
-      Dummy_L_Eigenvectors : Complex_Arrays.Real_Arrays.Real_Matrix (1 .. 1,
-                                                                     1 .. 1);
+      Working_A : Real_Arrays.Real_Matrix (A'Range (2), A'Range (1));
+      W_R, W_I : Real_Arrays.Real_Vector (A'Range (1));
+      Dummy_L_Eigenvectors : Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1);
       Working_R_Eigenvectors :
-        Complex_Arrays.Real_Arrays.Real_Matrix (Vectors'Range (2),
-                                                Vectors'Range (1));
+        Real_Arrays.Real_Matrix (Vectors'Range (2), Vectors'Range (1));
       Info : Integer;
 
-      use type Complex_Arrays.Real_Arrays.Real;
+      use type Real_Arrays.Real;
 
    begin
 
@@ -376,7 +398,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong size";
+         raise Constraint_Error with "Vectors has wrong length";
       end if;
 
       if Vectors'First (1) /= A'First (1)
@@ -455,6 +477,95 @@ package body Ada_Numerics.Generic_Arrays is
 
    end Eigensystem;
 
+   procedure Generalized_Eigensystem
+     (A       :     Real_Arrays.Real_Matrix;
+      B       :     Real_Arrays.Real_Matrix;
+      Alphas  : out Complex_Arrays.Complex_Vector;
+      Betas   : out Real_Arrays.Real_Vector;
+      Vectors : out Real_Arrays.Real_Matrix)
+   is
+
+      Working_A, Working_B :
+        Real_Arrays.Real_Matrix (A'Range (2), A'Range (1));
+      A_R, A_I : Real_Arrays.Real_Vector (A'Range (1));
+      Dummy_L_Eigenvectors : Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1);
+      Working_R_Eigenvectors :
+        Real_Arrays.Real_Matrix (Vectors'Range (2), Vectors'Range (1));
+      Info : Integer;
+
+      use type Real_Arrays.Real;
+
+   begin
+
+      if A'Length (1) /= A'Length (2) then
+         raise Constraint_Error with "A not square";
+      end if;
+
+      if B'Length (1) /= B'Length (2) then
+         raise Constraint_Error with "B not square";
+      end if;
+
+      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2) then
+         raise Constraint_Error with "A & B have different ranges";
+      end if;
+
+      if Alphas'Length /= A'Length (1) then
+         raise Constraint_Error with "Alphas has wrong length";
+      end if;
+
+      if Betas'Length /= A'Length (1) then
+         raise Constraint_Error with "Betas has wrong length";
+      end if;
+
+      if Alphas'First /= A'First (1) then
+         raise Constraint_Error with "Alphas has wrong range";
+      end if;
+
+      if Betas'First /= A'First (1) then
+         raise Constraint_Error with "Betas has wrong range";
+      end if;
+
+      if Vectors'Length (1) /= Vectors'Length (2) then
+         raise Constraint_Error with "Vectors not square";
+      end if;
+
+      if Vectors'Length (1) /= A'Length (1) then
+         raise Constraint_Error with "Vectors has wrong length";
+      end if;
+
+      if Vectors'First (1) /= A'First (1)
+        or Vectors'First (2) /= A'First (2) then
+         raise Constraint_Error with "Vectors has wrong range(s)";
+      end if;
+
+      Transpose (A, Working_A);
+      Transpose (B, Working_B);
+
+      Real_ggev (Jobv_L => 'N', Jobv_R => 'V',
+                 A => Working_A,
+                 B => Working_B,
+                 Alpha_R => A_R,
+                 Alpha_I => A_I,
+                 Beta => Betas,
+                 V_L => Dummy_L_Eigenvectors,
+                 V_R => Working_R_Eigenvectors,
+                 Info => Info);
+
+      if Info /= 0 then
+         raise Constraint_Error with "no or incomplete result";
+      end if;
+
+      Complex_Arrays.Set_Re (Alphas, A_R);
+      Complex_Arrays.Set_Im (Alphas, A_I);
+
+      Transpose (Working_R_Eigenvectors, Vectors);
+
+   end Generalized_Eigensystem;
+
+   -----------------------------------------------------------
+   --  Bodies of Ada-ised versions of LAPACK subroutines.   --
+   -----------------------------------------------------------
+
    procedure Complex_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
@@ -488,7 +599,8 @@ package body Ada_Numerics.Generic_Arrays is
          begin
             --  Query the optimum size of the Work vector
             cgeev (Jobv_L, Jobv_R,
-                   A'Length (1), A, A'Length (1),
+                   A'Length (1),
+                   A, A'Length (1),
                    W,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
@@ -500,7 +612,8 @@ package body Ada_Numerics.Generic_Arrays is
                  (1 .. Integer (Querying_Work (1).Re));
             begin
                cgeev (Jobv_L, Jobv_R,
-                      A'Length (1), A, A'Length (1),
+                      A'Length (1),
+                      A, A'Length (1),
                       W,
                       V_L, V_L'Length (1),
                       V_R, V_R'Length (1),
@@ -532,7 +645,8 @@ package body Ada_Numerics.Generic_Arrays is
          begin
             --  Query the optimum size of the Work vector
             zgeev (Jobv_L, Jobv_R,
-                   A'Length (1), A, A'Length (1),
+                   A'Length (1),
+                   A, A'Length (1),
                    W,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
@@ -544,7 +658,8 @@ package body Ada_Numerics.Generic_Arrays is
                  (1 .. Integer (Querying_Work (1).Re));
             begin
                zgeev (Jobv_L, Jobv_R,
-                      A'Length (1), A, A'Length (1),
+                      A'Length (1),
+                      A, A'Length (1),
                       W,
                       V_L, V_L'Length (1),
                       V_R, V_R'Length (1),
@@ -612,11 +727,11 @@ package body Ada_Numerics.Generic_Arrays is
    procedure Real_geev
      (Jobv_L :        Character;
       Jobv_R :        Character;
-      A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
-      W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-      W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-      V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
-      V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+      A      : in out Real_Arrays.Real_Matrix;
+      W_R    :    out Real_Arrays.Real_Vector;
+      W_I    :    out Real_Arrays.Real_Vector;
+      V_L    :    out Real_Arrays.Real_Matrix;
+      V_R    :    out Real_Arrays.Real_Matrix;
       Info   :    out Integer)
    is
    begin
@@ -626,34 +741,36 @@ package body Ada_Numerics.Generic_Arrays is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
+               A      : in out Real_Arrays.Real_Matrix;
                Ld_A   :        Positive;
-               W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-               W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-               V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+               W_R    :    out Real_Arrays.Real_Vector;
+               W_I    :    out Real_Arrays.Real_Vector;
+               V_L    :    out Real_Arrays.Real_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+               V_R    :    out Real_Arrays.Real_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               Work   :    out Real_Arrays.Real_Vector;
                L_Work :        Integer;
                Info   :    out Integer);
             pragma Import (Fortran, sgeev, "sgeev_");
-            Querying_Work : Complex_Arrays.Real_Arrays.Real_Vector (1 .. 1);
+            Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             sgeev (Jobv_L, Jobv_R,
-                   A'Length (1), A, A'Length (1),
+                   A'Length (1),
+                   A, A'Length (1),
                    W_R, W_I,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Real_Arrays.Real_Vector
+               Local_Work : Real_Arrays.Real_Vector
                  (1 .. Integer (Querying_Work (1)));
             begin
                sgeev (Jobv_L, Jobv_R,
-                      A'Length (1), A, A'Length (1),
+                      A'Length (1),
+                      A, A'Length (1),
                       W_R, W_I,
                       V_L, V_L'Length (1),
                       V_R, V_R'Length (1),
@@ -667,34 +784,36 @@ package body Ada_Numerics.Generic_Arrays is
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out Complex_Arrays.Real_Arrays.Real_Matrix;
+               A      : in out Real_Arrays.Real_Matrix;
                Ld_A   :        Positive;
-               W_R    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-               W_I    :    out Complex_Arrays.Real_Arrays.Real_Vector;
-               V_L    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+               W_R    :    out Real_Arrays.Real_Vector;
+               W_I    :    out Real_Arrays.Real_Vector;
+               V_L    :    out Real_Arrays.Real_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out Complex_Arrays.Real_Arrays.Real_Matrix;
+               V_R    :    out Real_Arrays.Real_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out Complex_Arrays.Real_Arrays.Real_Vector;
+               Work   :    out Real_Arrays.Real_Vector;
                L_Work :        Integer;
                Info   :    out Integer);
             pragma Import (Fortran, dgeev, "dgeev_");
-            Querying_Work : Complex_Arrays.Real_Arrays.Real_Vector (1 .. 1);
+            Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             dgeev (Jobv_L, Jobv_R,
-                   A'Length (1), A, A'Length (1),
+                   A'Length (1),
+                   A, A'Length (1),
                    W_R, W_I,
                    V_L, V_L'Length (1),
                    V_R, V_R'Length (1),
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Real_Arrays.Real_Vector
+               Local_Work : Real_Arrays.Real_Vector
                  (1 .. Integer (Querying_Work (1)));
             begin
                dgeev (Jobv_L, Jobv_R,
-                      A'Length (1), A, A'Length (1),
+                      A'Length (1),
+                      A, A'Length (1),
                       W_R, W_I,
                       V_L, V_L'Length (1),
                       V_R, V_R'Length (1),
@@ -756,5 +875,168 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       end if;
    end Real_geev;
+
+   procedure Real_ggev
+     (Jobv_L  :        Character;
+      Jobv_R  :        Character;
+      A       : in out Real_Arrays.Real_Matrix;
+      B       : in out Real_Arrays.Real_Matrix;
+      Alpha_R :    out Real_Arrays.Real_Vector;
+      Alpha_I :    out Real_Arrays.Real_Vector;
+      Beta    :    out Real_Arrays.Real_Vector;
+      V_L     :    out Real_Arrays.Real_Matrix;
+      V_R     :    out Real_Arrays.Real_Matrix;
+      Info    :    out Integer)
+   is
+   begin
+      if Is_Single then
+         declare
+            procedure sggev
+              (Jobv_L  :        Character;
+               Jobv_R  :        Character;
+               N       :        Positive;
+               A       : in out Real_Arrays.Real_Matrix;
+               Ld_A    :        Positive;
+               B       : in out Real_Arrays.Real_Matrix;
+               Ld_B    :        Positive;
+               Alpha_R :    out Real_Arrays.Real_Vector;
+               Alpha_I :    out Real_Arrays.Real_Vector;
+               Beta    :    out Real_Arrays.Real_Vector;
+               V_L     :    out Real_Arrays.Real_Matrix;
+               Ld_V_L  :        Integer;
+               V_R     :    out Real_Arrays.Real_Matrix;
+               Ld_V_R  :        Integer;
+               Work    :    out Real_Arrays.Real_Vector;
+               L_Work  :        Integer;
+               Info    :    out Integer);
+            pragma Import (Fortran, sggev, "sggev_");
+            Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
+         begin
+            --  Query the optimum size of the Work vector
+            sggev (Jobv_L, Jobv_R,
+                   A'Length (1),
+                   A, A'Length (1),
+                   B, B'Length (1),
+                   Alpha_R, Alpha_I,
+                   Beta,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Querying_Work, -1,
+                   Info);
+            declare
+               Local_Work : Real_Arrays.Real_Vector
+                 (1 .. Integer (Querying_Work (1)));
+            begin
+               sggev (Jobv_L, Jobv_R,
+                      A'Length (1),
+                      A, A'Length (1),
+                      B, B'Length (1),
+                      Alpha_R, Alpha_I,
+                      Beta,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      Info);
+            end;
+         end;
+      elsif Is_Double then
+         raise Program_Error with "not yet implemented";
+         --  declare
+         --     procedure dggev
+         --       (Jobv_L :        Character;
+         --        Jobv_R :        Character;
+         --        N      :        Positive;
+         --        A      : in out Real_Arrays.Real_Matrix;
+         --        Ld_A   :        Positive;
+         --        W_R    :    out Real_Arrays.Real_Vector;
+         --        W_I    :    out Real_Arrays.Real_Vector;
+         --        V_L    :    out Real_Arrays.Real_Matrix;
+         --        Ld_V_L :        Integer;
+         --        V_R    :    out Real_Arrays.Real_Matrix;
+         --        Ld_V_R :        Integer;
+         --        Work   :    out Real_Arrays.Real_Vector;
+         --        L_Work :        Integer;
+         --        Info   :    out Integer);
+         --     pragma Import (Fortran, dggev, "dggev_");
+         --     Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
+         --  begin
+         --     --  Query the optimum size of the Work vector
+         --     dggev (Jobv_L, Jobv_R,
+         --            A'Length (1), A, A'Length (1),
+         --            W_R, W_I,
+         --            V_L, V_L'Length (1),
+         --            V_R, V_R'Length (1),
+         --            Querying_Work, -1,
+         --            Info);
+         --     declare
+         --        Local_Work : Real_Arrays.Real_Vector
+         --          (1 .. Integer (Querying_Work (1)));
+         --     begin
+         --        dggev (Jobv_L, Jobv_R,
+         --               A'Length (1), A, A'Length (1),
+         --               W_R, W_I,
+         --               V_L, V_L'Length (1),
+         --               V_R, V_R'Length (1),
+         --               Local_Work, Local_Work'Length,
+         --               Info);
+         --     end;
+         --  end;
+      else
+         raise Program_Error with "not yet implemented";
+         --  declare
+         --     package IFB renames Interfaces.Fortran.BLAS;
+         --     procedure dggev
+         --       (Jobv_L :        Character;
+         --        Jobv_R :        Character;
+         --        N      :        Positive;
+         --        A      : in out IFB.Double_Precision_Matrix;
+         --        Ld_A   :        Positive;
+         --        W_R    :    out IFB.Double_Precision_Vector;
+         --        W_I    :    out IFB.Double_Precision_Vector;
+         --        V_L    :    out IFB.Double_Precision_Matrix;
+         --        Ld_V_L :        Integer;
+         --        V_R    :    out IFB.Double_Precision_Matrix;
+         --        Ld_V_R :        Integer;
+         --        Work   :    out IFB.Double_Precision_Vector;
+         --        L_Work :        Integer;
+         --        Info   :    out Integer);
+         --     pragma Import (Fortran, dggev, "dggev_");
+         --     F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
+         --     F_W_R : IFB.Double_Precision_Vector (W_R'Range);
+         --     F_W_I : IFB.Double_Precision_Vector (W_I'Range);
+         --  F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1),
+         --                                       V_L'Range (2));
+         --  F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1),
+         --                                       V_R'Range (2));
+         --     F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
+         --  begin
+         --     --  Query the optimum size of the Work vector
+         --     dggev (Jobv_L, Jobv_R,
+         --            F_A'Length (1), F_A, F_A'Length (1),
+         --            F_W_R, F_W_I,
+         --            F_V_L, F_V_L'Length (1),
+         --            F_V_R, F_V_R'Length (1),
+         --            F_Querying_Work, -1,
+         --            Info);
+         --     declare
+         --        F_Local_Work :
+         --          IFB.Double_Precision_Vector
+         --          (1 .. Integer (F_Querying_Work (1)));
+         --     begin
+         --        dggev (Jobv_L, Jobv_R,
+         --               F_A'Length (1), F_A, F_A'Length (1),
+         --               F_W_R, F_W_I,
+         --               F_V_L, F_V_L'Length (1),
+         --               F_V_R, F_V_R'Length (1),
+         --               F_Local_Work, F_Local_Work'Length,
+         --               Info);
+         --        W_R := To_Real (F_W_R);
+         --        W_I := To_Real (F_W_I);
+         --        V_R := To_Real (F_V_R);
+         --        V_L := To_Real (F_V_L);
+         --     end;
+         --  end;
+      end if;
+   end Real_ggev;
 
 end Ada_Numerics.Generic_Arrays;
