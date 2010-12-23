@@ -67,7 +67,7 @@ package Ada_Numerics.Generic_Arrays is
       Values  : out Complex_Arrays.Complex_Vector;
       Vectors : out Complex_Arrays.Complex_Matrix);
 
-   --  Obtains the generalized eigenvalues and the right generalized
+   --  Obtain the generalized eigenvalues and the right generalized
    --  eigenvectors of a pair of non-symmetric real matrices.
    --
    --  A generalized eigenvalue for a pair of matrices (A,B) is a
@@ -83,7 +83,7 @@ package Ada_Numerics.Generic_Arrays is
    --  lambda(j) of (A,B) satisfies
    --            A * v(j) = lambda(j) * B * v(j).
    --
-   --  Alphas'Range abd Betas'Range must be the same as A'Range (1).
+   --  Alphas'Range and Betas'Range must be the same as A'Range (1).
    --  The ranges of A, B and Vectors must be the same.
    procedure Generalized_Eigensystem
      (A       :     Real_Arrays.Real_Matrix;
