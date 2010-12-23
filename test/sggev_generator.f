@@ -1,8 +1,8 @@
 *     sggev_generator.f
 
 *     generates test data sets for the Ada 2005 Math Extensions project
-*     by creating a random single-precision matrix, calling sggev, and
-*     outputting the inputs and the results.
+*     by creating two random single-precision matrices, calling sggev,
+*     and outputting the inputs and the results.
 
       program sggev_generator
 
@@ -35,7 +35,7 @@
          print *, '(', (b(j, k), ',', k=1,n), '),'
  35   continue
 
-      call sggev('V', 'V', n, a, n, b, n, ai, ar, be, l, n, r, n, work,
+      call sggev('V', 'V', n, a, n, b, n, ar, ai, be, l, n, r, n, work,
      $     1024,info)
 
       print *, 'info (should be 0): ', info
