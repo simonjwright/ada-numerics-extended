@@ -78,6 +78,9 @@ package body Tests.Real_Generalized_Eigenvalues is
       package Extensions
       is new Ada_Numerics.Generic_Arrays (Complex_Arrays);
 
+      subtype Generalized_Eigenvalue_Vector
+         is Extensions.Generalized_Eigenvalue_Vector;
+
       package Real_IO is new Float_IO (Real);
       package My_Complex_IO is new Complex_IO (Complex_Types);
 
@@ -87,6 +90,13 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       use Real_IO;
       use My_Complex_IO;
+
+      --  This limit may seem a tad on the high side, but all we
+      --  really need to know is whether the binding to the LAPACK
+      --  subprogram is successful. Experiment shows that putting the
+      --  numbers derived from the COMPLEX*16 set into the COMPLEX*8
+      --  subprogram gives differences of this size.
+      Lim : constant Real := Float'Model_Epsilon * 30.0;
 
       function Close_Enough (L, R : Complex_Vector) return Boolean;
       function Close_Enough (L, R : Real_Vector) return Boolean;
@@ -230,19 +240,17 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       procedure Eigensystem_Constraints (C : in out Test_Case'Class)
       is
-         Good_Alphas : Complex_Vector (Input_A'Range (1));
-         Good_Betas : Real_Vector (Input_A'Range (1));
+         Good_Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
          Good_Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
          declare
             Bad_Input : constant Real_Matrix (1 .. 2, 1 .. 3)
               := (others => (others => 0.0));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Bad_Input,
                B => Input_B,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (1)");
          exception
@@ -252,11 +260,10 @@ package body Tests.Real_Generalized_Eigenvalues is
             Bad_Input : constant Real_Matrix (1 .. 2, 1 .. 3)
               := (others => (others => 0.0));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Bad_Input,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (2)");
          exception
@@ -267,11 +274,10 @@ package body Tests.Real_Generalized_Eigenvalues is
                                               1 .. Input_A'Length (2))
               := (others => (others => 0.0));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Bad_Input,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (3)");
          exception
@@ -283,80 +289,51 @@ package body Tests.Real_Generalized_Eigenvalues is
                Input_A'First (2) .. Input_A'Last (2) - 1)
               := (others => (others => 0.0));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Bad_Input,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (4)");
          exception
             when Constraint_Error => null;
          end;
          declare
-            Bad_Alphas : Complex_Vector (1 .. Input_A'Length (1));
+            Bad_Values :
+              Generalized_Eigenvalue_Vector (1 .. Input_A'Length (1));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Input_B,
-               Alphas => Bad_Alphas,
-               Betas => Good_Betas,
+               Values => Bad_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (5)");
          exception
             when Constraint_Error => null;
          end;
          declare
-            Bad_Alphas : Complex_Vector
+            Bad_Values :
+              Generalized_Eigenvalue_Vector
               (Input_A'First (1) .. Input_A'Last (1) - 1);
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Input_B,
-               Alphas => Bad_Alphas,
-               Betas => Good_Betas,
+               Values => Bad_Values,
                Vectors => Good_Vectors);
             Assert (C, False, "should have raised Constraint_Error (6)");
          exception
             when Constraint_Error => null;
          end;
          declare
-            Bad_Betas : Real_Vector (1 .. Input_A'Length (1));
-         begin
-            Extensions.Generalized_Eigensystem
-              (A => Input_A,
-               B => Input_B,
-               Alphas => Good_Alphas,
-               Betas => Bad_Betas,
-               Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (7)");
-         exception
-            when Constraint_Error => null;
-         end;
-         declare
-            Bad_Betas : Real_Vector
-              (Input_A'First (1) .. Input_A'Last (1) - 1);
-         begin
-            Extensions.Generalized_Eigensystem
-              (A => Input_A,
-               B => Input_B,
-               Alphas => Good_Alphas,
-               Betas => Bad_Betas,
-               Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (8)");
-         exception
-            when Constraint_Error => null;
-         end;
-         declare
             Bad_Vectors : Real_Matrix (1 .. 2, 1 .. 3);
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Input_B,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Bad_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (9)");
+            Assert (C, False, "should have raised Constraint_Error (7)");
          exception
             when Constraint_Error => null;
          end;
@@ -364,13 +341,12 @@ package body Tests.Real_Generalized_Eigenvalues is
             Bad_Vectors : Real_Matrix (1 .. Input_A'Length (1),
                                           1 .. Input_A'Length (2));
          begin
-            Extensions.Generalized_Eigensystem
+            Extensions.Eigensystem
               (A => Input_A,
                B => Input_B,
-               Alphas => Good_Alphas,
-               Betas => Good_Betas,
+               Values => Good_Values,
                Vectors => Bad_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (10)");
+            Assert (C, False, "should have raised Constraint_Error (8)");
          exception
             when Constraint_Error => null;
          end;
@@ -378,21 +354,23 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       procedure Eigensystem (C : in out Test_Case'Class)
       is
-         Alphas : Complex_Vector (Input_A'Range (1));
-         Betas : Real_Vector (Input_A'Range (1));
+         Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
          Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
-         Extensions.Generalized_Eigensystem (A => Input_A,
-                                             B => Input_B,
-                                             Alphas => Alphas,
-                                             Betas => Betas,
-                                             Vectors => Vectors);
-         Assert (C,
-                 Close_Enough (Alphas, Expected_Alphas),
-                 "incorrect alphas");
-         Assert (C,
-                 Close_Enough (Betas, Expected_Betas),
-                 "incorrect betas");
+
+         Extensions.Eigensystem (A => Input_A,
+                                 B => Input_B,
+                                 Values => Values,
+                                 Vectors => Vectors);
+
+         for J in Values'Range loop
+            Assert (C,
+                    Modulus (Values (J).Alpha - Expected_Alphas (J)) <= Lim,
+                    "incorrect Values.Alpha");
+            Assert (C,
+                    abs (Values (J).Beta.Re - Expected_Betas (J)) <= Lim,
+                    "incorrect Values.Beta");
+         end loop;
 
          --  At this point you might have expected to see
          --
@@ -424,13 +402,6 @@ package body Tests.Real_Generalized_Eigenvalues is
          end;
 
       end Eigensystem;
-
-      --  This limit may seem a tad on the high side, but all we
-      --  really need to know is whether the binding to the LAPACK
-      --  subprogram is successful. Experiment shows that putting the
-      --  numbers derived from the COMPLEX*16 set into the COMPLEX*8
-      --  subprogram gives differences of this size.
-      Lim : constant Real := Float'Model_Epsilon * 30.0;
 
       function Close_Enough (L, R : Complex_Vector) return Boolean
       is

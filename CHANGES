@@ -1,9 +1,13 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
-2010mmdd
+20101223
 
         The package is renamed to Ada_Numerics.Generic_Arrays.
+
+        An additional overloaded procedure Eigensystem returns the
+        generalized eigenvalues and eigenvectors of a pair of
+        non-symmetric real matrices.
 
 20100901
 

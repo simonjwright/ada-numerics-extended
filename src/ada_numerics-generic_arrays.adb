@@ -477,17 +477,16 @@ package body Ada_Numerics.Generic_Arrays is
 
    end Eigensystem;
 
-   procedure Generalized_Eigensystem
+   procedure Eigensystem
      (A       :     Real_Arrays.Real_Matrix;
       B       :     Real_Arrays.Real_Matrix;
-      Alphas  : out Complex_Arrays.Complex_Vector;
-      Betas   : out Real_Arrays.Real_Vector;
+      Values  : out Generalized_Eigenvalue_Vector;
       Vectors : out Real_Arrays.Real_Matrix)
    is
 
       Working_A, Working_B :
         Real_Arrays.Real_Matrix (A'Range (2), A'Range (1));
-      A_R, A_I : Real_Arrays.Real_Vector (A'Range (1));
+      A_R, A_I, B_R : Real_Arrays.Real_Vector (Values'Range);
       Dummy_L_Eigenvectors : Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1);
       Working_R_Eigenvectors :
         Real_Arrays.Real_Matrix (Vectors'Range (2), Vectors'Range (1));
@@ -509,20 +508,12 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "A & B have different ranges";
       end if;
 
-      if Alphas'Length /= A'Length (1) then
-         raise Constraint_Error with "Alphas has wrong length";
+      if Values'Length /= A'Length (1) then
+         raise Constraint_Error with "Values has wrong length";
       end if;
 
-      if Betas'Length /= A'Length (1) then
-         raise Constraint_Error with "Betas has wrong length";
-      end if;
-
-      if Alphas'First /= A'First (1) then
-         raise Constraint_Error with "Alphas has wrong range";
-      end if;
-
-      if Betas'First /= A'First (1) then
-         raise Constraint_Error with "Betas has wrong range";
+      if Values'First /= A'First (1) then
+         raise Constraint_Error with "Values has wrong range";
       end if;
 
       if Vectors'Length (1) /= Vectors'Length (2) then
@@ -546,7 +537,7 @@ package body Ada_Numerics.Generic_Arrays is
                  B => Working_B,
                  Alpha_R => A_R,
                  Alpha_I => A_I,
-                 Beta => Betas,
+                 Beta => B_R,
                  V_L => Dummy_L_Eigenvectors,
                  V_R => Working_R_Eigenvectors,
                  Info => Info);
@@ -555,12 +546,16 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "no or incomplete result";
       end if;
 
-      Complex_Arrays.Set_Re (Alphas, A_R);
-      Complex_Arrays.Set_Im (Alphas, A_I);
+      for J in Values'Range loop
+         Values (J) := (Alpha => (Re => A_R (J),
+                                  Im => A_I (J)),
+                        Beta  => (Re => B_R (J),
+                                  Im => 0.0));
+      end loop;
 
       Transpose (Working_R_Eigenvectors, Vectors);
 
-   end Generalized_Eigensystem;
+   end Eigensystem;
 
    -----------------------------------------------------------
    --  Bodies of Ada-ised versions of LAPACK subroutines.   --

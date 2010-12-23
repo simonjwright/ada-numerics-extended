@@ -27,6 +27,7 @@ generic
       is new Ada.Numerics.Generic_Complex_Arrays (<>);
 package Ada_Numerics.Generic_Arrays is
 
+   package Complex_Types renames Complex_Arrays.Complex_Types;
    package Real_Arrays renames Complex_Arrays.Real_Arrays;
 
    --  Obtain the eigenvalues of a non-hermitian complex matrix.
@@ -83,13 +84,18 @@ package Ada_Numerics.Generic_Arrays is
    --  lambda(j) of (A,B) satisfies
    --            A * v(j) = lambda(j) * B * v(j).
    --
-   --  Alphas'Range and Betas'Range must be the same as A'Range (1).
+   --  Values'Range must be the same as A'Range (1).
    --  The ranges of A, B and Vectors must be the same.
-   procedure Generalized_Eigensystem
+   type Generalized_Eigenvalue is record
+      Alpha : Complex_Types.Complex;
+      Beta  : Complex_Types.Complex;
+   end record;
+   type Generalized_Eigenvalue_Vector
+      is array (Integer range <>) of Generalized_Eigenvalue;
+   procedure Eigensystem
      (A       :     Real_Arrays.Real_Matrix;
       B       :     Real_Arrays.Real_Matrix;
-      Alphas  : out Complex_Arrays.Complex_Vector;
-      Betas   : out Real_Arrays.Real_Vector;
+      Values  : out Generalized_Eigenvalue_Vector;
       Vectors : out Real_Arrays.Real_Matrix);
 
 end Ada_Numerics.Generic_Arrays;
