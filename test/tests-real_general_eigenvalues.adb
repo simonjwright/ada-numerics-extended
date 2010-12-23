@@ -302,9 +302,6 @@ package body Tests.Real_General_Eigenvalues is
          --  LAPACK. Most strangely, the 4th vector returned by
          --  sgeev_generator was returned negated by the Ada binding
          --  on the same platform!
-
-         --  Note the trouble needed to find the J'th eigenvector.
-
          declare
             J : Integer := Vectors'First (2);
             K : Integer := Expected_Eigenvectors'First (2);

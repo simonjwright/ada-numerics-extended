@@ -393,9 +393,36 @@ package body Tests.Real_Generalized_Eigenvalues is
          Assert (C,
                  Close_Enough (Betas, Expected_Betas),
                  "incorrect betas");
-         Assert (C,
-                 Close_Enough (Vectors, Expected_Eigenvectors),
-                 "incorrect vectors");
+
+         --  At this point you might have expected to see
+         --
+         --  Assert (Close_Enough (Vectors, Expected_Eigenvectors),
+         --          "incorrect vectors");
+         --
+         --  However, this fails (often) because LAPACK can negate a
+         --  particular eigenvector. This has been seen with single-
+         --  vs double-precision, and on different releases of
+         --  LAPACK.
+         declare
+            J : Integer := Vectors'First (2);
+            K : Integer := Expected_Eigenvectors'First (2);
+         begin
+            loop
+               Assert (C,
+                       Close_Enough
+                         (Column (Vectors, J),
+                          Column (Expected_Eigenvectors, K))
+                         or else
+                         Close_Enough
+                         (Column (Vectors, J),
+                          -Column (Expected_Eigenvectors, K)),
+                       "incorrect vector " & K'Img);
+               exit when J = Vectors'Last (2);
+               J := J + 1;
+               K := K + 1;
+            end loop;
+         end;
+
       end Eigensystem;
 
       --  This limit may seem a tad on the high side, but all we
@@ -449,6 +476,10 @@ package body Tests.Real_Generalized_Eigenvalues is
                                              K - L'First (2) + R'First (2));
                begin
                   if abs (Left - Right) > Lim then
+                     Put_Line ("Close_Enough(Real_Matrix): failure:"
+                                 & " j:" & J'Img
+                                 & " k:" & K'Img
+                                 & " diff:" & Real'Image (abs (Left - Right)));
                      return False;
                   end if;
                end;

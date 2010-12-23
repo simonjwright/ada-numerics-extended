@@ -940,47 +940,55 @@ package body Ada_Numerics.Generic_Arrays is
             end;
          end;
       elsif Is_Double then
-         raise Program_Error with "not yet implemented";
-         --  declare
-         --     procedure dggev
-         --       (Jobv_L :        Character;
-         --        Jobv_R :        Character;
-         --        N      :        Positive;
-         --        A      : in out Real_Arrays.Real_Matrix;
-         --        Ld_A   :        Positive;
-         --        W_R    :    out Real_Arrays.Real_Vector;
-         --        W_I    :    out Real_Arrays.Real_Vector;
-         --        V_L    :    out Real_Arrays.Real_Matrix;
-         --        Ld_V_L :        Integer;
-         --        V_R    :    out Real_Arrays.Real_Matrix;
-         --        Ld_V_R :        Integer;
-         --        Work   :    out Real_Arrays.Real_Vector;
-         --        L_Work :        Integer;
-         --        Info   :    out Integer);
-         --     pragma Import (Fortran, dggev, "dggev_");
-         --     Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
-         --  begin
-         --     --  Query the optimum size of the Work vector
-         --     dggev (Jobv_L, Jobv_R,
-         --            A'Length (1), A, A'Length (1),
-         --            W_R, W_I,
-         --            V_L, V_L'Length (1),
-         --            V_R, V_R'Length (1),
-         --            Querying_Work, -1,
-         --            Info);
-         --     declare
-         --        Local_Work : Real_Arrays.Real_Vector
-         --          (1 .. Integer (Querying_Work (1)));
-         --     begin
-         --        dggev (Jobv_L, Jobv_R,
-         --               A'Length (1), A, A'Length (1),
-         --               W_R, W_I,
-         --               V_L, V_L'Length (1),
-         --               V_R, V_R'Length (1),
-         --               Local_Work, Local_Work'Length,
-         --               Info);
-         --     end;
-         --  end;
+         declare
+            procedure dggev
+              (Jobv_L  :        Character;
+               Jobv_R  :        Character;
+               N       :        Positive;
+               A       : in out Real_Arrays.Real_Matrix;
+               Ld_A    :        Positive;
+               B       : in out Real_Arrays.Real_Matrix;
+               Ld_B    :        Positive;
+               Alpha_R :    out Real_Arrays.Real_Vector;
+               Alpha_I :    out Real_Arrays.Real_Vector;
+               Beta    :    out Real_Arrays.Real_Vector;
+               V_L     :    out Real_Arrays.Real_Matrix;
+               Ld_V_L  :        Integer;
+               V_R     :    out Real_Arrays.Real_Matrix;
+               Ld_V_R  :        Integer;
+               Work    :    out Real_Arrays.Real_Vector;
+               L_Work  :        Integer;
+               Info    :    out Integer);
+            pragma Import (Fortran, dggev, "dggev_");
+            Querying_Work : Real_Arrays.Real_Vector (1 .. 1);
+         begin
+            --  Query the optimum size of the Work vector
+            dggev (Jobv_L, Jobv_R,
+                   A'Length (1),
+                   A, A'Length (1),
+                   B, B'Length (1),
+                   Alpha_R, Alpha_I,
+                   Beta,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Querying_Work, -1,
+                   Info);
+            declare
+               Local_Work : Real_Arrays.Real_Vector
+                 (1 .. Integer (Querying_Work (1)));
+            begin
+               dggev (Jobv_L, Jobv_R,
+                      A'Length (1),
+                      A, A'Length (1),
+                      B, B'Length (1),
+                      Alpha_R, Alpha_I,
+                      Beta,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      Info);
+            end;
+         end;
       else
          raise Program_Error with "not yet implemented";
          --  declare
