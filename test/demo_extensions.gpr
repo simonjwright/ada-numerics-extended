@@ -14,9 +14,9 @@
 
 with "../src/ada_math_build";
 
-project Test_Extensions is
+project Demo_Extensions is
 
-   for Main use ("test_extensions.adb");
+   for Main use ("demo_extensions.adb");
    for Exec_Dir use ".";
 
    for Object_Dir use ".build";
@@ -37,4 +37,4 @@ project Test_Extensions is
       for Default_Switches ("ada") use ("-E");
    end Binder;
 
-end Test_Extensions;
+end Demo_Extensions;

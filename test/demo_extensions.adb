@@ -12,15 +12,17 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
+with Ada.Exceptions;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Text_IO.Complex_IO;
+with Ada.Numerics.Float_Random;
 with Ada.Numerics.Generic_Real_Arrays;
 with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays;
 with Ada_Numerics.Generic_Arrays;
 
-procedure Test_Extensions is
+procedure Demo_Extensions is
 
    subtype My_Float is Float;
    package My_Float_IO is new Float_IO (My_Float);
@@ -185,4 +187,56 @@ begin
 
    end;
 
-end Test_Extensions;
+   --  Generalized eigensystem of real non-symmetric matrix.
+   --
+   --  The solution is such that beta*a - alpha*b is singular, ie its
+   --  determinant is zero. We'll show that it's small.
+   declare
+      Gen : Ada.Numerics.Float_Random.Generator;
+
+      A, B, Vectors : Real_Arrays.Real_Matrix (1 .. 6, 1 .. 6);
+
+      Values : Extensions.Generalized_Eigenvalue_Vector (A'Range (1));
+
+      A_Times_Beta, B_Times_Alpha, Difference :
+        Complex_Arrays.Complex_Matrix (A'Range (1), A'Range (2));
+   begin
+      Ada.Numerics.Float_Random.Reset (Gen, 1);
+
+      for T in 1 .. 6 loop
+
+         for J in A'Range (1) loop
+            for K in A'Range (2) loop
+               A (J, K) := Ada.Numerics.Float_Random.Random (Gen);
+            end loop;
+         end loop;
+
+         for J in B'Range (1) loop
+            for K in B'Range (2) loop
+               B (J, K) := Ada.Numerics.Float_Random.Random (Gen);
+            end loop;
+         end loop;
+
+         Extensions.Eigensystem (A, B, Values, Vectors);
+
+         for J in Values'Range loop
+            begin
+               A_Times_Beta := Compose_From_Cartesian (A) * Values (J).Beta;
+               B_Times_Alpha := Compose_From_Cartesian (B) * Values (J).Alpha;
+               Difference := A_Times_Beta - B_Times_Alpha;
+               Put ("j:" & J'Img);
+               Put (" determinant:");
+               Put (Modulus (Determinant (Difference)));
+            exception
+               when E : others =>
+                  Put (" =====> " & Ada.Exceptions.Exception_Message (E));
+            end;
+            New_Line;
+         end loop;
+
+         New_Line;
+
+      end loop;
+   end;
+
+end Demo_Extensions;
