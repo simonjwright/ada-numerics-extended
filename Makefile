@@ -35,8 +35,8 @@ DISTRIBUTION_FILES =				\
   src/ada_math_build.gpr
 
 DISTRIBUTION_FILES +=				\
-  test/test_extensions.adb			\
-  test/test_extensions.gpr
+  test/demo_extensions.adb			\
+  test/demo_extensions.gpr
 
 DISTRIBUTION_FILES +=				\
   test/aunit.gpr				\
@@ -46,7 +46,9 @@ DISTRIBUTION_FILES +=				\
   test/tests-complex_general_eigenvalues.adb	\
   test/tests-complex_general_eigenvalues.ads	\
   test/tests-real_general_eigenvalues.adb	\
-  test/tests-real_general_eigenvalues.ads
+  test/tests-real_general_eigenvalues.ads	\
+  test/tests-real_generalized_eigenvalues.adb	\
+  test/tests-real_generalized_eigenvalues.ads
 
 gnat-math-extn-$(DATE).tar.gz: gnat-math-extn-$(DATE)
 	rm -f $@
