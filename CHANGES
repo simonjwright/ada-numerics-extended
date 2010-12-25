@@ -1,6 +1,12 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
+20yymmdd
+
+        The program Test_Extensions is renamed to Demo_Extensions, and
+        includes demonstration of the real generalized eigensystem
+        code.
+
 20101223
 
         The package is renamed to Ada_Numerics.Generic_Arrays.
