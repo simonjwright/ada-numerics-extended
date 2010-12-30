@@ -10,6 +10,7 @@ lapa*
 gnat-math-extn-*
 test/*.exe
 test/*.o
-test/test_extensions
+test/demo_extensions
 test/tests-main
 test/[c,s]geev_generator
+test/[c,s]ggev_generator
