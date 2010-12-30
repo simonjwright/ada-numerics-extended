@@ -985,60 +985,71 @@ package body Ada_Numerics.Generic_Arrays is
             end;
          end;
       else
-         raise Program_Error with "not yet implemented";
-         --  declare
-         --     package IFB renames Interfaces.Fortran.BLAS;
-         --     procedure dggev
-         --       (Jobv_L :        Character;
-         --        Jobv_R :        Character;
-         --        N      :        Positive;
-         --        A      : in out IFB.Double_Precision_Matrix;
-         --        Ld_A   :        Positive;
-         --        W_R    :    out IFB.Double_Precision_Vector;
-         --        W_I    :    out IFB.Double_Precision_Vector;
-         --        V_L    :    out IFB.Double_Precision_Matrix;
-         --        Ld_V_L :        Integer;
-         --        V_R    :    out IFB.Double_Precision_Matrix;
-         --        Ld_V_R :        Integer;
-         --        Work   :    out IFB.Double_Precision_Vector;
-         --        L_Work :        Integer;
-         --        Info   :    out Integer);
-         --     pragma Import (Fortran, dggev, "dggev_");
-         --     F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
-         --     F_W_R : IFB.Double_Precision_Vector (W_R'Range);
-         --     F_W_I : IFB.Double_Precision_Vector (W_I'Range);
-         --  F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1),
-         --                                       V_L'Range (2));
-         --  F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1),
-         --                                       V_R'Range (2));
-         --     F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
-         --  begin
-         --     --  Query the optimum size of the Work vector
-         --     dggev (Jobv_L, Jobv_R,
-         --            F_A'Length (1), F_A, F_A'Length (1),
-         --            F_W_R, F_W_I,
-         --            F_V_L, F_V_L'Length (1),
-         --            F_V_R, F_V_R'Length (1),
-         --            F_Querying_Work, -1,
-         --            Info);
-         --     declare
-         --        F_Local_Work :
-         --          IFB.Double_Precision_Vector
-         --          (1 .. Integer (F_Querying_Work (1)));
-         --     begin
-         --        dggev (Jobv_L, Jobv_R,
-         --               F_A'Length (1), F_A, F_A'Length (1),
-         --               F_W_R, F_W_I,
-         --               F_V_L, F_V_L'Length (1),
-         --               F_V_R, F_V_R'Length (1),
-         --               F_Local_Work, F_Local_Work'Length,
-         --               Info);
-         --        W_R := To_Real (F_W_R);
-         --        W_I := To_Real (F_W_I);
-         --        V_R := To_Real (F_V_R);
-         --        V_L := To_Real (F_V_L);
-         --     end;
-         --  end;
+         declare
+            package IFB renames Interfaces.Fortran.BLAS;
+            procedure dggev
+              (Jobv_L  :        Character;
+               Jobv_R  :        Character;
+               N       :        Positive;
+               A       : in out IFB.Double_Precision_Matrix;
+               Ld_A    :        Positive;
+               B       : in out IFB.Double_Precision_Matrix;
+               Ld_B    :        Positive;
+               Alpha_R :    out IFB.Double_Precision_Vector;
+               Alpha_I :    out IFB.Double_Precision_Vector;
+               Beta    :    out IFB.Double_Precision_Vector;
+               V_L     :    out IFB.Double_Precision_Matrix;
+               Ld_V_L  :        Integer;
+               V_R     :    out IFB.Double_Precision_Matrix;
+               Ld_V_R  :        Integer;
+               Work    :    out IFB.Double_Precision_Vector;
+               L_Work  :        Integer;
+               Info    :    out Integer);
+            pragma Import (Fortran, dggev, "dggev_");
+            F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
+            F_B : IFB.Double_Precision_Matrix := To_Double_Precision (B);
+            F_Alpha_R : IFB.Double_Precision_Vector (Alpha_R'Range);
+            F_Alpha_I : IFB.Double_Precision_Vector (Alpha_I'Range);
+            F_Beta : IFB.Double_Precision_Vector (Beta'Range);
+            F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1),
+                                                 V_L'Range (2));
+            F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1),
+                                                 V_R'Range (2));
+            F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
+         begin
+            --  Query the optimum size of the Work vector
+            dggev (Jobv_L, Jobv_R,
+                   F_A'Length (1),
+                   F_A, F_A'Length (1),
+                   F_B, F_B'Length (1),
+                   F_Alpha_R, F_Alpha_I,
+                   F_Beta,
+                   F_V_L, F_V_L'Length (1),
+                   F_V_R, F_V_R'Length (1),
+                   F_Querying_Work, -1,
+                   Info);
+            declare
+               F_Local_Work :
+                 IFB.Double_Precision_Vector
+                 (1 .. Integer (F_Querying_Work (1)));
+            begin
+               dggev (Jobv_L, Jobv_R,
+                      F_A'Length (1),
+                      F_A, F_A'Length (1),
+                      F_B, F_B'Length (1),
+                      F_Alpha_R, F_Alpha_I,
+                      F_Beta,
+                      F_V_L, F_V_L'Length (1),
+                      F_V_R, F_V_R'Length (1),
+                      F_Local_Work, F_Local_Work'Length,
+                      Info);
+               Alpha_R := To_Real (F_Alpha_R);
+               Alpha_I := To_Real (F_Alpha_I);
+               Beta := To_Real (F_Beta);
+               V_R := To_Real (F_V_R);
+               V_L := To_Real (F_V_L);
+            end;
+         end;
       end if;
    end Real_ggev;
 
