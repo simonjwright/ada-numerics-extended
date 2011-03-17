@@ -19,11 +19,11 @@ gnat-math-extn-YYYYMMDD
    /test contains an installation verification program and unit tests.
 
 Go to the test/ directory. If on a Unix-based system, run
-   $ gnatmake -p -P test_extensions
-   $ ./test_extensions
+   $ gnatmake -p -P demo_extensions
+   $ ./demo_extensions
 or if on Windows,
-   > gnatmake -p -P test_extensions
-   > test_extensions
+   > gnatmake -p -P demo_extensions
+   > demo_extensions
 
 This should output the results of a simple set of tests.
 [At some future release, we will list the expected output]

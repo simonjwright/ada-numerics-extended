@@ -47,7 +47,12 @@ procedure Demo_Extensions is
 
 begin
 
-   --  Values in yc's example
+   Put_Line ("--------------------------------");
+   Put_Line ("Values from <143ef70b-7e74-426b-a621-a5fd157849be"
+               & "@x21g2000yqa.googlegroups.com>");
+   --  (posting by yc on comp.lang.ada)
+   New_Line;
+
    declare
       Input : constant Complex_Matrix
         := (42 => ((8.0, 0.0), (-1.0, 0.0), (-5.0, 0.0)),
@@ -55,9 +60,6 @@ begin
             44 => ((18.0, 0.0), (-5.0, 0.0), (-7.0, 0.0)));
       Result : constant Complex_Vector := Extensions.Eigenvalues (Input);
    begin
-
-      Put_Line ("Values from <143ef70b-7e74-426b-a621-a5fd157849be"
-                  & "@x21g2000yqa.googlegroups.com>");
 
       for J in Result'Range loop
          Put (J, Width => 2);
@@ -70,8 +72,12 @@ begin
 
    end;
 
-   --  Values in Test 16 of
-   --  http://people.sc.fsu.edu/~jburkardt/f_src/lapack/lapack_OSX_prb_output.txt
+   Put_Line ("--------------------------------");
+   Put_Line ("Values in Test16 of "
+               & "http://people.sc.fsu.edu/~jburkardt/f_src/lapack"
+               & "/lapack_OSX_prb_output.txt");
+   New_Line;
+
    declare
       Z : constant Complex := (0.0, 0.0);
       A : constant Complex := (2.44949, 0.0);
@@ -88,10 +94,6 @@ begin
             7 => (Z, Z, Z, Z, Z, A, Z)
            );
    begin
-
-      Put_Line ("Values in Test16 of "
-                  & "http://people.sc.fsu.edu/~jburkardt/f_src/lapack"
-                  & "/lapack_OSX_prb_output.txt");
 
       -- GNAT: Eigenvalues of symmetrix complex matrix are real
       Put_Line ("using Complex_Arrays.Eigenvalues");
@@ -119,7 +121,11 @@ begin
 
    end;
 
-   --  Values from http://en.wikipedia.org/wiki/Skew-symmetric_matrix
+   Put_Line ("--------------------------------");
+   Put_Line
+     ("Values from http://en.wikipedia.org/wiki/Skew-symmetric_matrix");
+   New_Line;
+
    declare
       Input : constant Complex_Matrix
         := (((0.0, 0.0), (2.0, 0.0), (-1.0, 0.0)),
@@ -127,9 +133,6 @@ begin
             ((1.0, 0.0), (4.0, 0.0), (0.0, 0.0)));
       Result : Complex_Vector (1 .. Input'Length (1));
    begin
-
-      Put_Line
-        ("Values from http://en.wikipedia.org/wiki/Skew-symmetric_matrix");
 
       Result := Extensions.Eigenvalues (Input);
 
@@ -141,7 +144,11 @@ begin
 
    end;
 
-   --  Values from http://en.wikipedia.org/wiki/Orthogonal_matrix
+   Put_Line ("--------------------------------");
+   Put_Line
+     ("Results from http://en.wikipedia.org/wiki/Orthogonal_matrix");
+   New_Line;
+
    declare
       Input : constant Complex_Matrix
         := (((0.0, 0.0), (-0.8, 0.0), (-0.6, 0.0)),
@@ -152,10 +159,9 @@ begin
       Vectors : Complex_Matrix (Input'Range (1), Input'Range (2));
    begin
 
-      Put_Line
-        ("Result from http://en.wikipedia.org/wiki/Orthogonal_matrix");
-
       Result := Extensions.Eigenvalues (Input);
+
+      Put_Line ("Eigenvalues:");
 
       for J in Result'Range loop
          Put (Result (J), Exp => 0);
@@ -163,19 +169,16 @@ begin
       end loop;
       New_Line;
 
-      Put_Line
-        ("Values, Vectors from http://en.wikipedia.org/wiki/Orthogonal_matrix");
-
       Extensions.Eigensystem (Input, Values, Vectors);
 
-      Put_Line ("Values:");
+      Put_Line ("Eignesystem Values:");
       for J in Values'Range loop
          Put (Values (J), Exp => 0);
          New_Line;
       end loop;
       New_Line;
 
-      Put_Line ("Vectors:");
+      Put_Line ("Eigensystem Vectors:");
       for J in Vectors'Range (1) loop
          for K in Vectors'Range loop
             Put (Vectors (J, K), Exp => 0);
@@ -187,10 +190,13 @@ begin
 
    end;
 
-   --  Generalized eigensystem of real non-symmetric matrix.
-   --
-   --  The solution is such that beta*a - alpha*b is singular, ie its
-   --  determinant is zero. We'll show that it's small.
+   Put_Line ("--------------------------------");
+   Put_Line ("Generalized eigensystem of real non-symmetric matrix.");
+   Put_Line ("The solutions are such that beta*a - alpha*b is singular, ie");
+   Put_Line ("its determinant is zero. We'll show that it's small for");
+   Put_Line ("a selection of randomly-benerated matrices.");
+   New_Line;
+
    declare
       Gen : Ada.Numerics.Float_Random.Generator;
 
