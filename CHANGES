@@ -7,6 +7,8 @@ This is the change log for the Ada 2005 Math Extensions project
         includes demonstration of the real generalized eigensystem
         code.
 
+        The library project file is renamed src/gnat_math_extensions.gpr.
+
 20101223
 
         The package is renamed to Ada_Numerics.Generic_Arrays.

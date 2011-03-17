@@ -12,9 +12,9 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
-project Ada_Math_Build is
+project GNAT_Math_Extensions is
 
-   for Library_Name use "ada_math";
+   for Library_Name use "gnat_math_extensions";
    for Library_Kind use "static";
    for Library_Dir use "../lib";
    for Library_Src_Dir use "../include";
@@ -38,4 +38,4 @@ project Ada_Math_Build is
         );
    end Compiler;
 
-end Ada_Math_Build;
+end GNAT_Math_Extensions;

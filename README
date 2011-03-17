@@ -32,14 +32,13 @@ As a side-effect, it builds a static library for use in your own
 programs.
 
 In order to use this library within your own code, you need to use a
-GPR referencing the extensions' GPR, "ada_math_build" [This name is
-subject to change]. Either
+GPR referencing the extensions' GPR, "gnat_math_extensions". Either
 
-* say 'with "ada_math_build";' and include
+* say 'with "gnat_math_extensions";' and include
   /where/ever/gnat-math-extn-YYYYMMDD/src in your ADA_PROJECTS_PATH
   environment variable; or
 
-* say 'with "/where/ever/gnat-math-extn-YYYYMMDD/src/ada_math_build";'
+* say 'with "/where/ever/gnat-math-extn-YYYYMMDD/src/gnat_math_extensions";'
   (this path can be relative, if you like).
 
 Testing
