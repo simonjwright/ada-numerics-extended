@@ -12,7 +12,7 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
-with "../src/ada_math_build";
+with "../src/gnat_math_extensions";
 
 project Demo_Extensions is
 
