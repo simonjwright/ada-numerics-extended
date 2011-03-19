@@ -19,6 +19,7 @@ with AUnit.Test_Suites;
 
 with Tests.Complex_General_Eigenvalues;
 with Tests.Real_General_Eigenvalues;
+with Tests.Complex_Generalized_Eigenvalues;
 with Tests.Real_Generalized_Eigenvalues;
 
 procedure Tests.Main is
@@ -30,9 +31,14 @@ procedure Tests.Main is
       Result : constant AUnit.Test_Suites.Access_Test_Suite
         := new AUnit.Test_Suites.Test_Suite;
    begin
-      AUnit.Test_Suites.Add_Test (Result, Complex_General_Eigenvalues.Suite);
-      AUnit.Test_Suites.Add_Test (Result, Real_General_Eigenvalues.Suite);
-      AUnit.Test_Suites.Add_Test (Result, Real_Generalized_Eigenvalues.Suite);
+      AUnit.Test_Suites.Add_Test (Result,
+                                  Complex_General_Eigenvalues.Suite);
+      AUnit.Test_Suites.Add_Test (Result,
+                                  Real_General_Eigenvalues.Suite);
+      AUnit.Test_Suites.Add_Test (Result,
+                                  Complex_Generalized_Eigenvalues.Suite);
+      AUnit.Test_Suites.Add_Test (Result,
+                                  Real_Generalized_Eigenvalues.Suite);
       return Result;
    end Suites;
 
