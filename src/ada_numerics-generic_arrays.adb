@@ -221,6 +221,20 @@ package body Ada_Numerics.Generic_Arrays is
       Info   :    out Integer);
 
    --  This declaration is an Ada-ised version of the Fortran
+   --  {c,z}ggev, without the order/leading dimension parameters
+   --  necessary for Fortran; the work areas are internally allocated.
+   procedure Complex_ggev
+     (Jobv_L  :        Character;
+      Jobv_R  :        Character;
+      A       : in out Complex_Arrays.Complex_Matrix;
+      B       : in out Complex_Arrays.Complex_Matrix;
+      Alpha   :    out Complex_Arrays.Complex_Vector;
+      Beta    :    out Complex_Arrays.Complex_Vector;
+      V_L     :    out Complex_Arrays.Complex_Matrix;
+      V_R     :    out Complex_Arrays.Complex_Matrix;
+      Info    :    out Integer);
+
+   --  This declaration is an Ada-ised version of the Fortran
    --  {s,d}ggev, without the order/leading dimension parameters
    --  necessary for Fortran; the work areas are internally allocated.
    procedure Real_ggev
@@ -474,6 +488,83 @@ package body Ada_Numerics.Generic_Arrays is
 
          end loop;
       end;
+
+   end Eigensystem;
+
+   procedure Eigensystem
+     (A       :     Complex_Arrays.Complex_Matrix;
+      B       :     Complex_Arrays.Complex_Matrix;
+      Values  : out Generalized_Eigenvalue_Vector;
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   is
+
+      Working_A, Working_B :
+        Complex_Arrays.Complex_Matrix (A'Range (2), A'Range (1));
+      Alpha, Beta : Complex_Arrays.Complex_Vector (Values'Range);
+      Dummy_L_Eigenvectors : Complex_Arrays.Complex_Matrix (1 .. 1, 1 .. 1);
+      Working_R_Eigenvectors :
+        Complex_Arrays.Complex_Matrix (Vectors'Range (2), Vectors'Range (1));
+      Info : Integer;
+
+      --  use type Complex_Arrays.Complex;
+
+   begin
+
+      if A'Length (1) /= A'Length (2) then
+         raise Constraint_Error with "A not square";
+      end if;
+
+      if B'Length (1) /= B'Length (2) then
+         raise Constraint_Error with "B not square";
+      end if;
+
+      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2) then
+         raise Constraint_Error with "A & B have different ranges";
+      end if;
+
+      if Values'Length /= A'Length (1) then
+         raise Constraint_Error with "Values has wrong length";
+      end if;
+
+      if Values'First /= A'First (1) then
+         raise Constraint_Error with "Values has wrong range";
+      end if;
+
+      if Vectors'Length (1) /= Vectors'Length (2) then
+         raise Constraint_Error with "Vectors not square";
+      end if;
+
+      if Vectors'Length (1) /= A'Length (1) then
+         raise Constraint_Error with "Vectors has wrong length";
+      end if;
+
+      if Vectors'First (1) /= A'First (1)
+        or Vectors'First (2) /= A'First (2) then
+         raise Constraint_Error with "Vectors has wrong range(s)";
+      end if;
+
+      Transpose (A, Working_A);
+      Transpose (B, Working_B);
+
+      Complex_ggev (Jobv_L => 'N', Jobv_R => 'V',
+                    A => Working_A,
+                    B => Working_B,
+                    Alpha => Alpha,
+                    Beta => Beta,
+                    V_L => Dummy_L_Eigenvectors,
+                    V_R => Working_R_Eigenvectors,
+                    Info => Info);
+
+      if Info /= 0 then
+         raise Constraint_Error with "no or incomplete result";
+      end if;
+
+      for J in Values'Range loop
+         Values (J) := (Alpha => Alpha (J),
+                        Beta  => Beta (J));
+      end loop;
+
+      Transpose (Working_R_Eigenvectors, Vectors);
 
    end Eigensystem;
 
@@ -870,6 +961,190 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       end if;
    end Real_geev;
+
+   procedure Complex_ggev
+     (Jobv_L  :        Character;
+      Jobv_R  :        Character;
+      A       : in out Complex_Arrays.Complex_Matrix;
+      B       : in out Complex_Arrays.Complex_Matrix;
+      Alpha   :    out Complex_Arrays.Complex_Vector;
+      Beta    :    out Complex_Arrays.Complex_Vector;
+      V_L     :    out Complex_Arrays.Complex_Matrix;
+      V_R     :    out Complex_Arrays.Complex_Matrix;
+      Info    :    out Integer)
+   is
+   begin
+      if Is_Single then
+         declare
+            procedure cggev
+              (Jobv_L  :        Character;
+               Jobv_R  :        Character;
+               N       :        Positive;
+               A       : in out Complex_Arrays.Complex_Matrix;
+               Ld_A    :        Positive;
+               B       : in out Complex_Arrays.Complex_Matrix;
+               Ld_B    :        Positive;
+               Alpha   :    out Complex_Arrays.Complex_Vector;
+               Beta    :    out Complex_Arrays.Complex_Vector;
+               V_L     :    out Complex_Arrays.Complex_Matrix;
+               Ld_V_L  :        Integer;
+               V_R     :    out Complex_Arrays.Complex_Matrix;
+               Ld_V_R  :        Integer;
+               Work    :    out Complex_Arrays.Complex_Vector;
+               L_Work  :        Integer;
+               R_Work  :    out Real_Arrays.Real_Vector;
+               Info    :    out Integer);
+            pragma Import (Fortran, cggev, "cggev_");
+            Querying_Work : Complex_Arrays.Complex_Vector (1 .. 1);
+            R_Work : Real_Arrays.Real_Vector (1 .. 8 * A'Length (1));
+         begin
+            --  Query the optimum size of the Work vector
+            cggev (Jobv_L, Jobv_R,
+                   A'Length (1),
+                   A, A'Length (1),
+                   B, B'Length (1),
+                   Alpha, Beta,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Querying_Work, -1,
+                   R_Work,
+                   Info);
+            declare
+               Local_Work : Complex_Arrays.Complex_Vector
+                 (1 .. Integer (Querying_Work (1).Re));
+            begin
+               cggev (Jobv_L, Jobv_R,
+                      A'Length (1),
+                      A, A'Length (1),
+                      B, B'Length (1),
+                      Alpha, Beta,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      R_Work,
+                      Info);
+            end;
+         end;
+      elsif Is_Double then
+         declare
+            procedure zggev
+              (Jobv_L  :        Character;
+               Jobv_R  :        Character;
+               N       :        Positive;
+               A       : in out Complex_Arrays.Complex_Matrix;
+               Ld_A    :        Positive;
+               B       : in out Complex_Arrays.Complex_Matrix;
+               Ld_B    :        Positive;
+               Alpha   :    out Complex_Arrays.Complex_Vector;
+               Beta    :    out Complex_Arrays.Complex_Vector;
+               V_L     :    out Complex_Arrays.Complex_Matrix;
+               Ld_V_L  :        Integer;
+               V_R     :    out Complex_Arrays.Complex_Matrix;
+               Ld_V_R  :        Integer;
+               Work    :    out Complex_Arrays.Complex_Vector;
+               L_Work  :        Integer;
+               R_Work  :    out Real_Arrays.Real_Vector;
+               Info    :    out Integer);
+            pragma Import (Fortran, zggev, "zggev_");
+            Querying_Work : Complex_Arrays.Complex_Vector (1 .. 1);
+            R_Work : Real_Arrays.Real_Vector (1 .. 8 * A'Length (1));
+         begin
+            --  Query the optimum size of the Work vector
+            zggev (Jobv_L, Jobv_R,
+                   A'Length (1),
+                   A, A'Length (1),
+                   B, B'Length (1),
+                   Alpha, Beta,
+                   V_L, V_L'Length (1),
+                   V_R, V_R'Length (1),
+                   Querying_Work, -1,
+                   R_Work,
+                   Info);
+            declare
+               Local_Work : Complex_Arrays.Complex_Vector
+                 (1 .. Integer (Querying_Work (1).Re));
+            begin
+               zggev (Jobv_L, Jobv_R,
+                      A'Length (1),
+                      A, A'Length (1),
+                      B, B'Length (1),
+                      Alpha, Beta,
+                      V_L, V_L'Length (1),
+                      V_R, V_R'Length (1),
+                      Local_Work, Local_Work'Length,
+                      R_Work,
+                      Info);
+            end;
+         end;
+      else
+         raise Program_Error;
+      --     declare
+      --        package IFB renames Interfaces.Fortran.BLAS;
+      --        procedure zggev
+      --          (Jobv_L  :        Character;
+      --           Jobv_R  :        Character;
+      --           N       :        Positive;
+      --           A       : in out IFB.Double_Precision_Matrix;
+      --           Ld_A    :        Positive;
+      --           B       : in out IFB.Double_Precision_Matrix;
+      --           Ld_B    :        Positive;
+      --           Alpha_R :    out IFB.Double_Precision_Vector;
+      --           Alpha_I :    out IFB.Double_Precision_Vector;
+      --           Beta    :    out IFB.Double_Precision_Vector;
+      --           V_L     :    out IFB.Double_Precision_Matrix;
+      --           Ld_V_L  :        Integer;
+      --           V_R     :    out IFB.Double_Precision_Matrix;
+      --           Ld_V_R  :        Integer;
+      --           Work    :    out IFB.Double_Precision_Vector;
+      --           L_Work  :        Integer;
+      --           Info    :    out Integer);
+      --        pragma Import (Fortran, zggev, "zggev_");
+      --        F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
+      --        F_B : IFB.Double_Precision_Matrix := To_Double_Precision (B);
+      --        F_Alpha_R : IFB.Double_Precision_Vector (Alpha_R'Range);
+      --        F_Alpha_I : IFB.Double_Precision_Vector (Alpha_I'Range);
+      --        F_Beta : IFB.Double_Precision_Vector (Beta'Range);
+      --        F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1),
+      --                                             V_L'Range (2));
+      --        F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1),
+      --                                             V_R'Range (2));
+      --        F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
+      --     begin
+      --        --  Query the optimum size of the Work vector
+      --        zggev (Jobv_L, Jobv_R,
+      --               F_A'Length (1),
+      --               F_A, F_A'Length (1),
+      --               F_B, F_B'Length (1),
+      --               F_Alpha_R, F_Alpha_I,
+      --               F_Beta,
+      --               F_V_L, F_V_L'Length (1),
+      --               F_V_R, F_V_R'Length (1),
+      --               F_Querying_Work, -1,
+      --               Info);
+      --        declare
+      --           F_Local_Work :
+      --             IFB.Double_Precision_Vector
+      --             (1 .. Integer (F_Querying_Work (1)));
+      --        begin
+      --           zggev (Jobv_L, Jobv_R,
+      --                  F_A'Length (1),
+      --                  F_A, F_A'Length (1),
+      --                  F_B, F_B'Length (1),
+      --                  F_Alpha_R, F_Alpha_I,
+      --                  F_Beta,
+      --                  F_V_L, F_V_L'Length (1),
+      --                  F_V_R, F_V_R'Length (1),
+      --                  F_Local_Work, F_Local_Work'Length,
+      --                  Info);
+      --           Alpha_R := To_Complex (F_Alpha_R);
+      --           Alpha_I := To_Complex (F_Alpha_I);
+      --           Beta := To_Complex (F_Beta);
+      --           V_R := To_Complex (F_V_R);
+      --           V_L := To_Complex (F_V_L);
+      --        end;
+      --     end;
+      end if;
+   end Complex_ggev;
 
    procedure Real_ggev
      (Jobv_L  :        Character;

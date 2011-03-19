@@ -24,7 +24,7 @@ with Ada_Numerics.Generic_Arrays;
 
 procedure Demo_Extensions is
 
-   subtype My_Float is Float;
+   subtype My_Float is Long_Float;
    package My_Float_IO is new Float_IO (My_Float);
 
    package Real_Arrays
@@ -213,13 +213,13 @@ begin
 
          for J in A'Range (1) loop
             for K in A'Range (2) loop
-               A (J, K) := Ada.Numerics.Float_Random.Random (Gen);
+               A (J, K) := My_Float (Ada.Numerics.Float_Random.Random (Gen));
             end loop;
          end loop;
 
          for J in B'Range (1) loop
             for K in B'Range (2) loop
-               B (J, K) := Ada.Numerics.Float_Random.Random (Gen);
+               B (J, K) := My_Float (Ada.Numerics.Float_Random.Random (Gen));
             end loop;
          end loop;
 
@@ -242,6 +242,37 @@ begin
 
          New_Line;
 
+      end loop;
+   end;
+
+   Put_Line ("--------------------------------");
+   Put_Line ("ZGGEV example at http://www.nag.co.uk/lapack-ex/node122.html");
+   New_Line;
+
+   declare
+      A : constant Complex_Arrays.Complex_Matrix (1 .. 4, 1 .. 4) :=
+        (((-21.10,-22.50), ( 53.50,-50.50), (-34.50,127.50), (  7.50,  0.50)),
+         (( -0.46, -7.78), ( -3.50,-37.50), (-15.50, 58.50), (-10.50, -1.50)),
+         ((  4.30, -5.50), ( 39.70,-17.10), (-68.50, 12.50), ( -7.50, -3.50)),
+         ((  5.50,  4.40), ( 14.40, 43.30), (-32.50,-46.00), (-19.00,-32.50)));
+      B : constant Complex_Arrays.Complex_Matrix (1 .. 4, 1 .. 4) :=
+        (((  1.00, -5.00), (  1.60,  1.20), ( -3.00,  0.00), (  0.00, -1.00)),
+         ((  0.80, -0.60), (  3.00, -5.00), ( -4.00,  3.00), ( -2.40, -3.20)),
+         ((  1.00,  0.00), (  2.40,  1.80), ( -4.00, -5.00), (  0.00, -3.00)),
+         ((  0.00,  1.00), ( -1.80,  2.40), (  0.00, -4.00), (  4.00, -5.00)));
+      Values : Extensions.Generalized_Eigenvalue_Vector (1 .. 4);
+      Vectors : Complex_Arrays.Complex_Matrix (1 .. 4, 1 .. 4);
+   begin
+      Extensions.Eigensystem (A, B, Values, Vectors);
+      for J in 1 .. 4 loop
+         Put ("Eigenvalue(" & J'Img & ") = ");
+         Put (Values (J).Alpha / Values (J).Beta);
+         New_Line;
+         Put ("Eigenvector(" & J'Img & ") = ");
+         for K in 1 .. 4 loop
+            Put (Vectors (K, J));
+         end loop;
+         New_Line;
       end loop;
    end;
 
