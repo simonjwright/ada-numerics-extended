@@ -12,5 +12,5 @@ test/*.exe
 test/*.o
 test/demo_extensions
 test/tests-main
-test/[c,s]geev_generator
-test/[c,s]ggev_generator
+test/[cs]geev_generator
+test/[csz]ggev_generator
