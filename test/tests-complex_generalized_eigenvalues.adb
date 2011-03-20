@@ -18,7 +18,9 @@ with Ada.Numerics.Generic_Real_Arrays;
 with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays;
 with Ada_Numerics.Generic_Arrays;
+pragma Warnings (Off);
 with System.Generic_Array_Operations;
+pragma Warnings (On);
 
 with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 --  May not be referenced for released versions
@@ -85,10 +87,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
       use Real_IO;
       use My_Complex_IO;
 
-      function Close_Enough (L, R : Complex_Vector) return Boolean;
-      function Close_Enough (L, R : Complex_Matrix) return Boolean;
-      function Close_Enough (L, R : Real_Vector) return Boolean;
-      function Close_Enough (L, R : Real_Matrix) return Boolean;
+      function Close_Enough
+        (L, R : Complex_Vector; Limit : Real) return Boolean;
       function Column (V : Complex_Matrix; C : Integer) return Complex_Vector;
 
       package body Impl is
@@ -273,11 +273,11 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   end if;
                end loop;
                Assert (C,
-                       Close_Enough (Alphas, Expected_Alphas),
+                       Close_Enough (Alphas, Expected_Alphas, Limit),
                        "incorrect Values.Alpha");
                if Expected_Betas'Length /= 0 then
                   Assert (C,
-                          Close_Enough (Betas, Expected_Betas),
+                          Close_Enough (Betas, Expected_Betas, Limit),
                           "incorrect Values.Beta");
                end if;
             end;
@@ -287,7 +287,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
             begin
                for J in Vectors'Range (2) loop
                   if not Close_Enough (Column (Vectors, J),
-                                       Column (Expected_Eigenvectors, J)) then
+                                       Column (Expected_Eigenvectors, J),
+                                      Limit) then
                      Put_Line (".. column:" & J'Img);
                      Test_OK := False;
                   end if;
@@ -311,22 +312,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
          end return;
       end Transpose;
 
-      --  This limit may seem a tad on the high side, but all we
-      --  really need to know is whether the binding to the LAPACK
-      --  subprogram is successful. Experiment shows that putting the
-      --  numbers derived from the COMPLEX*16 set into the COMPLEX*8
-      --  subprogram gives differences of about 30e.
-      --
-      --  For cggev, this limit isn't quite enough: maybe the vectors
-      --  are rather sensitive?
-      Lim : constant Real := Float'Model_Epsilon * 60.0;
-
-      --  The values in Input_A, Input_B, Expected_Alphas,
-      --  Expected_Betas, Expected_Eigenvectors were derived from a
-      --  run of sggev_generator.
-
-
-      function Close_Enough (L, R : Complex_Vector) return Boolean
+      function Close_Enough
+        (L, R : Complex_Vector; Limit : Real) return Boolean
       is
          Result : Boolean := True;
       begin
@@ -339,8 +326,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
                Left : Complex renames L (J);
                Right : Complex renames R (J - L'First + R'First);
             begin
-               if abs (Left.Re - Right.Re) > Lim
-                 or abs (Left.Im - Right.Im) > Lim then
+               if abs (Left.Re - Right.Re) > Limit
+                 or abs (Left.Im - Right.Im) > Limit then
                   Put ("Close_Enough(Complex_Vector): failure:"
                          & " j:" & J'Img
                          & " l:");
@@ -349,8 +336,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   Put (Right);
                   Put (" diff:");
                   Put (Left - Right);
-                  Put (" lim:");
-                  Put (Lim'Img);
+                  Put (" limit:");
+                  Put (Limit'Img);
                   New_Line;
                   Result := False;
                end if;
@@ -359,88 +346,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
          return Result;
       end Close_Enough;
 
-      function Close_Enough (L, R : Complex_Matrix) return Boolean
-      is
-         Result : Boolean := True;
-      begin
-         if L'Length (1) /= R'Length (1)
-           or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error
-              with "Close_Enough(Complex_Matrix): different lengths";
-         end if;
-         for J in L'Range (1) loop
-            for K in L'Range (2) loop
-               declare
-                  Left : Complex renames L (J, K);
-                  Right : Complex renames R (J - L'First (1) + R'First (1),
-                                             K - L'First (2) + R'First (2));
-               begin
-                  if abs (Left.Re - Right.Re) > Lim
-                    or abs (Left.Im - Right.Im) > Lim then
-                     Put ("Close_Enough(Complex_Matrix): failure:"
-                            & " j:" & J'Img
-                            & " k:" & K'Img
-                            & " l:");
-                     Put (Left);
-                     Put (" r:");
-                     Put (Right);
-                     Put (" diff:");
-                     Put (Left - Right);
-                     Put (" lim:");
-                     Put (Lim'Img);
-                     New_Line;
-                     Result :=  False;
-                  end if;
-               end;
-            end loop;
-         end loop;
-         return Result;
-      end Close_Enough;
-
-      function Close_Enough (L, R : Real_Vector) return Boolean
-      is
-      begin
-         if L'Length /= R'Length then
-            raise Constraint_Error
-              with "Close_Enough(Real_Vector): different lengths";
-         end if;
-         for J in L'Range loop
-            if abs (L (J) - R (J - L'First + R'First)) > Lim then
-               return False;
-            end if;
-         end loop;
-         return True;
-      end Close_Enough;
-
-      function Close_Enough (L, R : Real_Matrix) return Boolean
-      is
-      begin
-         if L'Length (1) /= R'Length (1)
-           or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error
-              with "Close_Enough(Real_Matrix): different lengths";
-         end if;
-         for J in L'Range (1) loop
-            for K in L'Range (2) loop
-               declare
-                  Left : Real renames L (J, K);
-                  Right : Real renames R (J - L'First (1) + R'First (1),
-                                          K - L'First (2) + R'First (2));
-               begin
-                  if abs (Left - Right) > Lim then
-                     Put_Line ("Close_Enough(Real_Matrix): failure:"
-                                 & " j:" & J'Img
-                                 & " k:" & K'Img
-                                 & " diff:" & Real'Image (abs (Left - Right)));
-                     return False;
-                  end if;
-               end;
-            end loop;
-         end loop;
-         return True;
-      end Close_Enough;
-
-      function Column (V : Complex_Matrix; C : Integer) return Complex_Vector
+      function Column
+        (V : Complex_Matrix; C : Integer) return Complex_Vector
       is
       begin
          return Result : Complex_Vector (V'Range (1)) do
@@ -605,7 +512,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Expected_Alphas => Single_Expected_Alphas,
       Expected_Betas => Single_Expected_Betas,
       Expected_Eigenvectors => Single_Expected_Eigenvectors,
-      Limit => 1.0e-6);
+      Limit => 1.0e-5);
 
    --  The data is derived from a run of zggev_generator.
    Double_Input_A :
@@ -756,7 +663,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Expected_Alphas => Double_Expected_Alphas,
       Expected_Betas => Double_Expected_Betas,
       Expected_Eigenvectors => Double_Expected_Eigenvectors,
-      Limit => 1.0e-10);
+      Limit => 1.0e-5);
 
    --  The data is from the ZGGEV example at
    --  http://www.nag.co.uk/lapack-ex/node122.html.
@@ -787,7 +694,190 @@ package body Tests.Complex_Generalized_Eigenvalues is
               ( 1.2090E-01,-1.5371E-01), ( 1.5371E-01, 1.2090E-01)),
              ((-9.0623E-01, 9.3766E-02), (-7.4303E-03, 6.8750E-03),
               ( 3.0208E-02,-3.1255E-03), (-1.4586E-02,-1.4097E-01))))),
-      Limit => 1.0e-6,
+      Limit => 1.0e-5,
+      Additional_Naming => "NAG ZGGEV example");
+
+   --  The data is derived from a run of zggev_generator.
+   Extended_Input_A :
+     constant Extended_Tests.Complex_Arrays.Complex_Matrix (3 .. 8,
+                                                          13 .. 18) :=
+     ((( 0.99755960702896118     , 0.56682473421096802     ),
+       ( 0.36739090085029602     , 0.48063689470291138     ),
+       ( 0.34708127379417419     , 0.34224382042884827     ),
+       ( 0.90052449703216553     , 0.38676601648330688     ),
+       ( 1.61083005368709564E-002, 0.65085482597351074     ),
+       ( 0.85569238662719727     , 0.40128692984580994     )),
+      (( 0.59839951992034912     , 0.67298072576522827     ),
+       ( 0.10038292407989502     , 0.75545328855514526     ),
+       ( 0.89733457565307617     , 0.65822911262512207     ),
+       ( 0.97866022586822510     , 0.99914228916168213     ),
+       ( 0.65904754400253296     , 0.55400514602661133     ),
+       ( 0.65792471170425415     , 0.72885853052139282     )),
+      (( 0.14783519506454468     , 0.67452931404113770     ),
+       ( 0.11581885814666748     , 0.61436921358108521     ),
+       ( 0.73112863302230835     , 0.49760389328002930     ),
+       ( 0.55290305614471436     , 0.99791926145553589     ),
+       ( 0.95375907421112061     , 9.32746902108192444E-002),
+       ( 0.94684851169586182     , 0.70617634057998657     )),
+      (( 6.17055781185626984E-002, 0.48038077354431152     ),
+       ( 0.58739519119262695     , 0.51996827125549316     ),
+       ( 0.66965728998184204     , 0.66494011878967285     ),
+       ( 7.65594989061355591E-002, 0.10124966502189636     ),
+       ( 1.51495030149817467E-002, 0.79291546344757080     ),
+       ( 0.95358073711395264     , 0.11424437165260315     )),
+      (( 4.81529012322425842E-002, 0.11420577764511108     ),
+       ( 7.33418017625808716E-002, 0.24686174094676971     ),
+       ( 0.56699836254119873     , 2.43123993277549744E-002),
+       ( 0.97658544778823853     , 0.69260501861572266     ),
+       ( 4.67772595584392548E-002, 0.83977776765823364     ),
+       ( 0.73352593183517456     , 0.11604274809360504     )),
+      (( 0.74653637409210205     , 0.84320092201232910     ),
+       ( 0.73073655366897583     , 0.41060426831245422     ),
+       ( 0.47131767868995667     , 0.46262544393539429     ),
+       ( 0.25796580314636230     , 0.93770503997802734     ),
+       ( 0.90884804725646973     , 0.69487667083740234     ),
+       ( 0.74439668655395508     , 0.30111306905746460     )));
+
+   Extended_Input_B :
+     constant Extended_Tests.Complex_Arrays.Complex_Matrix
+     (Extended_Input_A'Range (1),
+      Extended_Input_A'Range (2)) :=
+     ((( 0.96591538190841675     , 0.74792766571044922     ),
+       ( 7.37542659044265747E-002, 5.35522913560271263E-003),
+       ( 0.21795172989368439     , 0.13316041231155396     ),
+       ( 0.44548228383064270     , 0.66193217039108276     ),
+       ( 0.64640879631042480     , 0.32298728823661804     ),
+       ( 0.20687432587146759     , 0.96853947639465332     )),
+      (( 0.45688229799270630     , 0.33001512289047241     ),
+       ( 0.60569328069686890     , 0.71904790401458740     ),
+       ( 0.15071684122085571     , 0.61231487989425659     ),
+       ( 0.25679799914360046     , 0.55086541175842285     ),
+       ( 0.97776007652282715     , 0.90192329883575439     ),
+       ( 0.40245527029037476     , 0.92862766981124878     )),
+      (( 0.76961433887481689     , 0.33932256698608398     ),
+       ( 0.82061713933944702     , 0.94709467887878418     ),
+       ( 0.37480175495147705     , 0.42150586843490601     ),
+       ( 0.99039477109909058     , 0.74630963802337646     ),
+       ( 0.73402369022369385     , 0.75176161527633667     ),
+       ( 0.81380969285964966     , 0.55859452486038208     )),
+      (( 0.59768974781036377     , 0.13753192126750946     ),
+       ( 0.88587832450866699     , 0.30381017923355103     ),
+       ( 0.50367689132690430     , 0.26157513260841370     ),
+       ( 0.54926574230194092     , 0.37558495998382568     ),
+       ( 0.62087756395339966     , 0.77360355854034424     ),
+       ( 0.31846264004707336     , 0.59681981801986694     )),
+      (( 0.21596491336822510     , 0.10057339072227478     ),
+       ( 0.44338425993919373     , 0.20836757123470306     ),
+       ( 0.42029058933258057     , 0.39785301685333252     ),
+       ( 4.94336755946278572E-003, 0.12992103397846222     ),
+       ( 0.67848885059356689     , 0.58195084333419800     ),
+       ( 0.84029966592788696     , 0.83499598503112793     )),
+      (( 0.52883899211883545     , 0.66548466682434082     ),
+       ( 0.35572159290313721     , 0.73537701368331909     ),
+       ( 0.75969171524047852     , 0.70245939493179321     ),
+       ( 0.45610359311103821     , 0.80848932266235352     ),
+       ( 0.21948850154876709     , 0.85495454072952271     ),
+       ( 0.67196851968765259     , 0.61871403455734253     )));
+
+   Extended_Expected_Alphas :
+     constant Extended_Tests.Complex_Arrays.Complex_Vector
+     (Extended_Input_A'Range (1)) :=
+     ((-0.72462137727084108     , 0.66605284400204401     ),
+      ( 0.38089150123582910     , 0.88627961630480201     ),
+      (-0.64196175825401258     ,-0.12045771725621814     ),
+      ( 0.62007403908784364     ,-0.65259336565559700     ),
+      (  2.2019693761831594     ,-0.74377395504137078     ),
+      ( 0.52759066348006678     ,-9.17980559652656625E-002));
+
+   Extended_Expected_Betas :
+     constant Extended_Tests.Complex_Arrays.Complex_Vector
+     (Extended_Input_A'Range (1)) :=
+     (( 0.39223242731531105     ,  0.0000000000000000     ),
+      ( 0.47756126471998211     ,  0.0000000000000000     ),
+      ( 0.96558994968501355     ,  0.0000000000000000     ),
+      ( 0.51958743124576134     ,  0.0000000000000000     ),
+      (  2.2389017108697922     ,  0.0000000000000000     ),
+      ( 0.94190294494813787     ,  0.0000000000000000     ));
+
+   Extended_Expected_Eigenvectors :
+     constant Extended_Tests.Complex_Arrays.Complex_Matrix
+     (Extended_Input_A'Range (1),
+      Extended_Input_B'Range (2)) :=
+     (((-8.40656466581337150E-003, 0.34664542621724620     ),
+       ( 6.21121712215207053E-002,-0.63323784986162979     ),
+       (-0.21450330305538842     ,-7.66602177307265098E-002),
+       ( 0.25260679374520156     , 9.00310139007541449E-002),
+       ( 0.29881527806205832     ,-0.13540040921933222     ),
+       ( 0.54871069909424020     , 0.17579324594467974     )),
+      ((-6.13655573904763121E-002, 0.65659973009420114     ),
+       ( 0.99719193664281780     ,-2.80806335718215014E-003),
+       ( 7.64720452724648864E-002, 0.64829780145503546     ),
+       ( 0.34621743159109913     , 0.43700577424819742     ),
+       ( 0.12661385107114020     , 0.52514882689654929     ),
+       (-0.89201833333728031     ,-0.10798166666271966     )),
+      (( 2.23962116559053882E-002,-0.60222986928648559     ),
+       (-0.74760925130497535     ,-0.13722683664302515     ),
+       (-0.27227505359572124     ,-0.72772494640427876     ),
+       (-3.96092536052228827E-002, 0.37341646201720402     ),
+       (-0.11374640573517417     , 0.10914045817685453     ),
+       (-0.28644158750620391     , 9.93527614856379859E-002)),
+      (( 0.40711535463760518     ,-0.59288464536239494     ),
+       (-0.11898190806251309     ,-5.75796267653002625E-002),
+       ( 0.19133370587153931     , 0.11643262199988723     ),
+       (-0.31280778181100533     ,-4.72146440539824297E-002),
+       (-0.18816748922853238     ,-7.23488877591436791E-002),
+       (-0.28263331715255124     , 3.14230051572193039E-002)),
+      ((-0.22497442766594572     ,-0.13906737903009458     ),
+       (-0.50120681073010565     , 0.40523516996093001     ),
+       ( 0.17694021812530289     , 0.15626453249333030     ),
+       (-0.71418177605252076     ,-0.22086519171187932     ),
+       (-0.54366994717920081     ,-0.45633005282079914     ),
+       ( 0.17893481474433970     ,-0.29209063829692694     )),
+      ((-0.17782586443391793     , 0.28198049558708305     ),
+       ( 0.36060141962977393     , 0.21891531827625882     ),
+       ( 0.13669243124775099     ,-0.16018673864998911     ),
+       ( 0.41781662983049417     ,-0.58218337016950583     ),
+       ( 0.15513868689302518     ,-0.69759200329309068     ),
+       ( 0.32355854452626087     , 0.24944776982410577     )));
+
+   package Extended_Impl is new Extended_Tests.Impl
+     (Input_A => Extended_Input_A,
+      Input_B => Extended_Input_B,
+      Expected_Alphas => Extended_Expected_Alphas,
+      Expected_Betas => Extended_Expected_Betas,
+      Expected_Eigenvectors => Extended_Expected_Eigenvectors,
+      Limit => 1.0e-5);
+
+   --  The data is from the ZGGEV example at
+   --  http://www.nag.co.uk/lapack-ex/node122.html.
+   package Extended_Impl_NAG is new Extended_Tests.Impl
+     (Input_A =>
+        (((-21.10,-22.50), ( 53.50,-50.50), (-34.50,127.50), (  7.50,  0.50)),
+         (( -0.46, -7.78), ( -3.50,-37.50), (-15.50, 58.50), (-10.50, -1.50)),
+         ((  4.30, -5.50), ( 39.70,-17.10), (-68.50, 12.50), ( -7.50, -3.50)),
+         ((  5.50,  4.40), ( 14.40, 43.30), (-32.50,-46.00), (-19.00,-32.50))),
+      Input_B =>
+        (((  1.00, -5.00), (  1.60,  1.20), ( -3.00,  0.00), (  0.00, -1.00)),
+         ((  0.80, -0.60), (  3.00, -5.00), ( -4.00,  3.00), ( -2.40, -3.20)),
+         ((  1.00,  0.00), (  2.40,  1.80), ( -4.00, -5.00), (  0.00, -3.00)),
+         ((  0.00,  1.00), ( -1.80,  2.40), (  0.00, -4.00), (  4.00, -5.00))),
+      Expected_Alphas =>
+        (( 3.0000E+00,-9.0000E+00),
+         ( 2.0000E+00,-5.0000E+00),
+         ( 3.0000E+00,-1.0000E-00),
+         ( 4.0000E+00,-5.0000E+00)),
+      Expected_Betas => (1 .. 0 => (0.0, 0.0)),
+      Expected_Eigenvectors =>
+        (Extended_Tests.Transpose
+           ((((-8.2377E-01,-1.7623E-01), (-1.5295E-01, 7.0655E-02),
+              (-7.0655E-02,-1.5295E-01), ( 1.5295E-01,-7.0655E-02)),
+             (( 6.3974E-01, 3.6026E-01), ( 4.1597E-03,-5.4650E-04),
+              ( 4.0212E-02, 2.2645E-02), (-2.2645E-02, 4.0212E-02)),
+             (( 9.7754E-01, 2.2465E-02), ( 1.5910E-01,-1.1371E-01),
+              ( 1.2090E-01,-1.5371E-01), ( 1.5371E-01, 1.2090E-01)),
+             ((-9.0623E-01, 9.3766E-02), (-7.4303E-03, 6.8750E-03),
+              ( 3.0208E-02,-3.1255E-03), (-1.4586E-02,-1.4097E-01))))),
+      Limit => 1.0e-5,
       Additional_Naming => "NAG ZGGEV example");
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite
@@ -798,7 +888,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
       AUnit.Test_Suites.Add_Test (Result, Single_Impl.Suite);
       AUnit.Test_Suites.Add_Test (Result, Double_Impl.Suite);
       AUnit.Test_Suites.Add_Test (Result, Double_Impl_NAG.Suite);
-      --  AUnit.Test_Suites.Add_Test (Result, Extended_Impl.Suite);
+      AUnit.Test_Suites.Add_Test (Result, Extended_Impl.Suite);
+      AUnit.Test_Suites.Add_Test (Result, Extended_Impl_NAG.Suite);
       return Result;
    end Suite;
 
