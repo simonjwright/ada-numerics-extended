@@ -663,7 +663,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Expected_Alphas => Double_Expected_Alphas,
       Expected_Betas => Double_Expected_Betas,
       Expected_Eigenvectors => Double_Expected_Eigenvectors,
-      Limit => 1.0e-5);
+      Limit => 1.0e-10);
 
    --  The data is from the ZGGEV example at
    --  http://www.nag.co.uk/lapack-ex/node122.html.
@@ -696,6 +696,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
               ( 3.0208E-02,-3.1255E-03), (-1.4586E-02,-1.4097E-01))))),
       Limit => 1.0e-5,
       Additional_Naming => "NAG ZGGEV example");
+   --  The limit is much higher than you'd expect because the values
+   --  are only supplied to 6 significant figures.
 
    --  The data is derived from a run of zggev_generator.
    Extended_Input_A :
@@ -846,7 +848,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Expected_Alphas => Extended_Expected_Alphas,
       Expected_Betas => Extended_Expected_Betas,
       Expected_Eigenvectors => Extended_Expected_Eigenvectors,
-      Limit => 1.0e-5);
+      Limit => 1.0e-10);
 
    --  The data is from the ZGGEV example at
    --  http://www.nag.co.uk/lapack-ex/node122.html.
