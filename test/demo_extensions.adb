@@ -24,7 +24,7 @@ with Ada_Numerics.Generic_Arrays;
 
 procedure Demo_Extensions is
 
-   subtype My_Float is Long_Float;
+   subtype My_Float is Float;
    package My_Float_IO is new Float_IO (My_Float);
 
    package Real_Arrays
