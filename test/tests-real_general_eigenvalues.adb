@@ -99,7 +99,6 @@ package body Tests.Real_General_Eigenvalues is
       use My_Complex_IO;
 
       function Close_Enough (L, R : Complex_Vector) return Boolean;
-      function Close_Enough (L, R : Complex_Matrix) return Boolean;
       function Column (V : Complex_Matrix; C : Integer) return Complex_Vector;
 
       --  The values in Input, Expected_Eigenvalues,
@@ -357,30 +356,6 @@ package body Tests.Real_General_Eigenvalues is
             or abs (L (J).Im - R (J - L'First + R'First).Im) > Lim then
                return False;
             end if;
-         end loop;
-         return True;
-      end Close_Enough;
-
-      function Close_Enough (L, R : Complex_Matrix) return Boolean
-      is
-      begin
-         if L'Length (1) /= R'Length (1)
-           or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error with "Close_Enough: different lengths";
-         end if;
-         for J in L'Range (1) loop
-            for K in L'Range (2) loop
-               declare
-                  Left : Complex renames L (J, K);
-                  Right : Complex renames R (J - L'First (1) + R'First (1),
-                                             K - L'First (2) + R'First (2));
-               begin
-                  if abs (Left.Re - Right.Re) > Lim
-                    or abs (Left.Im - Right.Im) > Lim then
-                     return False;
-                  end if;
-               end;
-            end loop;
          end loop;
          return True;
       end Close_Enough;

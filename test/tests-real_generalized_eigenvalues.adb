@@ -98,9 +98,7 @@ package body Tests.Real_Generalized_Eigenvalues is
       --  subprogram gives differences of this size.
       Lim : constant Real := Float'Model_Epsilon * 30.0;
 
-      function Close_Enough (L, R : Complex_Vector) return Boolean;
       function Close_Enough (L, R : Real_Vector) return Boolean;
-      function Close_Enough (L, R : Real_Matrix) return Boolean;
       function Column (V : Real_Matrix; C : Integer) return Real_Vector;
 
       --  The values in Input_A, Input_B, Expected_Alphas,
@@ -403,21 +401,6 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       end Eigensystem;
 
-      function Close_Enough (L, R : Complex_Vector) return Boolean
-      is
-      begin
-         if L'Length /= R'Length then
-             raise Constraint_Error with "Close_Enough: different lengths";
-         end if;
-         for J in L'Range loop
-            if abs (L (J).Re - R (J - L'First + R'First).Re) > Lim
-            or abs (L (J).Im - R (J - L'First + R'First).Im) > Lim then
-               return False;
-            end if;
-         end loop;
-         return True;
-      end Close_Enough;
-
       function Close_Enough (L, R : Real_Vector) return Boolean
       is
       begin
@@ -428,33 +411,6 @@ package body Tests.Real_Generalized_Eigenvalues is
             if abs (L (J) - R (J - L'First + R'First)) > Lim then
                return False;
             end if;
-         end loop;
-         return True;
-      end Close_Enough;
-
-      function Close_Enough (L, R : Real_Matrix) return Boolean
-      is
-      begin
-         if L'Length (1) /= R'Length (1)
-           or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error with "Close_Enough: different lengths";
-         end if;
-         for J in L'Range (1) loop
-            for K in L'Range (2) loop
-               declare
-                  Left : Real renames L (J, K);
-                  Right : Real renames R (J - L'First (1) + R'First (1),
-                                             K - L'First (2) + R'First (2));
-               begin
-                  if abs (Left - Right) > Lim then
-                     Put_Line ("Close_Enough(Real_Matrix): failure:"
-                                 & " j:" & J'Img
-                                 & " k:" & K'Img
-                                 & " diff:" & Real'Image (abs (Left - Right)));
-                     return False;
-                  end if;
-               end;
-            end loop;
          end loop;
          return True;
       end Close_Enough;
