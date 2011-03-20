@@ -1,10 +1,14 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
-20yymmdd
+20110320
+
+        An additional overloaded procedure Eigensystem returns the
+        generalized eigenvalues and eigenvectors of a pair of
+        non-hermitian complex matrices.
 
         The program Test_Extensions is renamed to Demo_Extensions, and
-        includes demonstration of the real generalized eigensystem
+        includes a demonstration of the real generalized eigensystem
         code.
 
         The library project file is renamed src/gnat_math_extensions.gpr.
