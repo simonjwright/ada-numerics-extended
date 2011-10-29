@@ -1,6 +1,17 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
+2011mmdd
+
+        Different releases of LAPACK may alter the sign of
+        eigenvectors returned by the generalized eigensystem code
+        (remember that the generalized eigensystem is Av = lBv, where
+        l is an eigenvalue and v is the corresponding
+        eigenvector). This only affected the tests.
+
+        Testing on Debian 6 required an increase in the test limit for
+        complex general eigenvalues tests for Float.
+
 20110320
 
         An additional overloaded procedure Eigensystem returns the
