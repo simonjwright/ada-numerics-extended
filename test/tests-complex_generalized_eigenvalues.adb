@@ -40,6 +40,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
    generic
       type Real is digits <>;
       Type_Name : String;
+      Debug_Output : Boolean := False;
    package Tests_G is
 
       package Real_Arrays
@@ -286,9 +287,14 @@ package body Tests.Complex_Generalized_Eigenvalues is
                Test_OK : Boolean := True;
             begin
                for J in Vectors'Range (2) loop
-                  if not Close_Enough (Column (Vectors, J),
-                                       Column (Expected_Eigenvectors, J),
-                                      Limit) then
+                  if not (Close_Enough (Column (Vectors, J),
+                                        Column (Expected_Eigenvectors, J),
+                                        Limit)
+                            or else
+                            Close_Enough (-Column (Vectors, J),
+                                          Column (Expected_Eigenvectors, J),
+                                          Limit))
+                  then
                      Put_Line (".. column:" & J'Img);
                      Test_OK := False;
                   end if;
@@ -328,17 +334,19 @@ package body Tests.Complex_Generalized_Eigenvalues is
             begin
                if abs (Left.Re - Right.Re) > Limit
                  or abs (Left.Im - Right.Im) > Limit then
-                  Put ("Close_Enough(Complex_Vector): failure:"
-                         & " j:" & J'Img
-                         & " l:");
-                  Put (Left);
-                  Put (" r:");
-                  Put (Right);
-                  Put (" diff:");
-                  Put (Left - Right);
-                  Put (" limit:");
-                  Put (Limit'Img);
-                  New_Line;
+                  if Debug_Output then
+                     Put ("Close_Enough(Complex_Vector): failure:"
+                            & " j:" & J'Img
+                            & " l:");
+                     Put (Left);
+                     Put (" r:");
+                     Put (Right);
+                     Put (" diff:");
+                     Put (Left - Right);
+                     Put (" limit:");
+                     Put (Limit'Img);
+                     New_Line;
+                  end if;
                   Result := False;
                end if;
             end;
@@ -666,7 +674,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Limit => 1.0e-10);
 
    --  The data is from the ZGGEV example at
-   --  http://www.nag.co.uk/lapack-ex/node122.html.
+   --  http://www.nag.co.uk/lapack-ex/node122.html, implemented here
+   --  with extended output precision in nag-zggef.f.
    package Double_Impl_NAG is new Double_Tests.Impl
      (Input_A =>
         (((-21.10,-22.50), ( 53.50,-50.50), (-34.50,127.50), (  7.50,  0.50)),
@@ -679,30 +688,36 @@ package body Tests.Complex_Generalized_Eigenvalues is
          ((  1.00,  0.00), (  2.40,  1.80), ( -4.00, -5.00), (  0.00, -3.00)),
          ((  0.00,  1.00), ( -1.80,  2.40), (  0.00, -4.00), (  4.00, -5.00))),
       Expected_Alphas =>
-        (( 3.0000E+00,-9.0000E+00),
-         ( 2.0000E+00,-5.0000E+00),
-         ( 3.0000E+00,-1.0000E-00),
-         ( 4.0000E+00,-5.0000E+00)),
+        ((  2.999999999999997    , -9.000000000000002    ),
+         (  2.000000000000001    , -5.000000000000001    ),
+         (  3.000000000000001    , -9.999999999999971E-01),
+         (  4.000000000000000    , -4.999999999999999    )),
       Expected_Betas => (1 .. 0 => (0.0, 0.0)),
       Expected_Eigenvectors =>
         (Double_Tests.Transpose
-           ((((-8.2377E-01,-1.7623E-01), (-1.5295E-01, 7.0655E-02),
-              (-7.0655E-02,-1.5295E-01), ( 1.5295E-01,-7.0655E-02)),
-             (( 6.3974E-01, 3.6026E-01), ( 4.1597E-03,-5.4650E-04),
-              ( 4.0212E-02, 2.2645E-02), (-2.2645E-02, 4.0212E-02)),
-             (( 9.7754E-01, 2.2465E-02), ( 1.5910E-01,-1.1371E-01),
-              ( 1.2090E-01,-1.5371E-01), ( 1.5371E-01, 1.2090E-01)),
-             ((-9.0623E-01, 9.3766E-02), (-7.4303E-03, 6.8750E-03),
-              ( 3.0208E-02,-3.1255E-03), (-1.4586E-02,-1.4097E-01))))),
-      Limit => 1.0e-5,
+           ((((  8.237684355586408E-01,  1.762315644413593E-01),
+              (  1.529507374223460E-01, -7.065516195641947E-02),
+              (  7.065516195641951E-02,  1.529507374223459E-01),
+              ( -1.529507374223459E-01,  7.065516195641937E-02)),
+             (( -6.397414100896659E-01, -3.602585899103342E-01),
+              ( -4.159704468673991E-03,  5.465027092886775E-04),
+              ( -4.021231720563600E-02, -2.264482565150679E-02),
+              (  2.264482565150676E-02, -4.021231720563594E-02)),
+             ((  9.775354973150105E-01,  2.246450268498953E-02),
+              (  1.591014198926005E-01, -1.137099392482031E-01),
+              (  1.208985801073995E-01, -1.537099392482032E-01),
+              (  1.537099392482029E-01, 1.208985801073995E-01)),
+             ((  9.062337812121569E-01, -9.376621878784308E-02),
+              (  7.430303263300258E-03, -6.875036041750603E-03),
+              ( -3.020779270707200E-02,  3.125540626261550E-03),
+              (  1.458585625588661E-02,  1.409696992996683E-01))))),
+      Limit => 1.0e-10,
       Additional_Naming => "NAG ZGGEV example");
-   --  The limit is much higher than you'd expect because the values
-   --  are only supplied to 6 significant figures.
 
    --  The data is derived from a run of zggev_generator.
    Extended_Input_A :
      constant Extended_Tests.Complex_Arrays.Complex_Matrix (3 .. 8,
-                                                          13 .. 18) :=
+                                                            13 .. 18) :=
      ((( 0.99755960702896118     , 0.56682473421096802     ),
        ( 0.36739090085029602     , 0.48063689470291138     ),
        ( 0.34708127379417419     , 0.34224382042884827     ),
@@ -851,7 +866,8 @@ package body Tests.Complex_Generalized_Eigenvalues is
       Limit => 1.0e-10);
 
    --  The data is from the ZGGEV example at
-   --  http://www.nag.co.uk/lapack-ex/node122.html.
+   --  http://www.nag.co.uk/lapack-ex/node122.html, implemented here
+   --  with extended output precision in nag-zggef.f.
    package Extended_Impl_NAG is new Extended_Tests.Impl
      (Input_A =>
         (((-21.10,-22.50), ( 53.50,-50.50), (-34.50,127.50), (  7.50,  0.50)),
@@ -864,22 +880,30 @@ package body Tests.Complex_Generalized_Eigenvalues is
          ((  1.00,  0.00), (  2.40,  1.80), ( -4.00, -5.00), (  0.00, -3.00)),
          ((  0.00,  1.00), ( -1.80,  2.40), (  0.00, -4.00), (  4.00, -5.00))),
       Expected_Alphas =>
-        (( 3.0000E+00,-9.0000E+00),
-         ( 2.0000E+00,-5.0000E+00),
-         ( 3.0000E+00,-1.0000E-00),
-         ( 4.0000E+00,-5.0000E+00)),
+        ((  2.999999999999997    , -9.000000000000002    ),
+         (  2.000000000000001    , -5.000000000000001    ),
+         (  3.000000000000001    , -9.999999999999971E-01),
+         (  4.000000000000000    , -4.999999999999999    )),
       Expected_Betas => (1 .. 0 => (0.0, 0.0)),
       Expected_Eigenvectors =>
         (Extended_Tests.Transpose
-           ((((-8.2377E-01,-1.7623E-01), (-1.5295E-01, 7.0655E-02),
-              (-7.0655E-02,-1.5295E-01), ( 1.5295E-01,-7.0655E-02)),
-             (( 6.3974E-01, 3.6026E-01), ( 4.1597E-03,-5.4650E-04),
-              ( 4.0212E-02, 2.2645E-02), (-2.2645E-02, 4.0212E-02)),
-             (( 9.7754E-01, 2.2465E-02), ( 1.5910E-01,-1.1371E-01),
-              ( 1.2090E-01,-1.5371E-01), ( 1.5371E-01, 1.2090E-01)),
-             ((-9.0623E-01, 9.3766E-02), (-7.4303E-03, 6.8750E-03),
-              ( 3.0208E-02,-3.1255E-03), (-1.4586E-02,-1.4097E-01))))),
-      Limit => 1.0e-5,
+           ((((  8.237684355586408E-01,  1.762315644413593E-01),
+              (  1.529507374223460E-01, -7.065516195641947E-02),
+              (  7.065516195641951E-02,  1.529507374223459E-01),
+              ( -1.529507374223459E-01,  7.065516195641937E-02)),
+             (( -6.397414100896659E-01, -3.602585899103342E-01),
+              ( -4.159704468673991E-03,  5.465027092886775E-04),
+              ( -4.021231720563600E-02, -2.264482565150679E-02),
+              (  2.264482565150676E-02, -4.021231720563594E-02)),
+             ((  9.775354973150105E-01,  2.246450268498953E-02),
+              (  1.591014198926005E-01, -1.137099392482031E-01),
+              (  1.208985801073995E-01, -1.537099392482032E-01),
+              (  1.537099392482029E-01, 1.208985801073995E-01)),
+             ((  9.062337812121569E-01, -9.376621878784308E-02),
+              (  7.430303263300258E-03, -6.875036041750603E-03),
+              ( -3.020779270707200E-02,  3.125540626261550E-03),
+              (  1.458585625588661E-02,  1.409696992996683E-01))))),
+      Limit => 1.0e-10,
       Additional_Naming => "NAG ZGGEV example");
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite
