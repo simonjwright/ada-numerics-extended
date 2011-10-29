@@ -29,6 +29,7 @@ package body Tests.Complex_General_Eigenvalues is
    generic
       type Real is digits <>;
       Type_Name : String;
+      Debug_Output : Boolean := False;
    package Tests_G is
       function Suite return AUnit.Test_Suites.Access_Test_Suite;
    end Tests_G;
@@ -299,21 +300,40 @@ package body Tests.Complex_General_Eigenvalues is
       --  subprogram is successful. Experiment shows that putting
       --  the numbers derived from the COMPLEX*16 set into the
       --  COMPLEX*8 subprogram gives differences of this size.
-      Lim : constant Real := Float'Model_Epsilon * 30.0;
+      Lim : constant Real := Float'Model_Epsilon * 60.0;
 
       function Close_Enough (L, R : Complex_Vector) return Boolean
       is
       begin
          if L'Length /= R'Length then
-            raise Constraint_Error with "Close_Enough: different lengths";
+            raise Constraint_Error 
+	      with "Close_Enough(Complex_Vector): different lengths";
          end if;
          for J in L'Range loop
-            if abs (L (J).Re - R (J - L'First + R'First).Re) > Lim
-              or abs (L (J).Im - R (J - L'First + R'First).Im) > Lim then
-               return False;
-            end if;
+            declare
+               Left : Complex renames L (J);
+               Right : Complex renames R (J - L'First + R'First);
+            begin
+               if abs (Left.Re - Right.Re) > Lim
+                 or abs (Left.Im - Right.Im) > Lim then
+                  if Debug_Output then
+                     Put ("Close_Enough(Complex_Vector): failure:"
+                            & " j:" & J'Img
+                            & " l:");
+                     Put (Left);
+                     Put (" r:");
+                     Put (Right);
+                     Put (" diff:");
+                     Put (Left - Right);
+                     Put (" lim:");
+                     Put (Lim'Img);
+                     New_Line;
+                  end if;
+                  return False;
+               end if;
+            end;
          end loop;
-         return True;
+	 return True;
       end Close_Enough;
 
       function Close_Enough (L, R : Complex_Matrix) return Boolean
@@ -321,7 +341,8 @@ package body Tests.Complex_General_Eigenvalues is
       begin
          if L'Length (1) /= R'Length (1)
            or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error with "Close_Enough: different lengths";
+            raise Constraint_Error
+	      with "Close_Enough(Complex_Matrix): different lengths";
          end if;
          for J in L'Range (1) loop
             for K in L'Range (2) loop
@@ -332,6 +353,20 @@ package body Tests.Complex_General_Eigenvalues is
                begin
                   if abs (Left.Re - Right.Re) > Lim
                     or abs (Left.Im - Right.Im) > Lim then
+		     if Debug_Output then
+			Put ("Close_Enough(Complex_Matrix): failure:"
+			       & " j:" & J'Img
+			       & " k:" & K'Img
+			       & " l:");
+			Put (Left);
+			Put (" r:");
+			Put (Right);
+			Put (" diff:");
+			Put (Left - Right);
+			Put (" lim:");
+			Put (Lim'Img);
+			New_Line;
+		     end if;
                      return False;
                   end if;
                end;
