@@ -35,15 +35,15 @@ In order to use this library within your own code, you need to use a
 GPR referencing the extensions' GPR, "gnat_math_extensions". Either
 
 * say 'with "gnat_math_extensions";' and include
-  /where/ever/gnat-math-extn-YYYYMMDD/src in your ADA_PROJECTS_PATH
+  /where/ever/gnat-math-extn-YYYYMMDD in your ADA_PROJECTS_PATH
   environment variable; or
 
-* say 'with "/where/ever/gnat-math-extn-YYYYMMDD/src/gnat_math_extensions";'
+* say 'with "/where/ever/gnat-math-extn-YYYYMMDD/gnat_math_extensions";'
   (this path can be relative, if you like).
 
 Testing
 =======
 
-Unit tests are based on AUnit
-(http://svn.eu.adacore.com/anonsvn/US/trunk/AUnit). For instructions,
-see test/aunit.gpr.
+Unit tests are based on AUnit version 3
+(http://svn.eu.adacore.com/anonsvn/US/trunk/AUnit), which is expected
+to be installed.

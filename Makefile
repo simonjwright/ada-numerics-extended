@@ -26,20 +26,19 @@ DATE = $(shell date +%Y%m%d)
 
 dist:: gnat-math-extn-$(DATE).tar.gz gnat-math-extn-$(DATE).zip
 
-DISTRIBUTION_FILES =				\
-  README					\
-  CHANGES					\
-  src/ada_numerics-generic_arrays.adb		\
-  src/ada_numerics-generic_arrays.ads		\
-  src/ada_numerics.ads				\
-  src/gnat_math_extensions.gpr
+DISTRIBUTION_FILES =					\
+  README						\
+  CHANGES						\
+  gnat_math_extensions.gpr				\
+  src/ada_numerics-generic_arrays.adb			\
+  src/ada_numerics-generic_arrays.ads			\
+  src/ada_numerics.ads
 
 DISTRIBUTION_FILES +=				\
   test/demo_extensions.adb			\
   test/demo_extensions.gpr
 
 DISTRIBUTION_FILES +=					\
-  test/aunit.gpr					\
   test/tests.gpr					\
   test/tests.ads					\
   test/tests-main.adb					\

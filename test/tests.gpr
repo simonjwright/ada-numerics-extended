@@ -13,13 +13,12 @@
 --  Copyright Simon Wright <simon@pushface.org>
 
 with "aunit";
-with "../src/gnat_math_extensions";
+with "../gnat_math_extensions";
 
 project Tests is
 
   for Main use ("tests-main.adb");
 
-  for Source_Dirs use (".") & AUnit.Sources;
   for Exec_Dir use ".";
   for Object_Dir use ".build";
 

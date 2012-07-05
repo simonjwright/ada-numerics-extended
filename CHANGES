@@ -3,6 +3,11 @@ This is the change log for the Ada 2005 Math Extensions project
 
 2011mmdd
 
+        The GNAT Project file is now in the top directory of the
+        distribution.
+
+        The tests expect AUnit to be installed.
+
         Different releases of LAPACK may alter the sign of
         eigenvectors returned by the generalized eigensystem code
         (remember that the generalized eigensystem is Av = lBv, where
