@@ -16,8 +16,8 @@ project GNAT_Math_Extensions is
 
    for Library_Name use "gnat_math_extensions";
    for Library_Kind use "static";
-   for Library_Dir use "../lib";
-   for Library_Src_Dir use "../include";
+   for Library_Dir use "lib";
+   for Source_Dirs use ("src");
 
    for Languages use ("ada");
 
