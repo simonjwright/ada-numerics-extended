@@ -6,8 +6,15 @@ The purpose of this project is to provide additional matrix
 capabilities beyond those defined in the Standard Library (Annex G of
 the ARM). The implementations, which are only for GNAT, are in the
 form of bindings to the LAPACK and BLAS libraries which are widely
-available if not already provided on all operating systems, and in any
-case form part of GNAT GPL.
+available if not already provided on all operating systems.
+
+Prerequisites
+=============
+
+BLAS and LAPACK are required to be on the library lookup path (so that
+the linker switches "-llapack -lblas" find them).
+
+On Mac OS X, they are part of the Accelerate framework.
 
 Installation
 ============

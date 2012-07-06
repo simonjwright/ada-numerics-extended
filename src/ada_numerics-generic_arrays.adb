@@ -25,7 +25,7 @@
 pragma License (Modified_GPL);
 
 pragma Warnings (Off);
-with Interfaces.Fortran.BLAS;
+with Interfaces.Fortran;
 with System.Generic_Array_Operations;
 pragma Warnings (On);
 
@@ -78,9 +78,58 @@ package body Ada_Numerics.Generic_Arrays is
      return Complex_Arrays.Complex_Types.Complex;
    pragma Inline (To_Complex);
 
+   ------------------------------------
+   --  Vector/Matrix types for BLAS  --
+   ------------------------------------
+
+   --  These were in Interfaces.Fortran.BLAS until GCC 4.7/GNAT GPL 2012.
+
+   --  Commented-out items are retained for completeness. but
+   --  commented-out because they aren't used and the package is
+   --  compiled in GNAT implementation mode, which treats warnings as
+   --  errors.
+
+   package BLAS is
+
+      --  Vector types
+
+      --  type Real_Vector is array (Integer range <>)
+      --    of Interfaces.Fortran.Real;
+
+      --  type Complex_Vector is array (Integer range <>)
+      --    of Interfaces.Fortran.Complex;
+
+      type Double_Precision_Vector is array (Integer range <>)
+        of Interfaces.Fortran.Double_Precision;
+
+      type Double_Complex_Vector is array (Integer range <>)
+        of Interfaces.Fortran.Double_Complex;
+
+      --  Matrix types
+
+      --  type Real_Matrix is array (Integer range <>, Integer range <>)
+      --    of Interfaces.Fortran.Real;
+
+      type Double_Precision_Matrix
+         is array (Integer range <>, Integer range <>)
+        of Interfaces.Fortran.Double_Precision;
+
+      --  type Complex_Matrix is array (Integer range <>, Integer range <>)
+      --    of Interfaces.Fortran.Complex;
+
+      type Double_Complex_Matrix is array (Integer range <>, Integer range <>)
+        of Interfaces.Fortran.Double_Complex;
+
+   end BLAS;
+
    -----------------------
    --  Instantiations.  --
    -----------------------
+
+   --  Commented-out items are retained for completeness. but
+   --  commented-out because they aren't used and the package is
+   --  compiled in GNAT implementation mode, which treats warnings as
+   --  errors.
 
    procedure Transpose
    is new System.Generic_Array_Operations.Transpose
@@ -97,14 +146,14 @@ package body Ada_Numerics.Generic_Arrays is
    --    (X_Scalar      => Real'Base,
    --     Result_Scalar => Interfaces.Fortran.Double_Precision,
    --     X_Vector      => Real_Vector,
-   --     Result_Vector => Interfaces.Fortran.BLAS.Double_Precision_Vector,
+   --     Result_Vector => BLAS.Double_Precision_Vector,
    --     Operation     => To_Double_Precision);
 
    function To_Real is new
      System.Generic_Array_Operations.Vector_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
       Result_Scalar => Real_Arrays.Real'Base,
-      X_Vector      => Interfaces.Fortran.BLAS.Double_Precision_Vector,
+      X_Vector      => BLAS.Double_Precision_Vector,
       Result_Vector => Real_Arrays.Real_Vector,
       Operation     => To_Real);
 
@@ -113,14 +162,14 @@ package body Ada_Numerics.Generic_Arrays is
      (X_Scalar      => Real_Arrays.Real'Base,
       Result_Scalar => Interfaces.Fortran.Double_Precision,
       X_Matrix      => Real_Arrays.Real_Matrix,
-      Result_Matrix => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
+      Result_Matrix => BLAS.Double_Precision_Matrix,
       Operation     => To_Double_Precision);
 
    function To_Real is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Precision,
       Result_Scalar => Real_Arrays.Real'Base,
-      X_Matrix      => Interfaces.Fortran.BLAS.Double_Precision_Matrix,
+      X_Matrix      => BLAS.Double_Precision_Matrix,
       Result_Matrix => Real_Arrays.Real_Matrix,
       Operation     => To_Real);
 
@@ -129,14 +178,14 @@ package body Ada_Numerics.Generic_Arrays is
    --    (X_Scalar      => Complex,
    --     Result_Scalar => Interfaces.Fortran.Double_Complex,
    --     X_Vector      => Complex_Vector,
-   --     Result_Vector => Interfaces.Fortran.BLAS.Double_Complex_Vector,
+   --     Result_Vector => BLAS.Double_Complex_Vector,
    --     Operation     => To_Double_Complex);
 
    function To_Complex is new
      System.Generic_Array_Operations.Vector_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Complex,
       Result_Scalar => Complex_Arrays.Complex_Types.Complex,
-      X_Vector      => Interfaces.Fortran.BLAS.Double_Complex_Vector,
+      X_Vector      => BLAS.Double_Complex_Vector,
       Result_Vector => Complex_Arrays.Complex_Vector,
       Operation     => To_Complex);
 
@@ -145,14 +194,14 @@ package body Ada_Numerics.Generic_Arrays is
      (X_Scalar      => Complex_Arrays.Complex_Types.Complex,
       Result_Scalar => Interfaces.Fortran.Double_Complex,
       X_Matrix      => Complex_Arrays.Complex_Matrix,
-      Result_Matrix => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
+      Result_Matrix => BLAS.Double_Complex_Matrix,
       Operation     => To_Double_Complex);
 
    function To_Complex is new
      System.Generic_Array_Operations.Matrix_Elementwise_Operation
      (X_Scalar      => Interfaces.Fortran.Double_Complex,
       Result_Scalar => Complex_Arrays.Complex_Types.Complex,
-      X_Matrix      => Interfaces.Fortran.BLAS.Double_Complex_Matrix,
+      X_Matrix      => BLAS.Double_Complex_Matrix,
       Result_Matrix => Complex_Arrays.Complex_Matrix,
       Operation     => To_Complex);
 
@@ -756,29 +805,28 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       else
          declare
-            package IFB renames Interfaces.Fortran.BLAS;
             procedure zgeev
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out IFB.Double_Complex_Matrix;
+               A      : in out BLAS.Double_Complex_Matrix;
                Ld_A   :        Positive;
-               W      :    out IFB.Double_Complex_Vector;
-               V_L    :    out IFB.Double_Complex_Matrix;
+               W      :    out BLAS.Double_Complex_Vector;
+               V_L    :    out BLAS.Double_Complex_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out IFB.Double_Complex_Matrix;
+               V_R    :    out BLAS.Double_Complex_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out IFB.Double_Complex_Vector;
+               Work   :    out BLAS.Double_Complex_Vector;
                L_Work :        Integer;
-               R_Work :    out IFB.Double_Complex_Vector;
+               R_Work :    out BLAS.Double_Complex_Vector;
                Info   :    out Integer);
             pragma Import (Fortran, zgeev, "zgeev_");
-            F_A : IFB.Double_Complex_Matrix := To_Double_Complex (A);
-            F_W : IFB.Double_Complex_Vector (W'Range);
-            F_V_L : IFB.Double_Complex_Matrix (V_L'Range (1), V_L'Range (2));
-            F_V_R : IFB.Double_Complex_Matrix (V_R'Range (1), V_R'Range (2));
-            F_Querying_Work : IFB.Double_Complex_Vector (1 .. 1);
-            F_R_Work : IFB.Double_Complex_Vector (1 .. 2 * A'Length (1));
+            F_A : BLAS.Double_Complex_Matrix := To_Double_Complex (A);
+            F_W : BLAS.Double_Complex_Vector (W'Range);
+            F_V_L : BLAS.Double_Complex_Matrix (V_L'Range (1), V_L'Range (2));
+            F_V_R : BLAS.Double_Complex_Matrix (V_R'Range (1), V_R'Range (2));
+            F_Querying_Work : BLAS.Double_Complex_Vector (1 .. 1);
+            F_R_Work : BLAS.Double_Complex_Vector (1 .. 2 * A'Length (1));
          begin
             --  Query the optimum size of the Work vector
             zgeev (Jobv_L, Jobv_R,
@@ -791,7 +839,7 @@ package body Ada_Numerics.Generic_Arrays is
                    Info);
             declare
                F_Local_Work :
-                 IFB.Double_Complex_Vector
+                 BLAS.Double_Complex_Vector
                  (1 .. Integer (F_Querying_Work (1).Re));
             begin
                zgeev (Jobv_L, Jobv_R,
@@ -909,29 +957,30 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       else
          declare
-            package IFB renames Interfaces.Fortran.BLAS;
             procedure dgeev
               (Jobv_L :        Character;
                Jobv_R :        Character;
                N      :        Positive;
-               A      : in out IFB.Double_Precision_Matrix;
+               A      : in out BLAS.Double_Precision_Matrix;
                Ld_A   :        Positive;
-               W_R    :    out IFB.Double_Precision_Vector;
-               W_I    :    out IFB.Double_Precision_Vector;
-               V_L    :    out IFB.Double_Precision_Matrix;
+               W_R    :    out BLAS.Double_Precision_Vector;
+               W_I    :    out BLAS.Double_Precision_Vector;
+               V_L    :    out BLAS.Double_Precision_Matrix;
                Ld_V_L :        Integer;
-               V_R    :    out IFB.Double_Precision_Matrix;
+               V_R    :    out BLAS.Double_Precision_Matrix;
                Ld_V_R :        Integer;
-               Work   :    out IFB.Double_Precision_Vector;
+               Work   :    out BLAS.Double_Precision_Vector;
                L_Work :        Integer;
                Info   :    out Integer);
             pragma Import (Fortran, dgeev, "dgeev_");
-            F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
-            F_W_R : IFB.Double_Precision_Vector (W_R'Range);
-            F_W_I : IFB.Double_Precision_Vector (W_I'Range);
-            F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1), V_L'Range (2));
-            F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1), V_R'Range (2));
-            F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
+            F_A : BLAS.Double_Precision_Matrix := To_Double_Precision (A);
+            F_W_R : BLAS.Double_Precision_Vector (W_R'Range);
+            F_W_I : BLAS.Double_Precision_Vector (W_I'Range);
+            F_V_L : BLAS.Double_Precision_Matrix (V_L'Range (1),
+                                                  V_L'Range (2));
+            F_V_R : BLAS.Double_Precision_Matrix (V_R'Range (1),
+                                                  V_R'Range (2));
+            F_Querying_Work : BLAS.Double_Precision_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             dgeev (Jobv_L, Jobv_R,
@@ -943,7 +992,7 @@ package body Ada_Numerics.Generic_Arrays is
                    Info);
             declare
                F_Local_Work :
-                 IFB.Double_Precision_Vector
+                 BLAS.Double_Precision_Vector
                  (1 .. Integer (F_Querying_Work (1)));
             begin
                dgeev (Jobv_L, Jobv_R,
@@ -1078,36 +1127,35 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       else
          declare
-            package IFB renames Interfaces.Fortran.BLAS;
             procedure zggev
               (Jobv_L  :        Character;
                Jobv_R  :        Character;
                N       :        Positive;
-               A       : in out IFB.Double_Complex_Matrix;
+               A       : in out BLAS.Double_Complex_Matrix;
                Ld_A    :        Positive;
-               B       : in out IFB.Double_Complex_Matrix;
+               B       : in out BLAS.Double_Complex_Matrix;
                Ld_B    :        Positive;
-               Alpha   :    out IFB.Double_Complex_Vector;
-               Beta    :    out IFB.Double_Complex_Vector;
-               V_L     :    out IFB.Double_Complex_Matrix;
+               Alpha   :    out BLAS.Double_Complex_Vector;
+               Beta    :    out BLAS.Double_Complex_Vector;
+               V_L     :    out BLAS.Double_Complex_Matrix;
                Ld_V_L  :        Integer;
-               V_R     :    out IFB.Double_Complex_Matrix;
+               V_R     :    out BLAS.Double_Complex_Matrix;
                Ld_V_R  :        Integer;
-               Work    :    out IFB.Double_Complex_Vector;
+               Work    :    out BLAS.Double_Complex_Vector;
                L_Work  :        Integer;
-               R_Work  :    out IFB.Double_Precision_Vector;
+               R_Work  :    out BLAS.Double_Precision_Vector;
                Info    :    out Integer);
             pragma Import (Fortran, zggev, "zggev_");
-            F_A : IFB.Double_Complex_Matrix := To_Double_Complex (A);
-            F_B : IFB.Double_Complex_Matrix := To_Double_Complex (B);
-            F_Alpha : IFB.Double_Complex_Vector (Alpha'Range);
-            F_Beta : IFB.Double_Complex_Vector (Beta'Range);
-            F_V_L : IFB.Double_Complex_Matrix (V_L'Range (1),
+            F_A : BLAS.Double_Complex_Matrix := To_Double_Complex (A);
+            F_B : BLAS.Double_Complex_Matrix := To_Double_Complex (B);
+            F_Alpha : BLAS.Double_Complex_Vector (Alpha'Range);
+            F_Beta : BLAS.Double_Complex_Vector (Beta'Range);
+            F_V_L : BLAS.Double_Complex_Matrix (V_L'Range (1),
                                                V_L'Range (2));
-            F_V_R : IFB.Double_Complex_Matrix (V_R'Range (1),
+            F_V_R : BLAS.Double_Complex_Matrix (V_R'Range (1),
                                                V_R'Range (2));
-            F_Querying_Work : IFB.Double_Complex_Vector (1 .. 1);
-            R_Work : IFB.Double_Precision_Vector (1 .. 8 * A'Length (1));
+            F_Querying_Work : BLAS.Double_Complex_Vector (1 .. 1);
+            R_Work : BLAS.Double_Precision_Vector (1 .. 8 * A'Length (1));
          begin
             --  Query the optimum size of the Work vector
             zggev (Jobv_L, Jobv_R,
@@ -1122,7 +1170,7 @@ package body Ada_Numerics.Generic_Arrays is
                    Info);
             declare
                F_Local_Work :
-                 IFB.Double_Complex_Vector
+                 BLAS.Double_Complex_Vector
                  (1 .. Integer (F_Querying_Work (1).Re));
             begin
                zggev (Jobv_L, Jobv_R,
@@ -1259,36 +1307,35 @@ package body Ada_Numerics.Generic_Arrays is
          end;
       else
          declare
-            package IFB renames Interfaces.Fortran.BLAS;
             procedure dggev
               (Jobv_L  :        Character;
                Jobv_R  :        Character;
                N       :        Positive;
-               A       : in out IFB.Double_Precision_Matrix;
+               A       : in out BLAS.Double_Precision_Matrix;
                Ld_A    :        Positive;
-               B       : in out IFB.Double_Precision_Matrix;
+               B       : in out BLAS.Double_Precision_Matrix;
                Ld_B    :        Positive;
-               Alpha_R :    out IFB.Double_Precision_Vector;
-               Alpha_I :    out IFB.Double_Precision_Vector;
-               Beta    :    out IFB.Double_Precision_Vector;
-               V_L     :    out IFB.Double_Precision_Matrix;
+               Alpha_R :    out BLAS.Double_Precision_Vector;
+               Alpha_I :    out BLAS.Double_Precision_Vector;
+               Beta    :    out BLAS.Double_Precision_Vector;
+               V_L     :    out BLAS.Double_Precision_Matrix;
                Ld_V_L  :        Integer;
-               V_R     :    out IFB.Double_Precision_Matrix;
+               V_R     :    out BLAS.Double_Precision_Matrix;
                Ld_V_R  :        Integer;
-               Work    :    out IFB.Double_Precision_Vector;
+               Work    :    out BLAS.Double_Precision_Vector;
                L_Work  :        Integer;
                Info    :    out Integer);
             pragma Import (Fortran, dggev, "dggev_");
-            F_A : IFB.Double_Precision_Matrix := To_Double_Precision (A);
-            F_B : IFB.Double_Precision_Matrix := To_Double_Precision (B);
-            F_Alpha_R : IFB.Double_Precision_Vector (Alpha_R'Range);
-            F_Alpha_I : IFB.Double_Precision_Vector (Alpha_I'Range);
-            F_Beta : IFB.Double_Precision_Vector (Beta'Range);
-            F_V_L : IFB.Double_Precision_Matrix (V_L'Range (1),
+            F_A : BLAS.Double_Precision_Matrix := To_Double_Precision (A);
+            F_B : BLAS.Double_Precision_Matrix := To_Double_Precision (B);
+            F_Alpha_R : BLAS.Double_Precision_Vector (Alpha_R'Range);
+            F_Alpha_I : BLAS.Double_Precision_Vector (Alpha_I'Range);
+            F_Beta : BLAS.Double_Precision_Vector (Beta'Range);
+            F_V_L : BLAS.Double_Precision_Matrix (V_L'Range (1),
                                                  V_L'Range (2));
-            F_V_R : IFB.Double_Precision_Matrix (V_R'Range (1),
+            F_V_R : BLAS.Double_Precision_Matrix (V_R'Range (1),
                                                  V_R'Range (2));
-            F_Querying_Work : IFB.Double_Precision_Vector (1 .. 1);
+            F_Querying_Work : BLAS.Double_Precision_Vector (1 .. 1);
          begin
             --  Query the optimum size of the Work vector
             dggev (Jobv_L, Jobv_R,
@@ -1303,7 +1350,7 @@ package body Ada_Numerics.Generic_Arrays is
                    Info);
             declare
                F_Local_Work :
-                 IFB.Double_Precision_Vector
+                 BLAS.Double_Precision_Vector
                  (1 .. Integer (F_Querying_Work (1)));
             begin
                dggev (Jobv_L, Jobv_R,

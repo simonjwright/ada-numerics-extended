@@ -1,7 +1,7 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
-2011mmdd
+2012mmdd
 
         The GNAT Project file is now in the top directory of the
         distribution.
@@ -16,6 +16,12 @@ This is the change log for the Ada 2005 Math Extensions project
 
         Testing on Debian 6 required an increase in the test limit for
         complex general eigenvalues tests for Float.
+
+        In GNAT GPL 2012 and GCC 4.7, LAPACK and BLAS are no longer
+        used, and therefore aren't provided as part of GNAT on
+        platforms where they aren't natively available. This package
+        requires LAPACK and BLAS to be installed (it links with
+        "-llapack -lblas").
 
 20110320
 
