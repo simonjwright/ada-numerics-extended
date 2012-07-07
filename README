@@ -14,7 +14,7 @@ Prerequisites
 BLAS and LAPACK are required to be on the library lookup path (so that
 the linker switches "-llapack -lblas" find them).
 
-On Mac OS X, they are part of the Accelerate framework.
+On Mac OS X, they are part of the vecLib framework.
 
 Installation
 ============
