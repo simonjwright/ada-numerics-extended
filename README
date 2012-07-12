@@ -51,6 +51,5 @@ GPR referencing the extensions' GPR, "gnat_math_extensions". Either
 Testing
 =======
 
-Unit tests are based on AUnit version 3
-(http://svn.eu.adacore.com/anonsvn/US/trunk/AUnit), which is expected
-to be installed.
+Unit tests are based on AUnit version 3 (part of GNAT GPL), which is
+expected to be installed.

@@ -12,6 +12,7 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
+with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases; use AUnit.Test_Cases;
 
 with Ada.Numerics.Generic_Real_Arrays;
@@ -238,6 +239,7 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       procedure Eigensystem_Constraints (C : in out Test_Case'Class)
       is
+         pragma Unreferenced (C);
          Good_Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
          Good_Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
@@ -250,7 +252,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Input_B,
                Values => Good_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (1)");
+            Assert (False, "should have raised Constraint_Error (1)");
          exception
             when Constraint_Error => null;
          end;
@@ -263,7 +265,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Bad_Input,
                Values => Good_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (2)");
+            Assert (False, "should have raised Constraint_Error (2)");
          exception
             when Constraint_Error => null;
          end;
@@ -277,7 +279,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Bad_Input,
                Values => Good_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (3)");
+            Assert (False, "should have raised Constraint_Error (3)");
          exception
             when Constraint_Error => null;
          end;
@@ -292,7 +294,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Bad_Input,
                Values => Good_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (4)");
+            Assert (False, "should have raised Constraint_Error (4)");
          exception
             when Constraint_Error => null;
          end;
@@ -305,7 +307,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Input_B,
                Values => Bad_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (5)");
+            Assert (False, "should have raised Constraint_Error (5)");
          exception
             when Constraint_Error => null;
          end;
@@ -319,7 +321,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Input_B,
                Values => Bad_Values,
                Vectors => Good_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (6)");
+            Assert (False, "should have raised Constraint_Error (6)");
          exception
             when Constraint_Error => null;
          end;
@@ -331,7 +333,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Input_B,
                Values => Good_Values,
                Vectors => Bad_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (7)");
+            Assert (False, "should have raised Constraint_Error (7)");
          exception
             when Constraint_Error => null;
          end;
@@ -344,7 +346,7 @@ package body Tests.Real_Generalized_Eigenvalues is
                B => Input_B,
                Values => Good_Values,
                Vectors => Bad_Vectors);
-            Assert (C, False, "should have raised Constraint_Error (8)");
+            Assert (False, "should have raised Constraint_Error (8)");
          exception
             when Constraint_Error => null;
          end;
@@ -352,6 +354,7 @@ package body Tests.Real_Generalized_Eigenvalues is
 
       procedure Eigensystem (C : in out Test_Case'Class)
       is
+         pragma Unreferenced (C);
          Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
          Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
@@ -362,11 +365,9 @@ package body Tests.Real_Generalized_Eigenvalues is
                                  Vectors => Vectors);
 
          for J in Values'Range loop
-            Assert (C,
-                    Modulus (Values (J).Alpha - Expected_Alphas (J)) <= Lim,
+            Assert (Modulus (Values (J).Alpha - Expected_Alphas (J)) <= Lim,
                     "incorrect Values.Alpha");
-            Assert (C,
-                    abs (Values (J).Beta.Re - Expected_Betas (J)) <= Lim,
+            Assert (abs (Values (J).Beta.Re - Expected_Betas (J)) <= Lim,
                     "incorrect Values.Beta");
          end loop;
 
@@ -384,8 +385,7 @@ package body Tests.Real_Generalized_Eigenvalues is
             K : Integer := Expected_Eigenvectors'First (2);
          begin
             loop
-               Assert (C,
-                       Close_Enough
+               Assert (Close_Enough
                          (Column (Vectors, J),
                           Column (Expected_Eigenvectors, K))
                          or else

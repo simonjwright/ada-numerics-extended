@@ -12,6 +12,7 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
+with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases; use AUnit.Test_Cases;
 
 with Ada.Numerics.Generic_Real_Arrays;
@@ -138,6 +139,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
 
          procedure Eigensystem_Constraints (C : in out Test_Case'Class)
          is
+            pragma Unreferenced (C);
             Good_Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
             Good_Vectors : Complex_Matrix (Input_A'Range (1),
                                            Input_A'Range (2));
@@ -151,7 +153,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (1)");
+               Assert (False, "should have raised Constraint_Error (1)");
             exception
                when Constraint_Error => null;
             end;
@@ -164,7 +166,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (2)");
+               Assert (False, "should have raised Constraint_Error (2)");
             exception
                when Constraint_Error => null;
             end;
@@ -178,7 +180,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (3)");
+               Assert (False, "should have raised Constraint_Error (3)");
             exception
                when Constraint_Error => null;
             end;
@@ -193,7 +195,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (4)");
+               Assert (False, "should have raised Constraint_Error (4)");
             exception
                when Constraint_Error => null;
             end;
@@ -206,7 +208,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Bad_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (5)");
+               Assert (False, "should have raised Constraint_Error (5)");
             exception
                when Constraint_Error => null;
             end;
@@ -220,7 +222,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Bad_Values,
                   Vectors => Good_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (6)");
+               Assert (False, "should have raised Constraint_Error (6)");
             exception
                when Constraint_Error => null;
             end;
@@ -232,7 +234,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Bad_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (7)");
+               Assert (False, "should have raised Constraint_Error (7)");
             exception
                when Constraint_Error => null;
             end;
@@ -245,7 +247,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Bad_Vectors);
-               Assert (C, False, "should have raised Constraint_Error (8)");
+               Assert (False, "should have raised Constraint_Error (8)");
             exception
                when Constraint_Error => null;
             end;
@@ -253,6 +255,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
 
          procedure Eigensystem_Results (C : in out Test_Case'Class)
          is
+            pragma Unreferenced (C);
             Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
             Vectors : Complex_Matrix (Input_A'Range (1), Input_A'Range (2));
          begin
@@ -273,12 +276,10 @@ package body Tests.Complex_Generalized_Eigenvalues is
                      Alphas (J) := Alphas (J) / Betas (J);
                   end if;
                end loop;
-               Assert (C,
-                       Close_Enough (Alphas, Expected_Alphas, Limit),
+               Assert (Close_Enough (Alphas, Expected_Alphas, Limit),
                        "incorrect Values.Alpha");
                if Expected_Betas'Length /= 0 then
-                  Assert (C,
-                          Close_Enough (Betas, Expected_Betas, Limit),
+                  Assert (Close_Enough (Betas, Expected_Betas, Limit),
                           "incorrect Values.Beta");
                end if;
             end;
@@ -299,7 +300,7 @@ package body Tests.Complex_Generalized_Eigenvalues is
                      Test_OK := False;
                   end if;
                end loop;
-               Assert (C, Test_OK, "incorrect vectors");
+               Assert (Test_OK, "incorrect vectors");
             end;
 
          end Eigensystem_Results;
