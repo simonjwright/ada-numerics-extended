@@ -12,8 +12,8 @@
 #
 #  Copyright Simon Wright <simon@pushface.org>
 
-# This Makefile is distributed with the Ada 2005 Math Extensions
-# package.
+# This Makefile is part of the Ada 2005 Math Extensions package, and
+# is used to construct releases and upload the documentation..
 
 all::
 
@@ -64,4 +64,25 @@ gnat-math-extn-$(DATE): $(DISTRIBUTION_FILES)
 	mkdir $@
 	tar cf - $^ | tar xvf - -C $@
 
-.PHONY: dist
+
+# Documentation upload to SF
+
+SFUSER ?= simonjwright
+
+upload-docs:
+	rsync \
+	  --compress \
+	  --copy-unsafe-links \
+	  --cvs-exclude \
+	  --delete \
+	  --perms \
+	  --recursive \
+	  --rsh=ssh \
+	  --times \
+	  --update \
+	  --verbose \
+	  doc/*.{css,html} \
+	  $(SFUSER),gnat-math-extn@web.sourceforge.net:htdocs/index.html
+
+
+.PHONY: dist upload-docs
