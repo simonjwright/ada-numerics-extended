@@ -12,7 +12,7 @@
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
-with Ada.Assertions; use Ada.Assertions;
+with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases; use AUnit.Test_Cases;
 
 with Ada.Numerics.Generic_Real_Arrays;
