@@ -1,6 +1,17 @@
 This is the change log for the Ada 2005 Math Extensions project
 (https://sourceforge.net/projects/gnat-math-extn/) on SourceForge.
 
+20130529
+
+        Packages Ada_Numerics.Float_Arrays and .Long_Float_Arrays are
+        provided; they are instantiations of .Generic_Arrays for the
+        standard Float and Long_Float types.
+
+        The packages are declared Pure.
+
+        The code is compatible with GNAT GPL 2013 (a minor change was
+        required to avoid a compilation warning).
+
 20120712
 
         The GNAT Project file is now in the top directory of the
