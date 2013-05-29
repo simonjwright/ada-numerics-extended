@@ -308,7 +308,8 @@ package body Ada_Numerics.Generic_Arrays is
 
       Working_A : Complex_Arrays.Complex_Matrix (A'Range (2), A'Range (1));
       Result : Complex_Arrays.Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Complex_Arrays.Complex_Matrix (1 .. 1, 1 .. 1);
+      Dummy_L_Eigenvectors, Dummy_R_Eigenvectors :
+        Complex_Arrays.Complex_Matrix (1 .. 1, 1 .. 1); -- avoid warning
       Info : Integer;
 
    begin
@@ -322,8 +323,8 @@ package body Ada_Numerics.Generic_Arrays is
       Complex_geev (Jobv_L => 'N', Jobv_R => 'N',
                     A => Working_A,
                     W => Result,
-                    V_L => Dummy_Eigenvectors,
-                    V_R => Dummy_Eigenvectors,
+                    V_L => Dummy_L_Eigenvectors,
+                    V_R => Dummy_R_Eigenvectors,
                     Info => Info);
 
       if Info /= 0 then
@@ -397,7 +398,8 @@ package body Ada_Numerics.Generic_Arrays is
       Working_A : Real_Arrays.Real_Matrix (A'Range (2), A'Range (1));
       W_R, W_I : Real_Arrays.Real_Vector (A'Range (1));
       Result : Complex_Arrays.Complex_Vector (A'Range (1));
-      Dummy_Eigenvectors : Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1);
+      Dummy_L_Eigenvectors, Dummy_R_Eigenvectors :
+        Real_Arrays.Real_Matrix (1 .. 1, 1 .. 1); -- avoid overlap warning
       Info : Integer;
 
    begin
@@ -412,8 +414,8 @@ package body Ada_Numerics.Generic_Arrays is
                  A => Working_A,
                  W_R => W_R,
                  W_I => W_I,
-                 V_L => Dummy_Eigenvectors,
-                 V_R => Dummy_Eigenvectors,
+                 V_L => Dummy_L_Eigenvectors,
+                 V_R => Dummy_R_Eigenvectors,
                  Info => Info);
 
       if Info /= 0 then
