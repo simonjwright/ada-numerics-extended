@@ -370,7 +370,8 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2) then
+        or Vectors'First (2) /= A'First (2)
+      then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
 
@@ -467,7 +468,8 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2) then
+        or Vectors'First (2) /= A'First (2)
+      then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
 
@@ -590,7 +592,8 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2) then
+        or Vectors'First (2) /= A'First (2)
+      then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
 
@@ -667,7 +670,8 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2) then
+        or Vectors'First (2) /= A'First (2)
+      then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
 
