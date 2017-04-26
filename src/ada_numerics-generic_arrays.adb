@@ -523,8 +523,10 @@ package body Ada_Numerics.Generic_Arrays is
                end loop;
                C := C + 1;
             else
-               pragma Assert (W_I (C) = -W_I (C + 1),
-                              "eigenvalue pair is not complex conjugate");
+               if W_I (C) /= -W_I (C + 1) then
+                  raise Constraint_Error
+                    with "eigenvalue pair is not complex conjugate";
+               end if;
                for K in Vectors'Range (1) loop
                   Vectors (K, J) := (Working_R_Eigenvectors (J, K),
                                      Working_R_Eigenvectors (J + 1, K));
@@ -534,8 +536,9 @@ package body Ada_Numerics.Generic_Arrays is
                C := C + 2;
             end if;
 
-            pragma Assert (C <= Values'Last + 1,
-                           "ran off end of eigenvalues");
+            if C > Values'Last + 1 then
+               raise Program_Error with "ran off end of eigenvalues";
+            end if;
 
             exit when C > Values'Last;
 
@@ -559,7 +562,7 @@ package body Ada_Numerics.Generic_Arrays is
         Complex_Arrays.Complex_Matrix (Vectors'Range (2), Vectors'Range (1));
       Info : Integer;
 
-      --  use type Complex_Arrays.Complex;
+      use type Real_Arrays.Real;
 
    begin
 
@@ -626,7 +629,7 @@ package body Ada_Numerics.Generic_Arrays is
      (A       :     Real_Arrays.Real_Matrix;
       B       :     Real_Arrays.Real_Matrix;
       Values  : out Generalized_Eigenvalue_Vector;
-      Vectors : out Real_Arrays.Real_Matrix)
+      Vectors : out Complex_Arrays.Complex_Matrix)
    is
 
       Working_A, Working_B :
@@ -699,7 +702,63 @@ package body Ada_Numerics.Generic_Arrays is
                                   Im => 0.0));
       end loop;
 
-      Transpose (Working_R_Eigenvectors, Vectors);
+      --  This is from the man page for SGGEV:
+      --
+      --  VL is REAL array, dimension (LDVL,N)
+      --  If JOBVL = 'V', the left eigenvectors u(j) are stored one
+      --  after another in the columns of VL, in the same order as
+      --  their eigenvalues. If the j-th eigenvalue is real, then
+      --  u(j) = VL(:,j), the j-th column of VL. If the j-th and
+      --  (j+1)-th eigenvalues form a complex conjugate pair, then
+      --  u(j) = VL(:,j)+i*VL(:,j+1) and u(j+1) = VL(:,j)-i*VL(:,j+1).
+      declare
+
+         --  The current Value
+         C : Integer := Values'First;
+
+         --  We leave Working_R_Eigenvectors in Fortran order, so the
+         --  row/column indices are transposed.
+         --
+         --  The result of this is that the 'column' index in the
+         --  working matrix has to be adjusted to the corresponding
+         --  'row' index range.
+         J : Integer;
+
+      begin
+         loop
+
+            J := C - Vectors'First (1) + Vectors'First (2);
+
+            if Values (C).Alpha.Im = 0.0 then
+               for K in Vectors'Range (1) loop
+                  Vectors (K, J) := (Working_R_Eigenvectors (J, K), 0.0);
+               end loop;
+               C := C + 1;
+            else
+               if Values (C).Alpha.Im /= -Values (C + 1).Alpha.Im then
+                  --  It's lambda = alpha/beta that mkes the complex
+                  --  conjugate; but what if beta is zero?
+                  null;
+                  --  raise Constraint_Error
+                  --    with "eigenvalue pair is not complex conjugate";
+               end if;
+               for K in Vectors'Range (1) loop
+                  Vectors (K, J) := (Working_R_Eigenvectors (J, K),
+                                     Working_R_Eigenvectors (J + 1, K));
+                  Vectors (K, J + 1) := (Working_R_Eigenvectors (J, K),
+                                         -Working_R_Eigenvectors (J + 1, K));
+               end loop;
+               C := C + 2;
+            end if;
+
+            if C > Values'Last + 1 then
+               raise Program_Error with "ran off end of eigenvalues";
+            end if;
+
+            exit when C > Values'Last;
+
+         end loop;
+      end;
 
    end Eigensystem;
 

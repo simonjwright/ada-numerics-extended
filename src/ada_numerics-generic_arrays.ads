@@ -112,6 +112,6 @@ package Ada_Numerics.Generic_Arrays is
      (A       :     Real_Arrays.Real_Matrix;
       B       :     Real_Arrays.Real_Matrix;
       Values  : out Generalized_Eigenvalue_Vector;
-      Vectors : out Real_Arrays.Real_Matrix);
+      Vectors : out Complex_Arrays.Complex_Matrix);
 
 end Ada_Numerics.Generic_Arrays;

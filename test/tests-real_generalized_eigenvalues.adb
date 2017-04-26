@@ -25,6 +25,8 @@ with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 pragma Warnings (Off, Ada.Text_IO);
 pragma Warnings (Off, Ada.Text_IO.Complex_IO);
 
+with LAPACK_Version;
+
 package body Tests.Real_Generalized_Eigenvalues is
 
    generic
@@ -80,7 +82,7 @@ package body Tests.Real_Generalized_Eigenvalues is
       is new Ada_Numerics.Generic_Arrays (Complex_Arrays);
 
       subtype Generalized_Eigenvalue_Vector
-         is Extensions.Generalized_Eigenvalue_Vector;
+        is Extensions.Generalized_Eigenvalue_Vector;
 
       package Real_IO is new Float_IO (Real);
       package My_Complex_IO is new Complex_IO (Complex_Types);
@@ -99,149 +101,105 @@ package body Tests.Real_Generalized_Eigenvalues is
       --  subprogram gives differences of this size.
       Lim : constant Real := Float'Model_Epsilon * 30.0;
 
-      function Close_Enough (L, R : Real_Vector) return Boolean;
-      function Column (V : Real_Matrix; C : Integer) return Real_Vector;
+      function Close_Enough (L, R : Complex_Vector) return Boolean;
+      function Column (V : Complex_Matrix; C : Integer) return Complex_Vector;
 
       --  The values in Input_A, Input_B, Expected_Alphas,
       --  Expected_Betas, Expected_Eigenvectors were derived from a
       --  run of sggev_generator.
+      --
+      --  Note that the expected results changed at LAPACK 3.5.0!
 
       Input_A : constant Real_Matrix (3 .. 8, 13 .. 18) :=
         ((  0.99755955     ,
-            0.96591532     ,
-            0.36739087     ,
-            7.37542510E-02 ,
-            0.34708124     ,
-            0.21795171     ),
+         0.96591532     ,
+         0.36739087     ,
+         7.37542510E-02 ,
+         0.34708124     ,
+         0.21795171     ),
          (  0.90052450     ,
-            0.44548225     ,
-            1.61082745E-02 ,
-            0.64640880     ,
-            0.85569239     ,
-            0.20687431     ),
+          0.44548225     ,
+          1.61082745E-02 ,
+          0.64640880     ,
+          0.85569239     ,
+          0.20687431     ),
          (  0.59839952     ,
-            0.45688230     ,
-            0.10038292     ,
-            0.60569322     ,
-            0.89733458     ,
-            0.15071678     ),
+          0.45688230     ,
+          0.10038292     ,
+          0.60569322     ,
+          0.89733458     ,
+          0.15071678     ),
          (  0.97866023     ,
-            0.25679797     ,
-            0.65904748     ,
-            0.97776008     ,
-            0.65792465     ,
-            0.40245521     ),
+          0.25679797     ,
+          0.65904748     ,
+          0.97776008     ,
+          0.65792465     ,
+          0.40245521     ),
          (  0.14783514     ,
-            0.76961428     ,
-            0.11581880     ,
-            0.82061714     ,
-            0.73112863     ,
-            0.37480170     ),
+          0.76961428     ,
+          0.11581880     ,
+          0.82061714     ,
+          0.73112863     ,
+          0.37480170     ),
          (  0.55290300     ,
-            0.99039471     ,
-            0.95375901     ,
-            0.73402363     ,
-            0.94684845     ,
-            0.81380963     ));
+          0.99039471     ,
+          0.95375901     ,
+          0.73402363     ,
+          0.94684845     ,
+          0.81380963     ));
 
       Input_B : constant Real_Matrix (Input_A'Range (1), Input_A'Range (2)) :=
         ((  0.56682467     ,
-            0.74792767     ,
-            0.48063689     ,
-            5.35517931E-03 ,
-            0.34224379     ,
-            0.13316035     ),
+         0.74792767     ,
+         0.48063689     ,
+         5.35517931E-03 ,
+         0.34224379     ,
+         0.13316035     ),
          (  0.38676596     ,
-            0.66193217     ,
-            0.65085483     ,
-            0.32298726     ,
-            0.40128690     ,
-            0.96853942     ),
+          0.66193217     ,
+          0.65085483     ,
+          0.32298726     ,
+          0.40128690     ,
+          0.96853942     ),
          (  0.67298073     ,
-            0.33001512     ,
-            0.75545329     ,
-            0.71904790     ,
-            0.65822911     ,
-            0.61231488     ),
+          0.33001512     ,
+          0.75545329     ,
+          0.71904790     ,
+          0.65822911     ,
+          0.61231488     ),
          (  0.99914223     ,
-            0.55086535     ,
-            0.55400509     ,
-            0.90192330     ,
-            0.72885847     ,
-            0.92862761     ),
+          0.55086535     ,
+          0.55400509     ,
+          0.90192330     ,
+          0.72885847     ,
+          0.92862761     ),
          (  0.67452925     ,
-            0.33932251     ,
-            0.61436915     ,
-            0.94709462     ,
-            0.49760389     ,
-            0.42150581     ),
+          0.33932251     ,
+          0.61436915     ,
+          0.94709462     ,
+          0.49760389     ,
+          0.42150581     ),
          (  0.99791926     ,
-            0.74630964     ,
-            9.32746530E-02 ,
-            0.75176162     ,
-            0.70617634     ,
-            0.55859447     ));
+          0.74630964     ,
+          9.32746530E-02 ,
+          0.75176162     ,
+          0.70617634     ,
+          0.55859447     ));
 
-      Expected_Alphas : constant Complex_Vector (Input_A'Range (1)) :=
-        ((   1.0014051     ,   0.0000000     ),
-         ( -0.82248443     ,   0.0000000     ),
-         (  0.30849504     ,  0.26451489     ),
-         (  0.23517229     , -0.20164527     ),
-         (   1.4168590     ,   0.0000000     ),
-         (  0.43298730     ,   0.0000000     ));
+      --  Expected values are computed at package elaboration.
 
-      Expected_Betas : constant Real_Vector (Input_A'Range (1)) :=
-        ((  0.22170286     ),
-         (  0.73826897     ),
-         (  0.77807158     ),
-         (  0.59314036     ),
-         (   1.0982305     ),
-         (  0.23963201     ));
+      Expected_Alphas : Complex_Vector (Input_A'Range (1));
 
-      Expected_Eigenvectors : constant Real_Matrix (Input_A'Range (1),
-                                                    Input_B'Range (2)) :=
-        (( -1.0000000      ,
-           -0.49656805     ,
-            0.20049269     ,
-           -5.11029027E-02 ,
-           -3.50931920E-02 ,
-            0.55600142     ),
-         (  0.48818636     ,
-           -5.67028634E-02 ,
-           -0.37043244     ,
-           -6.61318377E-02 ,
-           -1.0000000      ,
-           -0.51956600     ),
-         ( -0.12512936     ,
-            1.0000000      ,
-           -0.27180523     ,
-            0.15255395     ,
-           -0.22950920     ,
-            5.55792861E-02 ),
-         (  0.67680043     ,
-           -0.20100972     ,
-           -8.27410221E-02 ,
-            0.17690741     ,
-           -0.52802014     ,
-           -1.0000000     ),
-         (  0.62804544     ,
-           -8.34040195E-02 ,
-            8.45926255E-02 ,
-            0.12979619     ,
-            0.41286322     ,
-            0.32229346     ),
-         ( -0.28328142     ,
-            0.23168407     ,
-            0.76369429     ,
-           -0.23630577     ,
-            0.57704848     ,
-            0.27017081     ));
+      Expected_Betas : Real_Vector (Input_A'Range (1));
+
+      Expected_Eigenvectors : Complex_Matrix (Input_A'Range (1),
+                                              Input_B'Range (2));
 
       procedure Eigensystem_Constraints (C : in out Test_Case'Class)
       is
          pragma Unreferenced (C);
          Good_Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
-         Good_Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
+         Good_Vectors : Complex_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
          declare
             Bad_Input : constant Real_Matrix (1 .. 2, 1 .. 3)
@@ -287,7 +245,7 @@ package body Tests.Real_Generalized_Eigenvalues is
             Bad_Input : constant Real_Matrix
               (Input_A'First (1) .. Input_A'Last (1) - 1,
                Input_A'First (2) .. Input_A'Last (2) - 1)
-              := (others => (others => 0.0));
+                := (others => (others => 0.0));
          begin
             Extensions.Eigensystem
               (A => Input_A,
@@ -300,7 +258,7 @@ package body Tests.Real_Generalized_Eigenvalues is
          end;
          declare
             Bad_Values :
-              Generalized_Eigenvalue_Vector (1 .. Input_A'Length (1));
+            Generalized_Eigenvalue_Vector (1 .. Input_A'Length (1));
          begin
             Extensions.Eigensystem
               (A => Input_A,
@@ -313,7 +271,7 @@ package body Tests.Real_Generalized_Eigenvalues is
          end;
          declare
             Bad_Values :
-              Generalized_Eigenvalue_Vector
+            Generalized_Eigenvalue_Vector
               (Input_A'First (1) .. Input_A'Last (1) - 1);
          begin
             Extensions.Eigensystem
@@ -326,7 +284,7 @@ package body Tests.Real_Generalized_Eigenvalues is
             when Constraint_Error => null;
          end;
          declare
-            Bad_Vectors : Real_Matrix (1 .. 2, 1 .. 3);
+            Bad_Vectors : Complex_Matrix (1 .. 2, 1 .. 3);
          begin
             Extensions.Eigensystem
               (A => Input_A,
@@ -338,7 +296,7 @@ package body Tests.Real_Generalized_Eigenvalues is
             when Constraint_Error => null;
          end;
          declare
-            Bad_Vectors : Real_Matrix (1 .. Input_A'Length (1),
+            Bad_Vectors : Complex_Matrix (1 .. Input_A'Length (1),
                                           1 .. Input_A'Length (2));
          begin
             Extensions.Eigensystem
@@ -356,7 +314,7 @@ package body Tests.Real_Generalized_Eigenvalues is
       is
          pragma Unreferenced (C);
          Values : Generalized_Eigenvalue_Vector (Input_A'Range (1));
-         Vectors : Real_Matrix (Input_A'Range (1), Input_A'Range (2));
+         Vectors : Complex_Matrix (Input_A'Range (1), Input_A'Range (2));
       begin
 
          Extensions.Eigensystem (A => Input_A,
@@ -385,27 +343,46 @@ package body Tests.Real_Generalized_Eigenvalues is
             K : Integer := Expected_Eigenvectors'First (2);
          begin
             loop
-               Assert (Close_Enough
-                         (Column (Vectors, J),
-                          Column (Expected_Eigenvectors, K))
-                         or else
-                         Close_Enough
-                         (Column (Vectors, J),
-                          -Column (Expected_Eigenvectors, K)),
-                       "incorrect vector " & K'Img);
-               exit when J = Vectors'Last (2);
-               J := J + 1;
-               K := K + 1;
+               declare
+                  Actual : constant Complex_Vector
+                    := Column (Vectors, J);
+                  Expected : constant Complex_Vector
+                    := Column (Expected_Eigenvectors, K);
+               begin
+                  Assert (Close_Enough (Actual, Expected)
+                          or else
+                          Close_Enough (Actual, -Expected),
+                          "incorrect vector " & K'Img);
+                  exit when J = Vectors'Last (2);
+                  J := J + 1;
+                  K := K + 1;
+               end;
             end loop;
          end;
 
       end Eigensystem;
 
+      function Close_Enough (L, R : Complex_Vector) return Boolean
+      is
+      begin
+         if L'Length /= R'Length then
+            raise Constraint_Error with "Close_Enough: different lengths";
+         end if;
+         for J in L'Range loop
+            if abs (L (J).Re - R (J - L'First + R'First).Re) > Lim
+              or abs (L (J).Im - R (J - L'First + R'First).Im) > Lim
+            then
+               return False;
+            end if;
+         end loop;
+         return True;
+      end Close_Enough;
+
       function Close_Enough (L, R : Real_Vector) return Boolean
       is
       begin
          if L'Length /= R'Length then
-             raise Constraint_Error with "Close_Enough: different lengths";
+            raise Constraint_Error with "Close_Enough: different lengths";
          end if;
          for J in L'Range loop
             if abs (L (J) - R (J - L'First + R'First)) > Lim then
@@ -414,6 +391,16 @@ package body Tests.Real_Generalized_Eigenvalues is
          end loop;
          return True;
       end Close_Enough;
+
+      function Column (V : Complex_Matrix; C : Integer) return Complex_Vector
+      is
+         Result : Complex_Vector (V'Range (1));
+      begin
+         for J in V'Range (1) loop
+            Result (J) := V (J, C);
+         end loop;
+         return Result;
+      end Column;
 
       function Column (V : Real_Matrix; C : Integer) return Real_Vector
       is
@@ -425,6 +412,116 @@ package body Tests.Real_Generalized_Eigenvalues is
          return Result;
       end Column;
 
+   begin
+      if LAPACK_Version < 30500 then
+         Expected_Alphas :=
+           ((   1.00140500     ,   0.00000000     ),
+            ( -0.822484076     ,   0.00000000     ),
+            (  0.308495104     ,  0.264515132     ),
+            (  0.235172346     , -0.201645479     ),
+            (   1.41685843     ,   0.00000000     ),
+            (  0.432987601     ,   0.00000000     ));
+
+         Expected_Betas :=
+           ((  0.221702680     ),
+            (  0.738268852     ),
+            (  0.778071642     ),
+            (  0.593140483     ),
+            (   1.09822965     ),
+            (  0.239632174     ));
+
+         Expected_Eigenvectors :=
+           (((-1.00000000, 0.0),
+             (-0.496568143, 0.0),
+             (0.200492918, -5.11028878E-02),
+             (0.200492918, 5.11028878E-02),
+             (-3.50932032E-02, 0.0),
+             (0.556000769, 0.0)),
+            ((0.488186270, 0.0),
+             (-5.67027591E-02, 0.0),
+             (-0.370432556, -6.61318526E-02),
+             (-0.370432556, 6.61318526E-02),
+             (-1.00000000, 0.0),
+             (-0.519566178, 0.0)),
+            ((-0.125129744, 0.0),
+             (1.00000000, 0.0),
+             (-0.27180528, 0.152554125),
+             (-0.27180528, -0.152554125),
+             (-0.229509324, 0.0),
+             (5.55794686E-02, 0.0)),
+            ((0.676800549, 0.0),
+             (-0.201009586, 0.0),
+             (-8.27412680E-02, 0.176907450),
+             (-8.27412680E-02, -0.176907450),
+             (-0.528019786, 0.0),
+             (-1.00000000, 0.0)),
+            ((0.628045917, 0.0),
+             (-8.34041759E-02, 0.0),
+             (8.45926031E-02, 0.129796341),
+             (8.45926031E-02, -0.129796341),
+             (0.412864298, 0.0),
+             (0.322295547, 0.0)),
+            ((-0.283281505, 0.0),
+             (0.231684163, 0.0),
+             (0.763694108, -0.236305878),
+             (0.763694108, 0.236305878),
+             (0.577049077, 0.0),
+             (0.270170867, 0.0)));
+      else
+         Expected_Alphas :=
+           ((   1.00140440     ,   0.00000000     ),
+            ( -0.822484553     ,   0.00000000     ),
+            (  0.308494955     ,  0.264514446     ),
+            (  0.235172167     , -0.201644912     ),
+            (  0.284790188     ,   0.00000000     ),
+            (   2.15415454     ,   0.00000000     ));
+
+         Expected_Betas :=
+           ((  0.221702456     ),
+            (  0.738268673     ),
+            (  0.778071404     ),
+            (  0.593140125     ),
+            (  0.157614022     ),
+            (   1.66972101     ));
+
+         Expected_Eigenvectors :=
+           (((-1.00000000, 0.0),
+             (-0.496568412, 0.0),
+             (0.200492606, -5.11028580E-02),
+             (0.200492606, 5.11028580E-02),
+             (0.556000769, 0.0),
+             (3.50940190E-02, 0.0)),
+            ((0.488185912, 0.0),
+             (-5.67027628E-02, 0.0),
+             (-0.370432585, -6.61318600E-02),
+             (-0.370432585, 6.61318600E-02),
+             (-0.519566774, 0.0),
+             (1.00000000, 0.0)),
+            ((-0.125129789, 0.0),
+             (1.00000000, 0.0),
+             (-0.271805733, 0.152553663),
+             (-0.271805733, -0.152553663),
+             (5.55791818E-02, 0.0),
+             (0.229510009, 0.0)),
+            ((0.676800013, 0.0),
+             (-0.201009721, 0.0),
+             (-8.27407986E-02, 0.176907077),
+             (-8.27407986E-02, -0.176907077),
+             (-1.00000000, 0.0),
+             (0.528018117, 0.0)),
+            ((0.628045678, 0.0),
+             (-8.34040344E-02, 0.0),
+             (8.45923871E-02, 0.129796267),
+             (8.45923871E-02, -0.129796267),
+             (0.322295755, 0.0),
+             (-0.412863880, 0.0)),
+            ((-0.283280969, 0.0),
+             (0.231684491, 0.0),
+             (0.763694644, -0.236305326),
+             (0.763694644, 0.236305326),
+             (0.270171165, 0.0),
+             (-0.577049255, 0.0)));
+        end if;
    end Tests_G;
 
    package Single_Tests is new Tests_G (Float, "Float");

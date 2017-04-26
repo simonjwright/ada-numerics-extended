@@ -38,7 +38,7 @@ project GNAT_Math_Extensions is
    end Compiler;
 
    package Linker is
-      for Linker_Options use ("-llapack", "-lblas");
+      for Linker_Options use ("-llapack", "-lblas", "-lgfortran");
    end Linker;
 
 end GNAT_Math_Extensions;

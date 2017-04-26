@@ -22,6 +22,9 @@ with Tests.Real_General_Eigenvalues;
 with Tests.Complex_Generalized_Eigenvalues;
 with Tests.Real_Generalized_Eigenvalues;
 
+with LAPACK_Version;
+with Ada.Text_IO;
+
 procedure Tests.Main is
 
    function Suites return AUnit.Test_Suites.Access_Test_Suite;
@@ -45,5 +48,6 @@ procedure Tests.Main is
    Reporter : AUnit.Reporter.Text.Text_Reporter;
 
 begin
+   Ada.Text_IO.Put_Line ("LAPACK version is" & LAPACK_Version'Img);
    Run (Reporter);
 end Tests.Main;
