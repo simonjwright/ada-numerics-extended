@@ -11,6 +11,6 @@ gnat-math-extn-*
 test/*.exe
 test/*.o
 test/demo_extensions
-test/tests-main
+test/tests
 test/[cs]geev_generator
 test/[csz]ggev_generator
