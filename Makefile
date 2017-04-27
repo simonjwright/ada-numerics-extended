@@ -13,11 +13,45 @@
 #  Copyright Simon Wright <simon@pushface.org>
 
 # This Makefile is part of the Ada 2005 Math Extensions package, and
-# is used to construct releases and upload the documentation..
+# is used to build, test, clean, construct releases and upload the
+# documentation.
 
 all::
 
+install::
+
+clean::
+
 dist::
+
+# Compute the prefix of the current GNAT installation
+prefix ?= $(realpath $(dir $(shell which gnatls))..)
+
+# Work out where to install the GPR
+debian = $(and $(wildcard /etc/debian_version),$(filter $(prefix),/usr))
+GPR_INSTALL_SUBDIR = $(if $(debian),share/ada/adainclude,lib/gnat)
+
+all:: force
+	gprbuild -p -P gnat_math_extensions
+	cd test; make all
+
+install::
+	gprinstall					\
+	  -f						\
+	  --prefix=$(prefix)				\
+	  -P gnat_math_extensions.gpr			\
+	  --install-name=gnat_math_extensions		\
+	  --project-subdir=$(GPR_INSTALL_SUBDIR)	\
+	  -XLIBRARY_TYPE=static				\
+	  --mode=dev					\
+	  --create-missing-dirs				\
+	  --build-var=LIBRARY_TYPE			\
+	  --build-name=static
+
+clean::
+	gprclean -f -P gnat_math_extensions.gpr
+	-rm -rf .build
+	cd test; make clean
 
 # Used to construct release IDs (eg, gnat-math-extn-20100731). You can
 # set the whole thing from the command line -- for example, if
@@ -27,8 +61,9 @@ DATE = $(shell date +%Y%m%d)
 dist:: gnat-math-extn-$(DATE).tar.gz gnat-math-extn-$(DATE).zip
 
 DISTRIBUTION_FILES =				\
-  README					\
   CHANGES					\
+  Makefile					\
+  README					\
   gnat_math_extensions.gpr			\
   src/ada_numerics-float_arrays.ads		\
   src/ada_numerics-generic_arrays.adb		\
@@ -36,11 +71,10 @@ DISTRIBUTION_FILES =				\
   src/ada_numerics-long_float_arrays.ads	\
   src/ada_numerics.ads
 
-DISTRIBUTION_FILES +=				\
-  test/demo_extensions.adb			\
-  test/demo_extensions.gpr
-
 DISTRIBUTION_FILES +=					\
+  test/Makefile						\
+  test/lapack_version.adb				\
+  test/lapack_version.ads				\
   test/tests.gpr					\
   test/tests.ads					\
   test/tests-main.adb					\
@@ -87,4 +121,4 @@ upload-docs:
 	  $(SFUSER),gnat-math-extn@web.sourceforge.net:htdocs/index.html
 
 
-.PHONY: dist upload-docs
+.PHONY: all install clean dist upload-docs force

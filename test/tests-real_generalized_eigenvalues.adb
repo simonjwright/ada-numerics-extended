@@ -378,33 +378,9 @@ package body Tests.Real_Generalized_Eigenvalues is
          return True;
       end Close_Enough;
 
-      function Close_Enough (L, R : Real_Vector) return Boolean
-      is
-      begin
-         if L'Length /= R'Length then
-            raise Constraint_Error with "Close_Enough: different lengths";
-         end if;
-         for J in L'Range loop
-            if abs (L (J) - R (J - L'First + R'First)) > Lim then
-               return False;
-            end if;
-         end loop;
-         return True;
-      end Close_Enough;
-
       function Column (V : Complex_Matrix; C : Integer) return Complex_Vector
       is
          Result : Complex_Vector (V'Range (1));
-      begin
-         for J in V'Range (1) loop
-            Result (J) := V (J, C);
-         end loop;
-         return Result;
-      end Column;
-
-      function Column (V : Real_Matrix; C : Integer) return Real_Vector
-      is
-         Result : Real_Vector (V'Range (1));
       begin
          for J in V'Range (1) loop
             Result (J) := V (J, C);

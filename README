@@ -14,7 +14,13 @@ Prerequisites
 BLAS and LAPACK are required to be on the library lookup path (so that
 the linker switches "-llapack -lblas" find them).
 
-On Mac OS X, they are part of the vecLib framework.
+On macOS, they are part of the vecLib framework (though, as of Sierra
+10.12.4, LAPACK is still at version 3.2.1).
+
+On Debian, check out liblapack3, libblas3.
+
+On Windows, check out LAPACK for Windows at
+http://icl.cs.utk.edu/lapack-for-windows/lapack/
 
 Installation
 ============
@@ -23,23 +29,13 @@ The software unpacks into a directory structure of the form
 
 gnat-math-extn-YYYYMMDD
    /src  contains the library code
-   /test contains an installation verification program and unit tests.
+   /test contains unit tests.
 
-Go to the test/ directory. If on a Unix-based system, run
-   $ gnatmake -p -P demo_extensions
-   $ ./demo_extensions
-or if on Windows,
-   > gnatmake -p -P demo_extensions
-   > demo_extensions
+Execute "make". This will build a static library for use in your own
+programs, and a test program (test/tests) using AUnit.
 
-This should output the results of a simple set of tests.
-[At some future release, we will list the expected output]
-
-As a side-effect, it builds a static library for use in your own
-programs.
-
-In order to use this library within your own code, you need to use a
-GPR referencing the extensions' GPR, "gnat_math_extensions". Either
+In order to use the library within your own code, you need to use a
+GPR referencing the extensions' GPR, "gnat_math_extensions". You can
 
 * say 'with "gnat_math_extensions";' and include
   /where/ever/gnat-math-extn-YYYYMMDD in your ADA_PROJECTS_PATH
@@ -47,6 +43,9 @@ GPR referencing the extensions' GPR, "gnat_math_extensions". Either
 
 * say 'with "/where/ever/gnat-math-extn-YYYYMMDD/gnat_math_extensions";'
   (this path can be relative, if you like).
+
+* install with your compiler by saying 'make install'. You can then
+  say 'with "gnat_math_extensions";'
 
 Testing
 =======
