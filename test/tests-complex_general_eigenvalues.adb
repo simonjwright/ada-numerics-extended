@@ -90,14 +90,11 @@ package body Tests.Complex_General_Eigenvalues is
       package Extensions
       is new Ada_Numerics.Generic_Arrays (Complex_Arrays);
 
-      package Real_IO is new Float_IO (Real);
       package My_Complex_IO is new Complex_IO (Complex_Types);
 
-      use Real_Arrays;
       use Complex_Types;
       use Complex_Arrays;
 
-      use Real_IO;
       use My_Complex_IO;
 
       function Close_Enough (L, R : Complex_Vector) return Boolean;
