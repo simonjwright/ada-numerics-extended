@@ -562,8 +562,6 @@ package body Ada_Numerics.Generic_Arrays is
         Complex_Arrays.Complex_Matrix (Vectors'Range (2), Vectors'Range (1));
       Info : Integer;
 
-      use type Real_Arrays.Real;
-
    begin
 
       if A'Length (1) /= A'Length (2) then

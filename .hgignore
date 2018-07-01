@@ -1,4 +1,5 @@
 syntax: glob
+BLAS*
 lib
 parker
 lapa*

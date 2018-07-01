@@ -84,15 +84,9 @@ package body Tests.Real_Generalized_Eigenvalues is
       subtype Generalized_Eigenvalue_Vector
         is Extensions.Generalized_Eigenvalue_Vector;
 
-      package Real_IO is new Float_IO (Real);
-      package My_Complex_IO is new Complex_IO (Complex_Types);
-
       use Real_Arrays;
       use Complex_Types;
       use Complex_Arrays;
-
-      use Real_IO;
-      use My_Complex_IO;
 
       --  This limit may seem a tad on the high side, but all we
       --  really need to know is whether the binding to the LAPACK
