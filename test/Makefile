@@ -12,7 +12,7 @@
 #
 #  Copyright Simon Wright <simon@pushface.org>
 
-# This Makefile is part of the Ada 2005 Math Extensions package, and
+# This Makefile is part of the GNAT Math Extensions package, and
 # is used to build tests.
 
 all:

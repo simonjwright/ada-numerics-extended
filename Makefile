@@ -12,17 +12,14 @@
 #
 #  Copyright Simon Wright <simon@pushface.org>
 
-# This Makefile is part of the Ada 2005 Math Extensions package, and
-# is used to build, test, clean, construct releases and upload the
-# documentation.
+# This Makefile is part of the GNAT Math Extensions package, and
+# is used to build, test, and clean.
 
 all::
 
 install::
 
 clean::
-
-dist::
 
 # Compute the prefix of the current GNAT installation
 prefix ?= $(realpath $(dir $(shell which gnatls))..)
@@ -52,73 +49,5 @@ clean::
 	gprclean -f -P gnat_math_extensions.gpr
 	-rm -rf .build
 	cd test; make clean
-
-# Used to construct release IDs (eg, gnat-math-extn-20100731). You can
-# set the whole thing from the command line -- for example, if
-# creating a patch release.
-DATE = $(shell date +%Y%m%d)
-
-dist:: gnat-math-extn-$(DATE).tar.gz gnat-math-extn-$(DATE).zip
-
-DISTRIBUTION_FILES =				\
-  CHANGES					\
-  Makefile					\
-  README					\
-  gnat_math_extensions.gpr			\
-  src/ada_numerics-float_arrays.ads		\
-  src/ada_numerics-generic_arrays.adb		\
-  src/ada_numerics-generic_arrays.ads		\
-  src/ada_numerics-long_float_arrays.ads	\
-  src/ada_numerics.ads
-
-DISTRIBUTION_FILES +=					\
-  test/Makefile						\
-  test/lapack_version.adb				\
-  test/lapack_version.ads				\
-  test/tests.gpr					\
-  test/tests.ads					\
-  test/tests-main.adb					\
-  test/tests-complex_general_eigenvalues.adb		\
-  test/tests-complex_general_eigenvalues.ads		\
-  test/tests-real_general_eigenvalues.adb		\
-  test/tests-real_general_eigenvalues.ads		\
-  test/tests-complex_generalized_eigenvalues.adb	\
-  test/tests-complex_generalized_eigenvalues.ads	\
-  test/tests-real_generalized_eigenvalues.adb		\
-  test/tests-real_generalized_eigenvalues.ads
-
-gnat-math-extn-$(DATE).tar.gz: gnat-math-extn-$(DATE)
-	rm -f $@
-	tar zcvf $@ $</
-
-gnat-math-extn-$(DATE).zip: gnat-math-extn-$(DATE)
-	rm -f $@
-	zip -r -9 $@ $</*
-
-gnat-math-extn-$(DATE): $(DISTRIBUTION_FILES)
-	rm -rf $@
-	mkdir $@
-	tar cf - $^ | tar xvf - -C $@
-
-
-# Documentation upload to SF
-
-SFUSER ?= simonjwright
-
-upload-docs:
-	rsync \
-	  --compress \
-	  --copy-unsafe-links \
-	  --cvs-exclude \
-	  --delete \
-	  --perms \
-	  --recursive \
-	  --rsh=ssh \
-	  --times \
-	  --update \
-	  --verbose \
-	  doc/*.{css,html} \
-	  $(SFUSER),gnat-math-extn@web.sourceforge.net:htdocs/index.html
-
 
 .PHONY: all install clean dist upload-docs force

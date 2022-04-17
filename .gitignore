@@ -1,4 +1,3 @@
-syntax: glob
 BLAS*
 lib
 parker
