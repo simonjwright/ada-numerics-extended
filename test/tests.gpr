@@ -32,7 +32,8 @@ project Tests is
         (
          "-gnatqQ",  --  to keep ALI files even if there are compilation errors
          "-gnatafo", --  assertions, full reports, integer overflow
-         "-gnatwaL"  --  all standard warnings except for elaboration
+         "-gnatwaL", --  all standard warnings except for elaboration
+         "-gnatw_A"  --  suppress anonymous type allocator warning
         );
    end Compiler;
 
