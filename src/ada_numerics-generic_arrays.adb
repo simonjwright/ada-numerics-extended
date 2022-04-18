@@ -572,7 +572,9 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "B not square";
       end if;
 
-      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2) then
+      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2)
+        or B'Last (1) /= A'Last (1) or B'Last (2) /= A'Last (2)
+      then
          raise Constraint_Error with "A & B have different ranges";
       end if;
 
@@ -650,7 +652,9 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "B not square";
       end if;
 
-      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2) then
+      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2)
+        or B'Last (1) /= A'Last (1) or B'Last (2) /= A'Last (2)
+      then
          raise Constraint_Error with "A & B have different ranges";
       end if;
 
