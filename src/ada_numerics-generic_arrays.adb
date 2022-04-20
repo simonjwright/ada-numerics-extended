@@ -918,8 +918,15 @@ package body Ada_Numerics.Generic_Arrays is
                       F_R_Work,
                       Info);
                W := To_Complex (F_W);
-               V_R := To_Complex (F_V_R);
-               V_L := To_Complex (F_V_L);
+               --  Avoid computing V_L, V_R if zgeev wasn't asked to
+               --  compute them (To_Complex might fail if
+               --  uninitialized (i.e. invalid) values are present)
+               if Jobv_L = 'V' then
+                  V_L := To_Complex (F_V_L);
+               end if;
+               if Jobv_R = 'V' then
+                  V_R := To_Complex (F_V_R);
+               end if;
             end;
          end;
       end if;
@@ -1071,8 +1078,15 @@ package body Ada_Numerics.Generic_Arrays is
                       Info);
                W_R := To_Real (F_W_R);
                W_I := To_Real (F_W_I);
-               V_R := To_Real (F_V_R);
-               V_L := To_Real (F_V_L);
+               --  Avoid computing V_L, V_R if dgeev wasn't asked to
+               --  compute them (To_Real might fail if
+               --  uninitialized (i.e. invalid) values are present)
+               if Jobv_L = 'L' then
+                  V_L := To_Real (F_V_L);
+               end if;
+               if Jobv_R = 'V' then
+                  V_R := To_Real (F_V_R);
+               end if;
             end;
          end;
       end if;
@@ -1252,8 +1266,15 @@ package body Ada_Numerics.Generic_Arrays is
                       Info);
                Alpha := To_Complex (F_Alpha);
                Beta := To_Complex (F_Beta);
-               V_R := To_Complex (F_V_R);
-               V_L := To_Complex (F_V_L);
+               --  Avoid computing V_L, V_R if zggev wasn't asked to
+               --  compute them (To_Complex might fail if
+               --  uninitialized (i.e. invalid) values are present)
+               if Jobv_L = 'V' then
+                  V_L := To_Complex (F_V_L);
+               end if;
+               if Jobv_R = 'V' then
+                  V_R := To_Complex (F_V_R);
+               end if;
             end;
          end;
       end if;
@@ -1433,8 +1454,15 @@ package body Ada_Numerics.Generic_Arrays is
                Alpha_R := To_Real (F_Alpha_R);
                Alpha_I := To_Real (F_Alpha_I);
                Beta := To_Real (F_Beta);
-               V_R := To_Real (F_V_R);
-               V_L := To_Real (F_V_L);
+               --  Avoid computing V_L, V_R if dggev wasn't asked to
+               --  compute them (To_Real might fail if
+               --  uninitialized (i.e. invalid) values are present)
+               if Jobv_L = 'V' then
+                  V_L := To_Real (F_V_L);
+               end if;
+               if Jobv_R = 'V' then
+                  V_R := To_Real (F_V_R);
+               end if;
             end;
          end;
       end if;
