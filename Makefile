@@ -29,7 +29,7 @@ debian = $(and $(wildcard /etc/debian_version),$(filter $(prefix),/usr))
 GPR_INSTALL_SUBDIR = $(if $(debian),share/ada/adainclude,lib/gnat)
 
 all:: force
-	gprbuild -p -P gnat_math_extensions
+	gprbuild -j0 -P gnat_math_extensions
 	cd test; make all
 
 install::

@@ -16,7 +16,7 @@
 # is used to build tests.
 
 all:
-	gprbuild -p -P tests
+	gprbuild -j0 -P tests
 
 clean:
 	gprclean -P tests
