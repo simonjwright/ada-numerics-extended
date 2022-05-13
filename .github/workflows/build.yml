@@ -19,7 +19,7 @@ jobs:
           - debian-latest
           - windows-latest
         gnat-version:
-          ^11
+          - ^11
 
     steps:
       - name: Checkout
