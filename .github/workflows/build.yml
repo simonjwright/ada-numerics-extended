@@ -18,9 +18,6 @@ jobs:
           - macos-latest
           - debian-latest
           - windows-latest
-        gnat-version:
-          - ^10
-          - ^11
 
     steps:
       - name: Checkout
