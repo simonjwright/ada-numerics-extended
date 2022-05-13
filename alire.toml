@@ -1,5 +1,5 @@
 name = "gnat_math_extensions"
-description = "Eigenvalues, eigenvectors for non-symmetric, non-Hermitiona matrices"
+description = "Eigenvalues, eigenvectors for non-symmetric, non-Hermitian matrices"
 website = "https://github.com/simonjwright/gnat_math_extensions"
 version = "1.1.0"
 licenses= "GPL-3.0-or-later WITH GCC-exception-3.1"
@@ -13,11 +13,5 @@ project-files = ["gnat_math_extensions.gpr"]
 tags = ["matrices", "blas", "lapack"]
 
 [[depends-on]]
-[depends-on."case(distribution)"."debian|ubuntu|msys2"]
   "libblas" = "*"
   "liblapack" = "*"
-  
-[[pins]]  # Added by alr
-libblas = { path='../libblas' }   # Added by alr
-[[pins]]  # Added by alr
-liblapack = { path='../liblapack' }   # Added by alr

@@ -8,10 +8,11 @@ maintainers = ["Simon Wright <simon@pushface.org>"]
 maintainers-logins = ["simonjwright"]
 
 project-files = ["tests.gpr"]
+executables = "tests"
 
-[[depends-on]]  # Added by alr
-gnat_math_extensions = "*"  # Added by alr
-[[pins]]  # Added by alr
-gnat_math_extensions = { path='../../gnat_math_extensions' }   # Added by alr
-[[depends-on]]  # Added by alr
-aunit = "^22.0.0"  # Added by alr
+[[depends-on]]
+gnat_math_extensions = "*"
+aunit = "^22.0.0"
+
+[[pins]]
+gnat_math_extensions = { path='../../gnat_math_extensions' }
