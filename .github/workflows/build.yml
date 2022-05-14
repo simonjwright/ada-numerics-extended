@@ -16,20 +16,20 @@ jobs:
     strategy:
       matrix:
         os:
+#          - macos-latest
+#          - windows-latest
           - debian-latest
-          - windows-latest
-          - macos-latest
 
     steps:
     -
       name: Checkout
       uses: actions/checkout@v2
-    -
-      name: ada-actions/toolchain
-      uses: ada-actions/toolchain@ce2020
-      with:
-        distrib: community
-        target: native
+    # -
+    #   name: ada-actions/toolchain
+    #   uses: ada-actions/toolchain@ce2020
+    #   with:
+    #     distrib: community
+    #     target: native
     -
       name: alire-project/setup-alire
       uses: alire-project/setup-alire@latest-stable
@@ -37,10 +37,15 @@ jobs:
       name: Build
       run: |
         alr index --reset-community
+        echo "adding local index"
         alr index --name=local --add=git+https://github.com/simonjwright/local-alire-index.git
+        echo "setting toolchain.assistant false"
         alr config --global --set toolchain.assistant false
+        echo "installing toolchain"
         alr toolchain --install gnat_native --non-interactive
         alr toolchain --install gprbuild --non-interactive
+        echo "selecting toolchain"
         alr toolchain --select gnat_native --non-interactive
         alr toolchain --select gprbuild --non-interactive
+        echo "building!"
         alr build --non-interactive
