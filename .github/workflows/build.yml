@@ -3,7 +3,7 @@ name: Build
 
 on:
   push:
-    branches: [ alire-workflow ]
+    branches: [ alire-workflows ]
   pull_request:
     branches: [ main ]
 
