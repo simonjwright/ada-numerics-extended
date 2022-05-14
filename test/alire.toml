@@ -1,3 +1,4 @@
+# Comment added to test workflow trigger.
 description = "GNAT Math Extensions testing"
 name = "gnat_math_extensions_test"
 licenses = "GPL-3.0-or-later WITH GCC-exception-3.1"
