@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - windows-latest
+          - debian-latest
 
     steps:
     -
@@ -39,5 +39,5 @@ jobs:
         echo "selecting toolchain"
         alr toolchain --select gnat_native --non-interactive
         alr toolchain --select gprbuild --non-interactive
-        echo "building!"
-        alr build --non-interactive
+        echo "building/running!"
+        cd test; alr run --non-interactive
