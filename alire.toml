@@ -20,6 +20,8 @@ tags = ["matrices", "blas", "lapack"]
   macos = true
   windows = false
 
+# BLAS, Lapack are provided with macOS Xcode or Command Line Tools.
 [[depends-on]]
+[depends-on.'case(os)'.linux]
   "libblas" = "*"
   "liblapack" = "*"
