@@ -27,7 +27,7 @@ jobs:
       name: alire-project/setup-alire
       uses: alire-project/setup-alire@latest-stable
     -
-      name: Build
+      name: Build and run tests
       run: |
         alr index --reset-community
         echo "adding local index"
