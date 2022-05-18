@@ -29,7 +29,6 @@ jobs:
     -
       name: Build and run tests
       run: |
-        alr index --reset-community
         echo "adding local index"
         alr index --name=local --add=git+https://github.com/simonjwright/local-alire-index.git
         echo "setting toolchain.assistant false"
