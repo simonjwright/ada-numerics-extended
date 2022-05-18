@@ -12,16 +12,6 @@ project-files = ["gnat_math_extensions.gpr"]
 
 tags = ["matrices", "blas", "lapack"]
 
-# The package may work on Windows using different BLAS/Lapack packages
-# than those available to Alire under msys2, which won't load (keyring
-# errors: 2022-05-15)
-[available.'case(os)']
-  linux = true
-  macos = true
-  windows = false
-
-# BLAS, Lapack are provided with macOS Xcode or Command Line Tools.
 [[depends-on]]
-[depends-on.'case(os)'.linux]
   "libblas" = "*"
   "liblapack" = "*"

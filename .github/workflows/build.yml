@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         os:
+          - windows-latest
           - ubuntu-latest
           - macos-latest
 
@@ -25,11 +26,10 @@ jobs:
       uses: actions/checkout@v2
     -
       name: alire-project/setup-alire
-      uses: alire-project/setup-alire@latest-stable
+      uses: alire-project/setup-alire@v1
     -
       name: Build and run tests
       run: |
-        alr index --reset-community
         alr config --global --set toolchain.assistant false
         alr toolchain --install gnat_native --non-interactive
         alr toolchain --install gprbuild --non-interactive
