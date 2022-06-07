@@ -1,4 +1,4 @@
-## GNAT Math Extensions ##
+# GNAT Math Extensions #
 
 The purpose of this project is to provide additional matrix capabilities beyond those defined in the Standard Library (Annex G of the ARM). The implementations, which are only for GNAT, are in the form of bindings to the LAPACK and BLAS libraries which are widely available if not already provided on all operating systems.
 
