@@ -370,7 +370,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2)
+        or else Vectors'First (2) /= A'First (2)
       then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
@@ -468,7 +468,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2)
+        or else Vectors'First (2) /= A'First (2)
       then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
@@ -572,8 +572,10 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "B not square";
       end if;
 
-      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2)
-        or B'Last (1) /= A'Last (1) or B'Last (2) /= A'Last (2)
+      if B'First (1) /= A'First (1)
+        or else B'First (2) /= A'First (2)
+        or else B'Last (1) /= A'Last (1)
+        or else B'Last (2) /= A'Last (2)
       then
          raise Constraint_Error with "A & B have different ranges";
       end if;
@@ -595,7 +597,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2)
+        or else Vectors'First (2) /= A'First (2)
       then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
@@ -652,8 +654,10 @@ package body Ada_Numerics.Generic_Arrays is
          raise Constraint_Error with "B not square";
       end if;
 
-      if B'First (1) /= A'First (1) or B'First (2) /= A'First (2)
-        or B'Last (1) /= A'Last (1) or B'Last (2) /= A'Last (2)
+      if B'First (1) /= A'First (1)
+        or else B'First (2) /= A'First (2)
+        or else B'Last (1) /= A'Last (1)
+        or else B'Last (2) /= A'Last (2)
       then
          raise Constraint_Error with "A & B have different ranges";
       end if;
@@ -675,7 +679,7 @@ package body Ada_Numerics.Generic_Arrays is
       end if;
 
       if Vectors'First (1) /= A'First (1)
-        or Vectors'First (2) /= A'First (2)
+        or else Vectors'First (2) /= A'First (2)
       then
          raise Constraint_Error with "Vectors has wrong range(s)";
       end if;
@@ -737,13 +741,6 @@ package body Ada_Numerics.Generic_Arrays is
                end loop;
                C := C + 1;
             else
-               if Values (C).Alpha.Im /= -Values (C + 1).Alpha.Im then
-                  --  It's lambda = alpha/beta that mkes the complex
-                  --  conjugate; but what if beta is zero?
-                  null;
-                  --  raise Constraint_Error
-                  --    with "eigenvalue pair is not complex conjugate";
-               end if;
                for K in Vectors'Range (1) loop
                   Vectors (K, J) := (Working_R_Eigenvectors (J, K),
                                      Working_R_Eigenvectors (J + 1, K));

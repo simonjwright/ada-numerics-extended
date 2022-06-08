@@ -1,5 +1,12 @@
 .build/
 .DS_Store
-alire/
-config/
-lib/
+*~
+*.gcov
+*.orig
+test/*.exe
+test/*.o
+test/demo_extensions
+test/tests
+test/[cs]geev_generator
+test/[csz]ggev_generator
+alire
