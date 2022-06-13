@@ -1,6 +1,10 @@
 # GNAT Math Extensions #
 
-The purpose of this project is to provide additional matrix capabilities beyond those defined in the Standard Library (Annex G of the ARM). The implementations, which are only for GNAT, are in the form of bindings to the LAPACK and BLAS libraries which are widely available if not already provided on all operating systems.
+The purpose of this project is to provide additional matrix capabilities beyond those defined in the Standard Library (Annex G of the ARM).
+
+The Standard defines real and complex matrix and vector operations. Not every possible operation is supported, so for example only symmetric real or [hermitian](http://en.wikipedia.org/wiki/Hermitian_matrix) complex matrices can be solved.
+
+The implementations, which are only for GNAT, are in the form of bindings to the [LAPACK](https://www.netlib.org/lapack) and [BLAS](https://www.netlib.org/blas/") libraries which are widely available if not already provided on all operating systems.
 
 ## Prerequisites ##
 
