@@ -6,9 +6,15 @@
 --  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 --  PARTICULAR PURPOSE.
 --
+--  As a special exception under Section 7 of GPL version 3, you are
+--  granted additional permissions described in the GCC Runtime
+--  Library Exception, version 3.1, as published by the Free Software
+--  Foundation.
+--
 --  You should have received a copy of the GNU General Public License
---  along with this program; see the file COPYING3.  If not, see
---  <http://www.gnu.org/licenses/>.
+--  and a copy of the GCC Runtime Library Exception along with this
+--  program; see the files COPYING3 and COPYING.RUNTIME respectively.
+--  If not, see <http://www.gnu.org/licenses/>.
 --
 --  Copyright Simon Wright <simon@pushface.org>
 
@@ -194,13 +200,14 @@ begin
    Put_Line ("Generalized eigensystem of real non-symmetric matrix.");
    Put_Line ("The solutions are such that beta*a - alpha*b is singular, ie");
    Put_Line ("its determinant is zero. We'll show that it's small for");
-   Put_Line ("a selection of randomly-benerated matrices.");
+   Put_Line ("a selection of randomly-generated matrices.");
    New_Line;
 
    declare
       Gen : Ada.Numerics.Float_Random.Generator;
 
-      A, B, Vectors : Real_Arrays.Real_Matrix (1 .. 6, 1 .. 6);
+      A, B : Real_Arrays.Real_Matrix (1 .. 6, 1 .. 6);
+      Vectors : Complex_Arrays.Complex_Matrix (1 .. 6, 1 .. 6);
 
       Values : Extensions.Generalized_Eigenvalue_Vector (A'Range (1));
 
