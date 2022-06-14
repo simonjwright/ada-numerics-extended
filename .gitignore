@@ -10,3 +10,4 @@ test/tests
 test/[cs]geev_generator
 test/[csz]ggev_generator
 alire
+lib
