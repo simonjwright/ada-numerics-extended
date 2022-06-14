@@ -20,6 +20,8 @@ with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays;
 with Ada_Numerics.Generic_Arrays;
 
+with Ada.Assertions;
+
 with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 --  May not be referenced for released versions
 pragma Warnings (Off, Ada.Text_IO);
@@ -93,7 +95,9 @@ package body Tests.Real_General_Eigenvalues is
       use Complex_Types;
       use Complex_Arrays;
 
-      function Close_Enough (L, R : Complex_Vector) return Boolean;
+      function Close_Enough (L, R : Complex_Vector) return Boolean
+      with Pre => L'Length = R'Length;
+
       function Column (V : Complex_Matrix; C : Integer) return Complex_Vector;
 
       --  The values in Input, Expected_Eigenvalues,
@@ -196,10 +200,10 @@ package body Tests.Real_General_Eigenvalues is
               := Extensions.Eigenvalues (Unsquare);
             pragma Unreferenced (Result);
          begin
-            Assert (False, "should have raised Constraint_Error");
+            Assert (False, "should have raised Assertion_Error");
          end;
       exception
-         when Constraint_Error => null;
+         when Ada.Assertions.Assertion_Error => null;
       end Eigenvalues_Constraints;
 
       procedure Eigenvalues (C : in out Test_Case'Class)
@@ -227,9 +231,9 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Bad_Input,
                                     Values => Good_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (1)");
+            Assert (False, "should have raised Assertion_Error (1)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Values : Complex_Vector (1 .. Input'Length (1));
@@ -237,9 +241,9 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (2)");
+            Assert (False, "should have raised Assertion_Error (2)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Values : Complex_Vector (Input'First (1) .. Input'Last (1) - 1);
@@ -247,9 +251,9 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (3)");
+            Assert (False, "should have raised Assertion_Error (3)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Vectors : Complex_Matrix (1 .. 2, 1 .. 3);
@@ -257,9 +261,9 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (4)");
+            Assert (False, "should have raised Assertion_Error (4)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Vectors : Complex_Matrix (1 .. Input'Length (1),
@@ -268,9 +272,9 @@ package body Tests.Real_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (5)");
+            Assert (False, "should have raised Assertion_Error (5)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
       end Eigensystem_Constraints;
 
@@ -342,9 +346,6 @@ package body Tests.Real_General_Eigenvalues is
       function Close_Enough (L, R : Complex_Vector) return Boolean
       is
       begin
-         if L'Length /= R'Length then
-             raise Constraint_Error with "Close_Enough: different lengths";
-         end if;
          for J in L'Range loop
             if abs (L (J).Re - R (J - L'First + R'First).Re) > Lim
             or abs (L (J).Im - R (J - L'First + R'First).Im) > Lim then

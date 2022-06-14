@@ -35,7 +35,11 @@ package Ada_Numerics.Generic_Arrays is
    --
    --  The range of the result is A'Range (1).
    function Eigenvalues (A : Complex_Arrays.Complex_Matrix)
-     return Complex_Arrays.Complex_Vector;
+                        return Complex_Arrays.Complex_Vector
+   with
+     Pre => A'Length (1) = A'Length (2),
+     Post => Eigenvalues'Result'First = A'First (1)
+             and then Eigenvalues'Result'Last = A'Last (1);
 
    --  Obtain the eigenvalues and eigenvectors of a non-hermitian
    --  complex matrix.
@@ -48,13 +52,25 @@ package Ada_Numerics.Generic_Arrays is
    procedure Eigensystem
      (A       :     Complex_Arrays.Complex_Matrix;
       Values  : out Complex_Arrays.Complex_Vector;
-      Vectors : out Complex_Arrays.Complex_Matrix);
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   with
+     Pre =>
+       A'Length (1) = A'Length (2)
+       and then Values'First = Vectors'First (1)
+       and then Values'Last = Vectors'Last (1)
+       and then A'First (1) = Vectors'First (1)
+       and then A'Last (1) = Vectors'Last (1);
 
    --  Obtain the eigenvalues of a non-symmetric real matrix.
    --
    --  The range of the result is A'Range (1).
    function Eigenvalues (A : Real_Arrays.Real_Matrix)
-     return Complex_Arrays.Complex_Vector;
+                        return Complex_Arrays.Complex_Vector
+   with
+     Pre => A'Length (1) = A'Length (2),
+     Post =>
+       Eigenvalues'Result'First = A'First (1)
+       and then Eigenvalues'Result'Last = A'Last (1);
 
    --  Obtain the eigenvalues and eigenvectors of a non-symmetric real
    --  matrix.
@@ -67,7 +83,14 @@ package Ada_Numerics.Generic_Arrays is
    procedure Eigensystem
      (A       :     Real_Arrays.Real_Matrix;
       Values  : out Complex_Arrays.Complex_Vector;
-      Vectors : out Complex_Arrays.Complex_Matrix);
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   with
+     Pre =>
+       A'Length (1) = A'Length (2)
+       and then Values'First = Vectors'First (1)
+       and then Values'Last = Vectors'Last (1)
+       and then A'First (1) = Vectors'First (1)
+       and then A'Last (1) = Vectors'Last (1);
 
    --  A generalized eigenvalue for a pair of matrices (A,B) is a
    --  scalar lambda or a ratio alpha/beta = lambda, such that A -
@@ -97,7 +120,19 @@ package Ada_Numerics.Generic_Arrays is
      (A       :     Complex_Arrays.Complex_Matrix;
       B       :     Complex_Arrays.Complex_Matrix;
       Values  : out Generalized_Eigenvalue_Vector;
-      Vectors : out Complex_Arrays.Complex_Matrix);
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   with
+     Pre =>
+       A'First (1) = B'First (1)
+       and then A'Last (1) = B'Last (1)
+       and then A'First (2) = B'First (2)
+       and then A'Last (2) = B'Last (2)
+       and then B'First (2) = Vectors'First (2)
+       and then B'Last (2) = Vectors'Last (2)
+       and then B'First (1) = Vectors'First (1)
+       and then B'Last (1) = Vectors'Last (1)
+       and then Values'First = A'First (1)
+       and then Values'Last = A'Last (1);
 
    --  Obtain the generalized eigenvalues and the right generalized
    --  eigenvectors of a pair of non-symmetric real matrices.
@@ -112,6 +147,18 @@ package Ada_Numerics.Generic_Arrays is
      (A       :     Real_Arrays.Real_Matrix;
       B       :     Real_Arrays.Real_Matrix;
       Values  : out Generalized_Eigenvalue_Vector;
-      Vectors : out Complex_Arrays.Complex_Matrix);
+      Vectors : out Complex_Arrays.Complex_Matrix)
+   with
+     Pre =>
+       A'First (1) = B'First (1)
+       and then A'Last (1) = B'Last (1)
+       and then A'First (2) = B'First (2)
+       and then A'Last (2) = B'Last (2)
+       and then B'First (2) = Vectors'First (2)
+       and then B'Last (2) = Vectors'Last (2)
+       and then B'First (1) = Vectors'First (1)
+       and then B'Last (1) = Vectors'Last (1)
+       and then Values'First = A'First (1)
+       and then Values'Last = A'Last (1);
 
 end Ada_Numerics.Generic_Arrays;

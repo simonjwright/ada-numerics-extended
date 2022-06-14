@@ -314,10 +314,6 @@ package body Ada_Numerics.Generic_Arrays is
 
    begin
 
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "not square";
-      end if;
-
       Transpose (A, Working_A);
 
       Complex_geev (Jobv_L => 'N', Jobv_R => 'N',
@@ -349,32 +345,6 @@ package body Ada_Numerics.Generic_Arrays is
 
    begin
 
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "A not square";
-      end if;
-
-      if Values'Length /= A'Length (1) then
-         raise Constraint_Error with "Values has wrong length";
-      end if;
-
-      if Values'First /= A'First (1) then
-         raise Constraint_Error with "Values has wrong range";
-      end if;
-
-      if Vectors'Length (1) /= Vectors'Length (2) then
-         raise Constraint_Error with "Vectors not square";
-      end if;
-
-      if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong length";
-      end if;
-
-      if Vectors'First (1) /= A'First (1)
-        or else Vectors'First (2) /= A'First (2)
-      then
-         raise Constraint_Error with "Vectors has wrong range(s)";
-      end if;
-
       Transpose (A, Working_A);
 
       Complex_geev (Jobv_L => 'N', Jobv_R => 'V',
@@ -404,10 +374,6 @@ package body Ada_Numerics.Generic_Arrays is
       Info : Integer;
 
    begin
-
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "not square";
-      end if;
 
       Transpose (A, Working_A);
 
@@ -446,32 +412,6 @@ package body Ada_Numerics.Generic_Arrays is
       use type Real_Arrays.Real;
 
    begin
-
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "not square";
-      end if;
-
-      if Values'Length /= A'Length (1) then
-         raise Constraint_Error with "Values has wrong length";
-      end if;
-
-      if Values'First /= A'First (1) then
-         raise Constraint_Error with "Values has wrong range";
-      end if;
-
-      if Vectors'Length (1) /= Vectors'Length (2) then
-         raise Constraint_Error with "Vectors not square";
-      end if;
-
-      if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong length";
-      end if;
-
-      if Vectors'First (1) /= A'First (1)
-        or else Vectors'First (2) /= A'First (2)
-      then
-         raise Constraint_Error with "Vectors has wrong range(s)";
-      end if;
 
       Transpose (A, Working_A);
 
@@ -564,44 +504,6 @@ package body Ada_Numerics.Generic_Arrays is
 
    begin
 
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "A not square";
-      end if;
-
-      if B'Length (1) /= B'Length (2) then
-         raise Constraint_Error with "B not square";
-      end if;
-
-      if B'First (1) /= A'First (1)
-        or else B'First (2) /= A'First (2)
-        or else B'Last (1) /= A'Last (1)
-        or else B'Last (2) /= A'Last (2)
-      then
-         raise Constraint_Error with "A & B have different ranges";
-      end if;
-
-      if Values'Length /= A'Length (1) then
-         raise Constraint_Error with "Values has wrong length";
-      end if;
-
-      if Values'First /= A'First (1) then
-         raise Constraint_Error with "Values has wrong range";
-      end if;
-
-      if Vectors'Length (1) /= Vectors'Length (2) then
-         raise Constraint_Error with "Vectors not square";
-      end if;
-
-      if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong length";
-      end if;
-
-      if Vectors'First (1) /= A'First (1)
-        or else Vectors'First (2) /= A'First (2)
-      then
-         raise Constraint_Error with "Vectors has wrong range(s)";
-      end if;
-
       Transpose (A, Working_A);
       Transpose (B, Working_B);
 
@@ -645,44 +547,6 @@ package body Ada_Numerics.Generic_Arrays is
       use type Real_Arrays.Real;
 
    begin
-
-      if A'Length (1) /= A'Length (2) then
-         raise Constraint_Error with "A not square";
-      end if;
-
-      if B'Length (1) /= B'Length (2) then
-         raise Constraint_Error with "B not square";
-      end if;
-
-      if B'First (1) /= A'First (1)
-        or else B'First (2) /= A'First (2)
-        or else B'Last (1) /= A'Last (1)
-        or else B'Last (2) /= A'Last (2)
-      then
-         raise Constraint_Error with "A & B have different ranges";
-      end if;
-
-      if Values'Length /= A'Length (1) then
-         raise Constraint_Error with "Values has wrong length";
-      end if;
-
-      if Values'First /= A'First (1) then
-         raise Constraint_Error with "Values has wrong range";
-      end if;
-
-      if Vectors'Length (1) /= Vectors'Length (2) then
-         raise Constraint_Error with "Vectors not square";
-      end if;
-
-      if Vectors'Length (1) /= A'Length (1) then
-         raise Constraint_Error with "Vectors has wrong length";
-      end if;
-
-      if Vectors'First (1) /= A'First (1)
-        or else Vectors'First (2) /= A'First (2)
-      then
-         raise Constraint_Error with "Vectors has wrong range(s)";
-      end if;
 
       Transpose (A, Working_A);
       Transpose (B, Working_B);

@@ -20,6 +20,8 @@ with Ada.Numerics.Generic_Complex_Types;
 with Ada.Numerics.Generic_Complex_Arrays;
 with Ada_Numerics.Generic_Arrays;
 
+with Ada.Assertions;
+
 with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 --  May not be referenced for released versions
 pragma Warnings (Off, Ada.Text_IO);
@@ -97,8 +99,13 @@ package body Tests.Complex_General_Eigenvalues is
 
       use My_Complex_IO;
 
-      function Close_Enough (L, R : Complex_Vector) return Boolean;
-      function Close_Enough (L, R : Complex_Matrix) return Boolean;
+      function Close_Enough (L, R : Complex_Vector) return Boolean
+      with Pre => L'Length = R'Length;
+      function Close_Enough (L, R : Complex_Matrix) return Boolean
+      with
+        Pre =>
+          L'Length (1) = R'Length (1)
+          and then L'Length (2) = R'Length (2);
 
       --  The values in Input, Expected_Eigenvalues,
       --  Expected_Eigenvectors were derived from a run of
@@ -200,10 +207,10 @@ package body Tests.Complex_General_Eigenvalues is
               := Extensions.Eigenvalues (Unsquare);
             pragma Unreferenced (Result);
          begin
-            Assert (False, "should have raised Constraint_Error");
+            Assert (False, "should have raised Assertion_Error");
          end;
       exception
-         when Constraint_Error => null;
+         when Ada.Assertions.Assertion_Error => null;
       end Eigenvalues_Constraints;
 
       procedure Eigenvalues (C : in out Test_Case'Class)
@@ -231,9 +238,9 @@ package body Tests.Complex_General_Eigenvalues is
             Extensions.Eigensystem (A => Bad_Input,
                                     Values => Good_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (1)");
+            Assert (False, "should have raised Assertion_Error (1)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Values : Complex_Vector (1 .. Input'Length (1));
@@ -241,9 +248,9 @@ package body Tests.Complex_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (2)");
+            Assert (False, "should have raised Assertion_Error (2)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Values : Complex_Vector (Input'First (1) .. Input'Last (1) - 1);
@@ -251,9 +258,9 @@ package body Tests.Complex_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Bad_Values,
                                     Vectors => Good_Vectors);
-            Assert (False, "should have raised Constraint_Error (3)");
+            Assert (False, "should have raised Assertion_Error (3)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Vectors : Complex_Matrix (1 .. 2, 1 .. 3);
@@ -261,9 +268,9 @@ package body Tests.Complex_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (4)");
+            Assert (False, "should have raised Assertion_Error (4)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
          declare
             Bad_Vectors : Complex_Matrix (1 .. Input'Length (1),
@@ -272,9 +279,9 @@ package body Tests.Complex_General_Eigenvalues is
             Extensions.Eigensystem (A => Input,
                                     Values => Good_Values,
                                     Vectors => Bad_Vectors);
-            Assert (False, "should have raised Constraint_Error (5)");
+            Assert (False, "should have raised Assertion_Error (5)");
          exception
-            when Constraint_Error => null;
+            when Ada.Assertions.Assertion_Error => null;
          end;
       end Eigensystem_Constraints;
 
@@ -303,10 +310,6 @@ package body Tests.Complex_General_Eigenvalues is
       function Close_Enough (L, R : Complex_Vector) return Boolean
       is
       begin
-         if L'Length /= R'Length then
-            raise Constraint_Error
-	      with "Close_Enough(Complex_Vector): different lengths";
-         end if;
          for J in L'Range loop
             declare
                Left : Complex renames L (J);
@@ -331,17 +334,12 @@ package body Tests.Complex_General_Eigenvalues is
                end if;
             end;
          end loop;
-	 return True;
+         return True;
       end Close_Enough;
 
       function Close_Enough (L, R : Complex_Matrix) return Boolean
       is
       begin
-         if L'Length (1) /= R'Length (1)
-           or L'Length (2) /= R'Length (2) then
-            raise Constraint_Error
-	      with "Close_Enough(Complex_Matrix): different lengths";
-         end if;
          for J in L'Range (1) loop
             for K in L'Range (2) loop
                declare
@@ -351,20 +349,20 @@ package body Tests.Complex_General_Eigenvalues is
                begin
                   if abs (Left.Re - Right.Re) > Lim
                     or abs (Left.Im - Right.Im) > Lim then
-		     if Debug_Output then
-			Put ("Close_Enough(Complex_Matrix): failure:"
-			       & " j:" & J'Img
-			       & " k:" & K'Img
-			       & " l:");
-			Put (Left);
-			Put (" r:");
-			Put (Right);
-			Put (" diff:");
-			Put (Left - Right);
-			Put (" lim:");
-			Put (Lim'Img);
-			New_Line;
-		     end if;
+                     if Debug_Output then
+                        Put ("Close_Enough(Complex_Matrix): failure:"
+                               & " j:" & J'Img
+                               & " k:" & K'Img
+                               & " l:");
+                        Put (Left);
+                        Put (" r:");
+                        Put (Right);
+                        Put (" diff:");
+                        Put (Left - Right);
+                        Put (" lim:");
+                        Put (Lim'Img);
+                        New_Line;
+                     end if;
                      return False;
                   end if;
                end;

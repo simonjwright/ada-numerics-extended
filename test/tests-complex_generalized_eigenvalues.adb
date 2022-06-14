@@ -23,6 +23,8 @@ pragma Warnings (Off);
 with System.Generic_Array_Operations;
 pragma Warnings (On);
 
+with Ada.Assertions;
+
 with Ada.Text_IO.Complex_IO; use Ada.Text_IO;
 --  May not be referenced for released versions
 pragma Warnings (Off, Ada.Text_IO);
@@ -150,9 +152,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (1)");
+               Assert (False, "should have raised Assertion_Error (1)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Input : constant Complex_Matrix (1 .. 2, 1 .. 3)
@@ -163,9 +165,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (2)");
+               Assert (False, "should have raised Assertion_Error (2)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Input : constant Complex_Matrix (1 .. Input_A'Length (1),
@@ -177,9 +179,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (3)");
+               Assert (False, "should have raised Assertion_Error (3)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Input : constant Complex_Matrix
@@ -192,9 +194,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Bad_Input,
                   Values => Good_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (4)");
+               Assert (False, "should have raised Assertion_Error (4)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Values :
@@ -205,9 +207,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Bad_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (5)");
+               Assert (False, "should have raised Assertion_Error (5)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Values :
@@ -219,9 +221,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Bad_Values,
                   Vectors => Good_Vectors);
-               Assert (False, "should have raised Constraint_Error (6)");
+               Assert (False, "should have raised Assertion_Error (6)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Vectors : Complex_Matrix (1 .. 2, 1 .. 3);
@@ -231,9 +233,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Bad_Vectors);
-               Assert (False, "should have raised Constraint_Error (7)");
+               Assert (False, "should have raised Assertion_Error (7)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
             declare
                Bad_Vectors : Complex_Matrix (1 .. Input_A'Length (1),
@@ -244,9 +246,9 @@ package body Tests.Complex_Generalized_Eigenvalues is
                   B => Input_B,
                   Values => Good_Values,
                   Vectors => Bad_Vectors);
-               Assert (False, "should have raised Constraint_Error (8)");
+               Assert (False, "should have raised Assertion_Error (8)");
             exception
-               when Constraint_Error => null;
+               when Ada.Assertions.Assertion_Error => null;
             end;
          end Eigensystem_Constraints;
 
