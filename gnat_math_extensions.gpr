@@ -56,4 +56,14 @@ project GNAT_Math_Extensions is
       for Artifacts (".") use ("share");
    end Install;
 
+   package Prove is
+      --  The default option (pretty) uses escape characters, which
+      --  confuse Emacs's identification of source location of errors.
+      for Proof_Switches ("Ada") use ("--output=brief");
+   end Prove;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("--source-line-breaks");
+   end Pretty_Printer;
+
 end GNAT_Math_Extensions;

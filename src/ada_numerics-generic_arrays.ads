@@ -19,15 +19,17 @@
 --  Copyright Simon Wright <simon@pushface.org>
 
 pragma License (Modified_GPL);
+pragma Spark_Mode (On);
 
 with Ada.Numerics.Generic_Complex_Arrays;
 
 generic
-   with package Complex_Arrays
+   with package Actual_Complex_Arrays
       is new Ada.Numerics.Generic_Complex_Arrays (<>);
 package Ada_Numerics.Generic_Arrays is
    pragma Pure (Generic_Arrays);
 
+   package Complex_Arrays renames Actual_Complex_Arrays;
    package Complex_Types renames Complex_Arrays.Complex_Types;
    package Real_Arrays renames Complex_Arrays.Real_Arrays;
 
