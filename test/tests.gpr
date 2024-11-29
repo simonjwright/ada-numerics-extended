@@ -44,6 +44,10 @@ project Tests is
         );
    end Compiler;
 
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("--source-line-breaks");
+   end Pretty_Printer;
+
    package Binder is
       for Default_Switches ("Ada") use ("-E");
    end Binder;

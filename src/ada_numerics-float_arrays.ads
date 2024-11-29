@@ -19,11 +19,11 @@
 --  Copyright Simon Wright <simon@pushface.org>
 
 pragma License (Modified_GPL);
+pragma SPARK_Mode (On);
 
 with Ada.Numerics.Complex_Arrays;
 with Ada_Numerics.Generic_Arrays;
 
-package Ada_Numerics.Float_Arrays
-is new Ada_Numerics.Generic_Arrays
-  (Complex_Arrays => Ada.Numerics.Complex_Arrays);
+package Ada_Numerics.Float_Arrays is new Ada_Numerics.Generic_Arrays
+  (Actual_Complex_Arrays => Ada.Numerics.Complex_Arrays);
 pragma Pure (Ada_Numerics.Float_Arrays);

@@ -23,6 +23,7 @@
 --  <simon@pushface.org>.
 
 pragma License (Modified_GPL);
+pragma Spark_Mode (On);
 
 pragma Warnings (Off);
 with Interfaces.Fortran;
@@ -671,8 +672,8 @@ package body Ada_Numerics.Generic_Arrays is
                    R_Work,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Complex_Vector
-                 (1 .. Integer (Querying_Work (1).Re));
+               UB : constant Integer := Integer (Querying_Work (1).Re);
+               Local_Work : Complex_Arrays.Complex_Vector (1 .. UB);
             begin
                cgeev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -717,8 +718,8 @@ package body Ada_Numerics.Generic_Arrays is
                    R_Work,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Complex_Vector
-                 (1 .. Integer (Querying_Work (1).Re));
+               UB : constant Integer := Integer (Querying_Work (1).Re);
+               Local_Work : Complex_Arrays.Complex_Vector (1 .. UB);
             begin
                zgeev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -766,9 +767,8 @@ package body Ada_Numerics.Generic_Arrays is
                    F_R_Work,
                    Info);
             declare
-               F_Local_Work :
-                 BLAS.Double_Complex_Vector
-                 (1 .. Integer (F_Querying_Work (1).Re));
+               UB : constant Integer := Integer (F_Querying_Work (1).Re);
+               F_Local_Work : BLAS.Double_Complex_Vector (1 .. UB);
             begin
                zgeev (Jobv_L, Jobv_R,
                       F_A'Length (1), F_A, F_A'Length (1),
@@ -834,8 +834,8 @@ package body Ada_Numerics.Generic_Arrays is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Real_Arrays.Real_Vector
-                 (1 .. Integer (Querying_Work (1)));
+               UB : constant Integer := Integer (Querying_Work (1));
+               Local_Work : Real_Arrays.Real_Vector (1 .. UB);
             begin
                sgeev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -877,8 +877,8 @@ package body Ada_Numerics.Generic_Arrays is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Real_Arrays.Real_Vector
-                 (1 .. Integer (Querying_Work (1)));
+               UB : constant Integer := Integer (Querying_Work (1));
+               Local_Work : Real_Arrays.Real_Vector (1 .. UB);
             begin
                dgeev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -926,9 +926,8 @@ package body Ada_Numerics.Generic_Arrays is
                    F_Querying_Work, -1,
                    Info);
             declare
-               F_Local_Work :
-                 BLAS.Double_Precision_Vector
-                 (1 .. Integer (F_Querying_Work (1)));
+               UB : constant Integer := Integer (F_Querying_Work (1));
+               F_Local_Work : BLAS.Double_Precision_Vector (1 .. UB);
             begin
                dgeev (Jobv_L, Jobv_R,
                       F_A'Length (1), F_A, F_A'Length (1),
@@ -1001,8 +1000,8 @@ package body Ada_Numerics.Generic_Arrays is
                    R_Work,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Complex_Vector
-                 (1 .. Integer (Querying_Work (1).Re));
+               UB : constant Integer := Integer (Querying_Work (1).Re);
+               Local_Work : Complex_Arrays.Complex_Vector (1 .. UB);
             begin
                cggev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -1052,8 +1051,8 @@ package body Ada_Numerics.Generic_Arrays is
                    R_Work,
                    Info);
             declare
-               Local_Work : Complex_Arrays.Complex_Vector
-                 (1 .. Integer (Querying_Work (1).Re));
+               UB : constant Integer := Integer (Querying_Work (1).Re);
+               Local_Work : Complex_Arrays.Complex_Vector (1 .. UB);
             begin
                zggev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -1111,9 +1110,8 @@ package body Ada_Numerics.Generic_Arrays is
                    R_Work,
                    Info);
             declare
-               F_Local_Work :
-                 BLAS.Double_Complex_Vector
-                 (1 .. Integer (F_Querying_Work (1).Re));
+               UB : constant Integer := Integer (F_Querying_Work (1).Re);
+               F_Local_Work : BLAS.Double_Complex_Vector (1 .. UB);
             begin
                zggev (Jobv_L, Jobv_R,
                       F_A'Length (1),
@@ -1189,8 +1187,8 @@ package body Ada_Numerics.Generic_Arrays is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Real_Arrays.Real_Vector
-                 (1 .. Integer (Querying_Work (1)));
+               UB : constant Integer := Integer (Querying_Work (1));
+               Local_Work : Real_Arrays.Real_Vector (1 .. UB);
             begin
                sggev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -1239,8 +1237,8 @@ package body Ada_Numerics.Generic_Arrays is
                    Querying_Work, -1,
                    Info);
             declare
-               Local_Work : Real_Arrays.Real_Vector
-                 (1 .. Integer (Querying_Work (1)));
+               UB : constant Integer := Integer (Querying_Work (1));
+               Local_Work : Real_Arrays.Real_Vector (1 .. UB);
             begin
                dggev (Jobv_L, Jobv_R,
                       A'Length (1),
@@ -1298,9 +1296,8 @@ package body Ada_Numerics.Generic_Arrays is
                    F_Querying_Work, -1,
                    Info);
             declare
-               F_Local_Work :
-                 BLAS.Double_Precision_Vector
-                 (1 .. Integer (F_Querying_Work (1)));
+               UB : constant Integer := Integer (F_Querying_Work (1));
+               Unused_F_Local_Work : BLAS.Double_Precision_Vector (1 .. UB);
             begin
                dggev (Jobv_L, Jobv_R,
                       F_A'Length (1),
@@ -1310,7 +1307,7 @@ package body Ada_Numerics.Generic_Arrays is
                       F_Beta,
                       F_V_L, F_V_L'Length (1),
                       F_V_R, F_V_R'Length (1),
-                      F_Local_Work, F_Local_Work'Length,
+                      Unused_F_Local_Work, Unused_F_Local_Work'Length,
                       Info);
                Alpha_R := To_Real (F_Alpha_R);
                Alpha_I := To_Real (F_Alpha_I);

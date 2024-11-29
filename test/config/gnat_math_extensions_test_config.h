@@ -2,14 +2,14 @@
 #ifndef GNAT_MATH_EXTENSIONS_TEST_CONFIG_H
 #define GNAT_MATH_EXTENSIONS_TEST_CONFIG_H
 
-#define CRATE_VERSION "1.1.0"
+#define CRATE_VERSION "1.2.0"
 #define CRATE_NAME "gnat_math_extensions_test"
 
 #define ALIRE_HOST_OS "macos"
 
-#define ALIRE_HOST_ARCH "x86_64"
+#define ALIRE_HOST_ARCH "aarch64"
 
-#define ALIRE_HOST_DISTRO "distro_unknown"
+#define ALIRE_HOST_DISTRO "homebrew"
 
 #define BUILD_PROFILE_RELEASE 1
 #define BUILD_PROFILE_VALIDATION 2

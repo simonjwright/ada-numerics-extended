@@ -1,2 +1,9 @@
+.build/
+alire/
+lib/
+config/
 tests
-tests.exe
+demo_extensions
+tests
+[cs]geev_generator
+[csz]ggev_generator
